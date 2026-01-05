@@ -1,0 +1,89 @@
+# Global
+.DS_Store
+Thumbs.db
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node / JS
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.npm/
+.yarn/
+.pnp.*
+.next/
+out/
+.next-dev/
+.next-static/
+.vercel/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+*.tmp
+*.temp
+
+########################
+# Next.js (frontend/)
+########################
+
+/frontend/node_modules/
+/frontend/.next/
+/frontend/out/
+/frontend/.env
+/frontend/.env.* 
+!/frontend/.env.example
+/frontend/.vercel/
+/frontend/coverage/
+/frontend/.turbo/
+
+# Next.js misc
+/frontend/.eslintcache
+/frontend/.stylelintcache
+/frontend/.swc/
+frontend/tsconfig.tsbuildinfo
+
+########################
+# Foundry (solidity/)
+########################
+
+/lib/
+/cache/
+/out/
+/broadcast/
+/docs/
+/artifacts/
+
+# Foundry env
+.env.local
+.env.sepolia
+.env.mainnet
+
+# Foundry test / coverage
+coverage.*
+lcov.info
+
+# Foundry VSCode
+.solhint.json
+.soliumrc.json
+
+########################
+# Monorepo tooling
+########################
+
+/turbo/
+/pnpm-lock.yaml
+/package-lock.json
+/yarn.lock
