@@ -15,15 +15,15 @@ export function AboutUsSection() {
             </div>
 
             <h2 className="text-4xl sm:text-5xl font-bold text-neutral-900 leading-tight">
-              Belajar Bahasa Daerah
+              Learn Regional Languages
               <br />
-              dengan Bukti yang Kredibel
+              With Verifiable Proof
             </h2>
           </div>
 
           <div className="lg:pt-12">
             <p className="text-lg text-neutral-600 leading-relaxed mb-8">
-              Kasturi menyelesaikan masalah belajar bahasa daerah yang tidak terstruktur dan sulit diverifikasi. Kami menggabungkan pelajaran praktis berbasis percakapan dengan credential non-transferable (SBT) yang bisa diverifikasi publik.
+              Kasturi solves the problem of unstructured learning with no credible proof. We combine practical, conversation-based lessons with a non-transferable credential (SBT) that can be publicly verified.
             </p>
 
             <Link href="/about">
