@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useInView } from '@/hooks/useInView';
 
 type FaqItem = {
   q: string;
@@ -9,6 +10,7 @@ type FaqItem = {
 };
 
 export function FAQSection() {
+  const { ref, isInView } = useInView();
   const items = useMemo<FaqItem[]>(
     () => [
       {
@@ -50,16 +52,16 @@ export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number>(0);
 
   return (
-    <section id="faq" className="py-20 bg-white">
+    <section id="faq" className="py-20 bg-white" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
+        <div className={`text-center mb-14 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="inline-block px-4 py-2 bg-neutral-100 rounded-full mb-6">
             <p className="text-sm text-neutral-600">FAQ</p>
           </div>
           <h2 className="text-4xl font-bold text-neutral-900 leading-tight">Frequently Asked Questions</h2>
         </div>
 
-        <div className="max-w-3xl mx-auto bg-neutral-50 rounded-3xl p-2">
+        <div className={`max-w-3xl mx-auto bg-neutral-50 rounded-3xl p-2 transition-all duration-700 delay-200 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           <div className="divide-y divide-neutral-200">
             {items.map((item, idx) => {
               const isOpen = idx === openIndex;

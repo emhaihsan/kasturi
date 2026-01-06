@@ -8,6 +8,7 @@ import {
   LineChart,
   ShieldCheck,
 } from 'lucide-react';
+import { useInView } from '@/hooks/useInView';
 
 const advantages = [
   {
@@ -49,10 +50,12 @@ const advantages = [
 ];
 
 export function WhyChooseUsSection() {
+  const { ref, isInView } = useInView();
+
   return (
-    <section id="features" className="py-20 bg-white">
+    <section id="why-choose-us" className="py-20 bg-white" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-neutral-50 rounded-3xl px-6 py-14 sm:px-10">
+        <div className={`bg-neutral-50 rounded-3xl px-6 py-14 sm:px-10 transition-all duration-700 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           <div className="text-center mb-14">
             <div className="inline-block px-4 py-2 bg-white border border-neutral-200 rounded-full mb-6">
               <p className="text-sm text-neutral-600">Why choose us</p>
@@ -67,7 +70,11 @@ export function WhyChooseUsSection() {
             {advantages.map((item, index) => {
               const Icon = item.icon;
               return (
-                <div key={index} className="text-left">
+                <div 
+                  key={index} 
+                  className={`text-left transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                  style={{ transitionDelay: `${index * 100}ms` }}
+                >
                   <div className="w-10 h-10 rounded-xl bg-white border border-neutral-200 flex items-center justify-center mb-4">
                     <Icon className="w-5 h-5 text-neutral-800" />
                   </div>

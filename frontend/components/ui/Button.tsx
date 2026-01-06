@@ -18,12 +18,12 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-full transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-full transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 hover:shadow-lg active:scale-95';
   
   const variants = {
-    primary: 'bg-neutral-900 text-white hover:bg-neutral-800',
-    secondary: 'bg-green-500 text-white hover:bg-green-600',
-    outline: 'border border-neutral-300 text-neutral-900 hover:bg-neutral-50',
+    primary: 'bg-neutral-900 text-white hover:bg-neutral-800 hover:shadow-neutral-900/20',
+    secondary: 'bg-green-500 text-white hover:bg-green-600 hover:shadow-green-500/30',
+    outline: 'border border-neutral-300 text-neutral-900 hover:bg-neutral-50 hover:border-neutral-400',
     ghost: 'text-neutral-600 hover:bg-neutral-100',
   };
   

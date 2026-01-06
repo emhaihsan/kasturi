@@ -3,12 +3,15 @@
 import { Button } from '../ui/Button';
 import Link from 'next/link';
 import { Play } from 'lucide-react';
+import { useInView } from '@/hooks/useInView';
 
 export function AboutUsSection() {
+  const { ref, isInView } = useInView();
+
   return (
-    <section id="about" className="py-20 bg-white">
+    <section id="about" className="py-20 bg-white" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-start mb-10">
+        <div className={`grid lg:grid-cols-2 gap-12 items-start mb-10 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div>
             <div className="inline-block px-4 py-2 bg-neutral-100 rounded-full mb-6">
               <p className="text-sm text-neutral-600">About us</p>
@@ -32,7 +35,7 @@ export function AboutUsSection() {
           </div>
         </div>
 
-        <div className="relative aspect-[16/7] bg-gradient-to-br from-neutral-200 to-neutral-300 rounded-3xl overflow-hidden flex items-center justify-center">
+        <div className={`relative aspect-[16/7] bg-gradient-to-br from-neutral-200 to-neutral-300 rounded-3xl overflow-hidden flex items-center justify-center transition-all duration-700 delay-300 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           <button className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors shadow-lg">
             <Play className="w-6 h-6 text-neutral-900 fill-neutral-900" />
           </button>

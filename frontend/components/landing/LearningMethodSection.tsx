@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp, MessageCircle } from 'lucide-react';
+import { useInView } from '@/hooks/useInView';
 
 type MethodItem = {
   title: string;
@@ -9,6 +10,7 @@ type MethodItem = {
 };
 
 export function LearningMethodSection() {
+  const { ref, isInView } = useInView();
   const items = useMemo<MethodItem[]>(
     () => [
       {
@@ -33,14 +35,14 @@ export function LearningMethodSection() {
   const [openIndex, setOpenIndex] = useState<number>(0);
 
   return (
-    <section id="metode" className="py-20 bg-white">
+    <section id="learning-method" className="py-20 bg-white" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          <div className="aspect-[4/3] bg-neutral-200 rounded-3xl overflow-hidden flex items-center justify-center">
+          <div className={`aspect-[4/3] bg-neutral-200 rounded-3xl overflow-hidden flex items-center justify-center transition-all duration-700 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
             <MessageCircle className="w-20 h-20 text-neutral-400" />
           </div>
 
-          <div>
+          <div className={`transition-all duration-700 delay-200 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
             <div className="inline-block px-4 py-2 bg-neutral-100 rounded-full mb-6">
               <p className="text-sm text-neutral-600">Learning method</p>
             </div>

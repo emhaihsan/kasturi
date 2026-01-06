@@ -53,9 +53,13 @@ export function HeroSection() {
   };
 
   return (
-    <section className="bg-white pt-40 pb-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+    <section className="relative bg-white pt-40 pb-20 overflow-hidden">
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-green-50/30 via-transparent to-emerald-50/20 animate-gradient" />
+      <div className="absolute top-20 right-10 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-20 left-10 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl animate-float-delayed" />
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <div className="inline-block px-4 py-2 bg-neutral-100 rounded-full mb-6">
             <p className="text-sm text-neutral-600">Structured learning • On-chain proof</p>
           </div>
@@ -123,9 +127,9 @@ export function HeroSection() {
             {slides.map(({ id, Icon, label }) => (
               <div
                 key={id}
-                className="snap-center shrink-0 w-[70%] sm:w-[45%] md:w-[24%] aspect-[3/4] bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-3xl overflow-hidden flex flex-col items-center justify-center gap-3 hover:shadow-lg transition-shadow"
+                className="snap-center shrink-0 w-[70%] sm:w-[45%] md:w-[24%] aspect-[3/4] bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-3xl overflow-hidden flex flex-col items-center justify-center gap-3 hover:shadow-xl hover:scale-105 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
               >
-                <Icon className="w-16 h-16 text-neutral-400" />
+                <Icon className="w-16 h-16 text-neutral-400 group-hover:text-green-600 transition-colors duration-300" />
                 <p className="text-sm text-neutral-500">{label}</p>
               </div>
             ))}

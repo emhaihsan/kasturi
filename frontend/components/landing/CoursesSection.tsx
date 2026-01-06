@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { languages } from '@/lib/data';
+import { useInView } from '@/hooks/useInView';
 
 export function CoursesSection() {
+  const { ref, isInView } = useInView();
   const featured = languages.filter((l) => l.id === 'banjar' || l.id === 'ambon');
 
   const overrides: Record<string, { name: string; description: string }> = {
@@ -21,9 +23,9 @@ export function CoursesSection() {
   };
 
   return (
-    <section id="courses" className="py-20 bg-white">
+    <section id="courses" className="py-20 bg-white" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-start justify-between gap-8 mb-12">
+        <div className={`flex items-start justify-between gap-8 mb-12 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div>
             <div className="inline-block px-4 py-2 bg-neutral-100 rounded-full mb-5">
               <p className="text-sm text-neutral-600">Our courses</p>
@@ -45,11 +47,11 @@ export function CoursesSection() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {featured.map((lang) => {
+          {featured.map((lang, idx) => {
             const displayName = overrides[lang.id]?.name ?? lang.name;
             const displayDescription = overrides[lang.id]?.description ?? lang.description;
             return (
-            <Link key={lang.id} href={`/languages/${lang.id}`} className="group">
+            <Link key={lang.id} href={`/languages/${lang.id}`} className={`group transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: `${idx * 150}ms` }}>
               <div>
                 <div className="aspect-[16/10] bg-neutral-200 rounded-3xl overflow-hidden mb-6 flex items-center justify-center">
                   <span className="text-6xl">{lang.flag}</span>
