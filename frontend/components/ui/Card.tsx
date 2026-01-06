@@ -12,8 +12,8 @@ interface CardProps {
 export function Card({ children, className = '', hover = false, onClick }: CardProps) {
   return (
     <div
-      className={`bg-white rounded-2xl shadow-sm border border-gray-100 ${
-        hover ? 'hover:shadow-lg hover:border-emerald-200 transition-all duration-300 cursor-pointer' : ''
+      className={`bg-white rounded-2xl border border-neutral-200 ${
+        hover ? 'hover:border-neutral-300 hover:shadow-md transition-all duration-200 cursor-pointer' : ''
       } ${className}`}
       onClick={onClick}
     >
@@ -31,5 +31,5 @@ export function CardContent({ children, className = '' }: { children: ReactNode;
 }
 
 export function CardFooter({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <div className={`px-6 pb-6 pt-4 border-t border-gray-100 ${className}`}>{children}</div>;
+  return <div className={`px-6 pb-6 pt-4 border-t border-neutral-100 ${className}`}>{children}</div>;
 }

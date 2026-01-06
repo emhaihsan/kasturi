@@ -19,7 +19,7 @@ import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
-type Tab = 'video' | 'vocabulary' | 'exercises';
+type Tab = 'materi' | 'exercises';
 
 export default function LessonDetailPage() {
   const params = useParams();
@@ -28,7 +28,7 @@ export default function LessonDetailPage() {
   const lessonId = params.lessonId as string;
 
   const { user, completeLesson, updateExerciseScore } = useAppStore();
-  const [activeTab, setActiveTab] = useState<Tab>('video');
+  const [activeTab, setActiveTab] = useState<Tab>('materi');
   const [currentExercise, setCurrentExercise] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -81,7 +81,7 @@ export default function LessonDetailPage() {
       if (score >= 70 && !isCompleted) {
         completeLesson(lesson.id, lesson.expReward);
       }
-      setActiveTab('video');
+      setActiveTab('materi');
     }
   };
 
@@ -98,8 +98,7 @@ export default function LessonDetailPage() {
   };
 
   const tabs = [
-    { id: 'video' as Tab, label: 'Video', icon: Play },
-    { id: 'vocabulary' as Tab, label: 'Kosakata', icon: BookOpen },
+    { id: 'materi' as Tab, label: 'Materi', icon: BookOpen },
     { id: 'exercises' as Tab, label: 'Latihan', icon: Award },
   ];
 
@@ -160,66 +159,63 @@ export default function LessonDetailPage() {
           })}
         </div>
 
-        {activeTab === 'video' && (
+        {activeTab === 'materi' && (
           <div className="space-y-8">
-            <Card className="overflow-hidden">
-              <div className="aspect-video bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4 cursor-pointer hover:bg-white/30 transition-colors">
-                    <Play className="w-10 h-10 fill-white" />
-                  </div>
-                  <p className="text-lg font-medium">Video Pelajaran</p>
-                  <p className="text-emerald-100">{lesson.duration}</p>
-                </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-emerald-600" />
+                Kosakata Penting
+              </h2>
+              <div className="space-y-4">
+                {lesson.vocabulary.map((vocab, index) => (
+                  <Card key={vocab.id} className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold flex-shrink-0">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-xl font-bold text-gray-900">{vocab.word}</span>
+                          <span className="text-gray-400">/</span>
+                          <span className="text-lg text-emerald-600">{vocab.translation}</span>
+                          <button className="p-1 hover:bg-gray-100 rounded-full">
+                            <Volume2 className="w-4 h-4 text-gray-400" />
+                          </button>
+                        </div>
+                        <p className="text-sm text-gray-500 mb-3">Pengucapan: {vocab.pronunciation}</p>
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <p className="text-gray-700 font-medium">&ldquo;{vocab.example}&rdquo;</p>
+                          <p className="text-gray-500 text-sm mt-1">{vocab.exampleTranslation}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
               </div>
-            </Card>
-
-            <div className="flex justify-end gap-4">
-              <Button variant="outline" onClick={() => setActiveTab('vocabulary')}>
-                Lihat Kosakata
-              </Button>
-              <Button onClick={() => setActiveTab('exercises')}>
-                Mulai Latihan
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
             </div>
-          </div>
-        )}
 
-        {activeTab === 'vocabulary' && (
-          <div className="space-y-4">
-            {lesson.vocabulary.map((vocab, index) => (
-              <Card key={vocab.id} className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold flex-shrink-0">
-                    {index + 1}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-xl font-bold text-gray-900">{vocab.word}</span>
-                      <span className="text-gray-400">/</span>
-                      <span className="text-lg text-emerald-600">{vocab.translation}</span>
-                      <button className="p-1 hover:bg-gray-100 rounded-full">
-                        <Volume2 className="w-4 h-4 text-gray-400" />
-                      </button>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Play className="w-5 h-5 text-emerald-600" />
+                Video Pelajaran
+              </h2>
+              <Card className="overflow-hidden">
+                <div className="aspect-video bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4 cursor-pointer hover:bg-white/30 transition-colors">
+                      <Play className="w-10 h-10 fill-white" />
                     </div>
-                    <p className="text-sm text-gray-500 mb-3">Pengucapan: {vocab.pronunciation}</p>
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-gray-700 font-medium">&ldquo;{vocab.example}&rdquo;</p>
-                      <p className="text-gray-500 text-sm mt-1">{vocab.exampleTranslation}</p>
-                    </div>
+                    <p className="text-lg font-medium">Tonton Video</p>
+                    <p className="text-emerald-100">{lesson.duration}</p>
                   </div>
                 </div>
               </Card>
-            ))}
+            </div>
 
-            <div className="flex justify-end gap-4 mt-8">
-              <Button variant="outline" onClick={() => setActiveTab('video')}>
-                Kembali ke Video
-              </Button>
-              <Button onClick={() => setActiveTab('exercises')}>
+            <div className="flex justify-end">
+              <Button onClick={() => setActiveTab('exercises')} size="lg">
                 Mulai Latihan
-                <ChevronRight className="w-4 h-4 ml-1" />
+                <ChevronRight className="w-5 h-5 ml-1" />
               </Button>
             </div>
           </div>
