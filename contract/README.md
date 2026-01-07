@@ -1,66 +1,145 @@
-## Foundry
+# Kasturi Smart Contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Smart contracts for Kasturi - a platform for learning Indonesian regional languages with verifiable on-chain credentials.
 
-Foundry consists of:
+## Overview
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Kasturi uses blockchain technology to issue verifiable learning credentials:
 
-## Documentation
+- **KasturiEXP** - EXP ledger for tracking learning progress
+- **KasturiSBT** - Soulbound Token (non-transferable) for learning credentials
+- **KasturiUtility** - Utility NFT for rewards and vouchers
+- **Kasturi** - Main coordinator contract
 
-https://book.getfoundry.sh/
+## Architecture
 
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```
+┌──────────────────┐
+│     Kasturi      │  ← Main coordinator
+│   (Controller)   │
+└────────┬─────────┘
+         │
+    ┌────┼────┬────────────┐
+    ▼    ▼    ▼            ▼
+┌──────┐ ┌──────┐ ┌──────────────┐
+│ EXP  │ │ SBT  │ │   Utility    │
+│Ledger│ │Cred. │ │     NFT      │
+└──────┘ └──────┘ └──────────────┘
 ```
 
-### Test
+## User Flow
 
-```shell
-$ forge test
+1. **Learn** - Complete lessons, earn EXP
+2. **Claim Credential** - Meet EXP requirement, claim SBT certificate
+3. **Earn Rewards** - Spend EXP to mint Utility NFTs (vouchers)
+4. **Redeem** - Redeem Utility NFTs for real benefits
+5. **Verify** - Anyone can verify credentials publicly
+
+## Setup
+
+```bash
+# Install dependencies
+forge install
+
+# Copy environment file
+cp .env.example .env
+
+# Edit .env with your private key
 ```
 
-### Format
+## Build & Test
 
-```shell
-$ forge fmt
+```bash
+# Build contracts
+forge build
+
+# Run tests
+forge test
+
+# Run tests with verbosity
+forge test -vvv
+
+# Check coverage
+forge coverage
 ```
 
-### Gas Snapshots
+## Deploy to Lisk Sepolia Testnet
 
-```shell
-$ forge snapshot
+```bash
+# Load environment variables
+source .env
+
+# Deploy
+forge script script/Deploy.s.sol:DeployScript \
+  --rpc-url https://rpc.sepolia-api.lisk.com \
+  --broadcast \
+  --verify
+
+# Or with explicit private key
+forge script script/Deploy.s.sol:DeployScript \
+  --rpc-url https://rpc.sepolia-api.lisk.com \
+  --private-key $PRIVATE_KEY \
+  --broadcast
 ```
 
-### Anvil
+## Deploy to Lisk Mainnet
 
-```shell
-$ anvil
+```bash
+forge script script/Deploy.s.sol:DeployScript \
+  --rpc-url https://rpc.api.lisk.com \
+  --broadcast \
+  --verify
 ```
 
-### Deploy
+## Contract Addresses
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+After deployment, update these addresses:
+
+| Contract | Lisk Sepolia | Lisk Mainnet |
+|----------|--------------|--------------|
+| KasturiEXP | TBD | TBD |
+| KasturiSBT | TBD | TBD |
+| KasturiUtility | TBD | TBD |
+| Kasturi | TBD | TBD |
+
+## Verification on Blockscout
+
+Contracts are automatically verified during deployment with `--verify` flag.
+
+Manual verification:
+```bash
+forge verify-contract <CONTRACT_ADDRESS> src/Kasturi.sol:Kasturi \
+  --chain-id 4202 \
+  --verifier blockscout \
+  --verifier-url https://sepolia-blockscout.lisk.com/api
 ```
 
-### Cast
+## Key Functions
 
-```shell
-$ cast <subcommand>
-```
+### For Backend (Owner Only)
+- `completeLessonForUser(user, programId, expAmount)` - Award EXP after lesson completion
 
-### Help
+### For Users
+- `claimCredential(programId)` - Claim SBT after meeting requirements
+- `mintUtilityWithEXP(utilityType)` - Spend EXP to mint utility NFT
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+### For Verification (Public)
+- `verifyCompletion(user, programId)` - Check if user completed a program
+- `getUserLearningStatus(user, programId)` - Get user's learning status
+
+## Program IDs
+
+| Program | ID (bytes32) |
+|---------|--------------|
+| Bahasa Banjar | `keccak256("banjar")` |
+| Bahasa Ambon | `keccak256("ambon")` |
+
+## Security
+
+- SBT credentials are **non-transferable** (soulbound)
+- Only authorized operators can add EXP
+- Utility NFTs can only be redeemed once
+
+## License
+
+MIT
