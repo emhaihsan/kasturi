@@ -51,6 +51,7 @@ export function Navbar() {
     setAuthenticated(false);
     setUser(null);
     setIsProfileOpen(false);
+    router.push('/');
   };
 
   // Floating navbar untuk landing page
@@ -60,9 +61,7 @@ export function Navbar() {
         <div className="bg-white rounded-2xl shadow-lg border border-neutral-100 px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-sm">
-                K
-              </div>
+              <img src="/icon.webp" alt="Kasturi" className="w-8 h-8" />
               <span className="text-lg font-bold text-neutral-900">Kasturi</span>
             </Link>
 
@@ -133,6 +132,7 @@ export function Navbar() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-10">
               <Link href="/dashboard" className="flex items-center gap-2">
+                <img src="/icon.webp" alt="Kasturi" className="w-8 h-8" />
                 <span className="text-xl font-bold text-neutral-900">Kasturi</span>
               </Link>
 

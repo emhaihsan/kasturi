@@ -14,7 +14,7 @@ export function PrivyProvider({ children }: { children: ReactNode }) {
         appearance: {
           theme: 'light',
           accentColor: '#10b981',
-          logo: '/kasturi-logo.png',
+          logo: '/icon.webp',
           showWalletLoginFirst: false,
         },
         embeddedWallets: {

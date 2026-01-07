@@ -3,31 +3,42 @@
 import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '../ui/Button';
 import Link from 'next/link';
-import { useMemo, useRef, useState } from 'react';
-import { Award, BookOpen, ChevronLeft, ChevronRight, GraduationCap, Users } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function HeroSection() {
   const { login, authenticated } = usePrivy();
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isInView, setIsInView] = useState(true);
+  const [isAutoSliding, setIsAutoSliding] = useState(false);
+  const [isPageScrolling, setIsPageScrolling] = useState(false);
 
-  const slides = useMemo(
-    () => [
-      { id: 's1', Icon: BookOpen, label: 'Lessons' },
-      { id: 's2', Icon: Users, label: 'Conversations' },
-      { id: 's3', Icon: GraduationCap, label: 'Practice' },
-      { id: 's4', Icon: Award, label: 'Credential' },
-    ],
-    []
-  );
+  const slides = [
+    '/hero1.webp',
+    '/hero2.webp',
+    '/hero3.webp',
+    '/hero4.webp',
+    '/hero5.webp',
+    '/hero6.webp',
+    '/hero7.webp',
+  ];
 
-  const scrollToIndex = (idx: number) => {
+  const scrollToIndex = (idx: number, auto = false) => {
     const el = trackRef.current;
     if (!el) return;
     const clamped = Math.max(0, Math.min(slides.length - 1, idx));
     const child = el.children.item(clamped) as HTMLElement | null;
     if (!child) return;
-    child.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    
+    if (auto) {
+      setIsAutoSliding(true);
+    }
+    
+    // Use scrollLeft instead of scrollIntoView to prevent page scroll jump
+    const scrollLeft = child.offsetLeft - (el.clientWidth / 2) + (child.clientWidth / 2);
+    el.scrollTo({ left: scrollLeft, behavior: 'smooth' });
     setActiveIndex(clamped);
   };
 
@@ -50,16 +61,66 @@ export function HeroSection() {
       }
     }
     setActiveIndex(bestIdx);
+    setIsAutoSliding(false);
   };
 
+  // Intersection Observer to detect when section is in view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Detect page scroll to pause auto-slide
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+
+    const handlePageScroll = () => {
+      setIsPageScrolling(true);
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        setIsPageScrolling(false);
+      }, 150);
+    };
+
+    window.addEventListener('scroll', handlePageScroll);
+    return () => {
+      window.removeEventListener('scroll', handlePageScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
+
+  // Auto-slide every 4 seconds, only when in view and not page scrolling
+  useEffect(() => {
+    if (!isInView || isPageScrolling) return;
+
+    const interval = setInterval(() => {
+      if (!isAutoSliding) {
+        const nextIndex = (activeIndex + 1) % slides.length;
+        scrollToIndex(nextIndex, true);
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [activeIndex, slides.length, isInView, isAutoSliding, isPageScrolling]);
+
   return (
-    <section className="relative bg-white pt-40 pb-20 overflow-hidden">
+    <section ref={sectionRef} className="relative bg-white bg-dot-pattern-light pt-40 pb-20 overflow-hidden">
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-green-50/30 via-transparent to-emerald-50/20 animate-gradient" />
       <div className="absolute top-20 right-10 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-20 left-10 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl animate-float-delayed" />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
+        <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in-up">
           <div className="inline-block px-4 py-2 bg-neutral-100 rounded-full mb-6">
             <p className="text-sm text-neutral-600">Structured learning • On-chain proof</p>
           </div>
@@ -94,8 +155,8 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="mt-20 relative">
-          <div className="hidden md:flex items-center justify-between absolute inset-y-0 left-0 right-0 pointer-events-none">
+        <div className="relative">
+          <div className="hidden md:flex items-center justify-between absolute inset-y-0 left-0 right-0 pointer-events-none z-10">
             <div className="pointer-events-auto">
               <button
                 type="button"
@@ -121,24 +182,23 @@ export function HeroSection() {
           <div
             ref={trackRef}
             onScroll={handleScroll}
-            className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 -mx-4 px-4"
+            className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory"
             style={{ scrollbarWidth: 'none' }}
           >
-            {slides.map(({ id, Icon, label }) => (
+            {slides.map((image, idx) => (
               <div
-                key={id}
-                className="snap-center shrink-0 w-[70%] sm:w-[45%] md:w-[24%] aspect-[3/4] bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-3xl overflow-hidden flex flex-col items-center justify-center gap-3 hover:shadow-xl hover:scale-105 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
+                key={idx}
+                className="snap-center shrink-0 w-full md:w-[60%] aspect-[16/9] rounded-3xl overflow-hidden"
               >
-                <Icon className="w-16 h-16 text-neutral-400 group-hover:text-green-600 transition-colors duration-300" />
-                <p className="text-sm text-neutral-500">{label}</p>
+                <img src={image} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
 
           <div className="flex items-center justify-center gap-2 mt-4">
-            {slides.map((s, idx) => (
+            {slides.map((_, idx) => (
               <button
-                key={s.id}
+                key={idx}
                 type="button"
                 onClick={() => scrollToIndex(idx)}
                 className={`h-2 rounded-full transition-all ${idx === activeIndex ? 'w-6 bg-neutral-900' : 'w-2 bg-neutral-300'}`}

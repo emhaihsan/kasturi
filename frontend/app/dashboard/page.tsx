@@ -16,8 +16,12 @@ import { useAppStore } from '@/lib/store';
 import { languages, lessons } from '@/lib/data';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { useInView } from '@/hooks/useInView';
 
 export default function DashboardPage() {
+  const { ref: headerRef, isInView: headerInView } = useInView();
+  const { ref: statsRef, isInView: statsInView } = useInView();
+  const { ref: contentRef, isInView: contentInView } = useInView();
   const { authenticated, login, user: privyUser } = usePrivy();
   const { user } = useAppStore();
 
@@ -28,12 +32,12 @@ export default function DashboardPage() {
           <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-6">
             <BookOpen className="w-8 h-8 text-neutral-600" />
           </div>
-          <h1 className="text-2xl font-bold text-neutral-900 mb-3">Dashboard Belajar</h1>
+          <h1 className="text-2xl font-bold text-neutral-900 mb-3">Learning Dashboard</h1>
           <p className="text-neutral-500 mb-8">
-            Login untuk melihat progress belajar Anda.
+            Login to view your learning progress.
           </p>
           <Button onClick={() => login()}>
-            Login untuk Melanjutkan
+            Login to Continue
           </Button>
         </div>
       </div>
@@ -70,46 +74,48 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-white pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-          <div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8" ref={headerRef}>
+          <div className={`transition-all duration-700 ${headerInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h1 className="text-2xl font-bold text-neutral-900 mb-1">
-              Selamat datang, {user?.name || privyUser?.email?.address?.split('@')[0] || 'Learner'}!
+              Welcome, {user?.name || privyUser?.email?.address?.split('@')[0] || 'Learner'}!
             </h1>
-            <p className="text-neutral-500">Pantau progress belajar Anda</p>
+            <p className="text-neutral-500">Track your learning progress</p>
           </div>
-          <Link href="/languages">
-            <Button className="mt-4 md:mt-0">
-              Lanjut Belajar
-            </Button>
-          </Link>
+          <div className={`transition-all duration-700 delay-200 ${headerInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <Link href="/languages">
+              <Button className="mt-4 md:mt-0">
+                Continue Learning
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="p-5 bg-neutral-50 rounded-2xl">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" ref={statsRef}>
+          <div className={`p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-all duration-500 ${statsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <p className="text-xs text-neutral-500 mb-1">Total EXP</p>
             <p className="text-2xl font-bold text-neutral-900">{user?.totalExp || 0}</p>
           </div>
-          <div className="p-5 bg-neutral-50 rounded-2xl">
-            <p className="text-xs text-neutral-500 mb-1">Token</p>
+          <div className={`p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-all duration-500 delay-[100ms] ${statsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <p className="text-xs text-neutral-500 mb-1">Tokens</p>
             <p className="text-2xl font-bold text-neutral-900">{user?.tokenBalance || 0}</p>
           </div>
-          <div className="p-5 bg-neutral-50 rounded-2xl">
-            <p className="text-xs text-neutral-500 mb-1">Pelajaran</p>
+          <div className={`p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-all duration-500 delay-[200ms] ${statsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <p className="text-xs text-neutral-500 mb-1">Lessons</p>
             <p className="text-2xl font-bold text-neutral-900">{totalCompletedLessons}</p>
           </div>
-          <div className="p-5 bg-neutral-50 rounded-2xl">
-            <p className="text-xs text-neutral-500 mb-1">Sertifikat</p>
+          <div className={`p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-all duration-500 delay-[300ms] ${statsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <p className="text-xs text-neutral-500 mb-1">Certificates</p>
             <p className="text-2xl font-bold text-neutral-900">{user?.credentials?.length || 0}</p>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-8" ref={contentRef}>
           <div className="lg:col-span-2 space-y-8">
-            <Card>
+            <Card className={`transition-all duration-700 hover:shadow-xl ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold text-neutral-900">
-                    Progress Bahasa
+                    Language Progress
                   </h2>
                 </div>
               </CardHeader>
@@ -126,7 +132,7 @@ export default function DashboardPage() {
                                 {lang.name}
                               </p>
                               <p className="text-xs text-neutral-500">
-                                {lang.completed} / {lang.total} pelajaran
+                                {lang.completed} / {lang.total} lessons
                               </p>
                             </div>
                           </div>
@@ -147,10 +153,10 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className={`transition-all duration-700 delay-200 hover:shadow-xl ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <CardHeader>
                 <h2 className="font-semibold text-neutral-900">
-                  Aktivitas Terakhir
+                  Recent Activity
                 </h2>
               </CardHeader>
               <CardContent>
@@ -174,7 +180,7 @@ export default function DashboardPage() {
                           </div>
                           <span className="text-xs text-neutral-400">
                             {progress.completedAt
-                              ? new Date(progress.completedAt).toLocaleDateString('id-ID')
+                              ? new Date(progress.completedAt).toLocaleDateString('en-US')
                               : ''}
                           </span>
                         </div>
@@ -183,7 +189,7 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-neutral-500 text-sm">Belum ada aktivitas</p>
+                    <p className="text-neutral-500 text-sm">No activity yet</p>
                   </div>
                 )}
               </CardContent>
@@ -191,10 +197,10 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-8">
-            <Card>
+            <Card className={`transition-all duration-700 delay-300 hover:shadow-xl ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <CardHeader>
                 <h2 className="font-semibold text-neutral-900">
-                  Pencapaian
+                  Achievements
                 </h2>
               </CardHeader>
               <CardContent>
@@ -205,8 +211,8 @@ export default function DashboardPage() {
                         🎯
                       </div>
                       <div>
-                        <p className="font-medium text-neutral-900 text-sm">Langkah Pertama</p>
-                        <p className="text-xs text-neutral-500">Selesaikan 1 pelajaran</p>
+                        <p className="font-medium text-neutral-900 text-sm">First Step</p>
+                        <p className="text-xs text-neutral-500">Complete 1 lesson</p>
                       </div>
                     </div>
                   </div>
@@ -217,8 +223,8 @@ export default function DashboardPage() {
                         📚
                       </div>
                       <div>
-                        <p className="font-medium text-neutral-900 text-sm">Pelajar Rajin</p>
-                        <p className="text-xs text-neutral-500">Selesaikan 5 pelajaran</p>
+                        <p className="font-medium text-neutral-900 text-sm">Diligent Learner</p>
+                        <p className="text-xs text-neutral-500">Complete 5 lessons</p>
                       </div>
                     </div>
                   </div>
@@ -229,8 +235,8 @@ export default function DashboardPage() {
                         🏆
                       </div>
                       <div>
-                        <p className="font-medium text-neutral-900 text-sm">Tersertifikasi</p>
-                        <p className="text-xs text-neutral-500">Dapatkan sertifikat pertama</p>
+                        <p className="font-medium text-neutral-900 text-sm">Certified</p>
+                        <p className="text-xs text-neutral-500">Get first certificate</p>
                       </div>
                     </div>
                   </div>
@@ -238,11 +244,11 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <div className="bg-neutral-900 rounded-2xl p-6 text-white">
-              <h3 className="font-semibold mb-4">Progress Keseluruhan</h3>
+            <div className={`bg-neutral-900 rounded-2xl p-6 text-white transition-all duration-700 delay-400 hover:scale-105 ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <h3 className="font-semibold mb-4">Overall Progress</h3>
               <div className="flex items-end gap-2 mb-4">
                 <span className="text-4xl font-bold">{Math.round(overallProgress)}%</span>
-                <span className="text-neutral-400 mb-1 text-sm">selesai</span>
+                <span className="text-neutral-400 mb-1 text-sm">complete</span>
               </div>
               <div className="h-2 bg-neutral-700 rounded-full overflow-hidden mb-3">
                 <div
@@ -251,7 +257,7 @@ export default function DashboardPage() {
                 />
               </div>
               <p className="text-neutral-400 text-sm">
-                {totalCompletedLessons} dari {totalLessons} pelajaran
+                {totalCompletedLessons} of {totalLessons} lessons
               </p>
             </div>
           </div>

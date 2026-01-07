@@ -9,16 +9,18 @@ export function CoursesSection() {
   const { ref, isInView } = useInView();
   const featured = languages.filter((l) => l.id === 'banjar' || l.id === 'ambon');
 
-  const overrides: Record<string, { name: string; description: string }> = {
+  const overrides: Record<string, { name: string; description: string; image: string }> = {
     banjar: {
-      name: 'Banjar Language',
+      name: 'Bahasa Banjar',
       description:
         'Learn everyday Banjar phrases for real-life conversations in South Kalimantan—greetings, introductions, and practical situations.',
+      image: '/bekantan.webp',
     },
     ambon: {
-      name: 'Ambonese Malay',
+      name: 'Bahasa Ambon',
       description:
-        'Learn practical Ambonese Malay used across Maluku—useful phrases and context to communicate more naturally with locals.',
+        'Learn practical Ambonese used across Maluku—useful phrases and context to communicate more naturally with locals.',
+      image: '/ambon.webp',
     },
   };
 
@@ -53,8 +55,8 @@ export function CoursesSection() {
             return (
             <Link key={lang.id} href={`/languages/${lang.id}`} className={`group transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: `${idx * 150}ms` }}>
               <div>
-                <div className="aspect-[16/10] bg-neutral-200 rounded-3xl overflow-hidden mb-6 flex items-center justify-center">
-                  <span className="text-6xl">{lang.flag}</span>
+                <div className="aspect-[16/10] bg-neutral-200 rounded-3xl overflow-hidden mb-6">
+                  <img src={overrides[lang.id]?.image || ''} alt={displayName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
 
                 <h3 className="text-xl font-semibold text-neutral-900 mb-2">{displayName}</h3>

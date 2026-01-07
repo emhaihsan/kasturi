@@ -35,10 +35,9 @@ export function AboutUsSection() {
           </div>
         </div>
 
-        <div className={`relative aspect-[16/7] bg-gradient-to-br from-neutral-200 to-neutral-300 rounded-3xl overflow-hidden flex items-center justify-center transition-all duration-700 delay-300 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-          <button className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition-colors shadow-lg">
-            <Play className="w-6 h-6 text-neutral-900 fill-neutral-900" />
-          </button>
+        <div className={`relative aspect-[16/7] bg-neutral-200 rounded-3xl overflow-hidden transition-all duration-700 delay-300 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          <img src="/aboutimage.webp" alt="About Kasturi" className="w-full h-full object-cover" />
+      
         </div>
       </div>
     </section>

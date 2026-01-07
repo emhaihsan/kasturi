@@ -38,8 +38,8 @@ export function LearningMethodSection() {
     <section id="learning-method" className="py-20 bg-white" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          <div className={`aspect-[4/3] bg-neutral-200 rounded-3xl overflow-hidden flex items-center justify-center transition-all duration-700 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-            <MessageCircle className="w-20 h-20 text-neutral-400" />
+          <div className={`aspect-[4/3] bg-neutral-200 rounded-3xl overflow-hidden transition-all duration-700 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+            <img src="/howtospeak.webp" alt="Learning method" className="w-full h-full object-cover" />
           </div>
 
           <div className={`transition-all duration-700 delay-200 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>

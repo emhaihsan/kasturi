@@ -136,3 +136,14 @@ html {
 .animate-slide-in-right {
   animation: slide-in-right 0.8s ease-out forwards;
 }
+
+/* Dot Pattern Background */
+.bg-dot-pattern {
+  background-image: radial-gradient(circle, rgb(200 200 200 / 0.3) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-dot-pattern-light {
+  background-image: radial-gradient(circle, rgb(0 0 0 / 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}

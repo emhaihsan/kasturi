@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "Kasturi - Belajar Bahasa Daerah Indonesia",
   description: "Platform pembelajaran bahasa daerah Indonesia dengan sertifikasi on-chain terverifikasi. Belajar Bahasa Banjar, Ambon, dan lainnya.",
   keywords: ["bahasa daerah", "belajar bahasa", "indonesia", "banjar", "ambon", "sertifikat", "blockchain", "lisk"],
+  icons: {
+    icon: "/icon.ico",
+  },
 };
 
 export default function RootLayout({

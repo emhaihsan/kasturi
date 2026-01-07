@@ -8,8 +8,9 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           <div>
-            <Link href="/" className="text-lg font-bold text-neutral-900 mb-4 block">
-              Kasturi
+            <Link href="/" className="flex items-center gap-2 mb-4">
+              <img src="/icon.webp" alt="Kasturi" className="w-8 h-8" />
+              <span className="text-lg font-bold text-neutral-900">Kasturi</span>
             </Link>
             <p className="text-sm text-neutral-500">
               Platform pembelajaran bahasa daerah Indonesia dengan sertifikasi on-chain.

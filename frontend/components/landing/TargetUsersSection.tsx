@@ -44,8 +44,8 @@ export function TargetUsersSection() {
 
         <div className="grid md:grid-cols-3 gap-8">
           {/* Row 1: image - text - image */}
-          <div className={`bg-neutral-100 rounded-3xl overflow-hidden aspect-[4/3] flex items-center justify-center transition-all duration-500 hover:scale-105 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '100ms' }}>
-            <GraduationCap className="w-16 h-16 text-neutral-400" />
+          <div className={`bg-neutral-100 rounded-3xl overflow-hidden aspect-[4/3] transition-all duration-500 hover:scale-105 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '100ms' }}>
+            <img src="/professional.webp" alt="Students studying in a new city" className="w-full h-full object-cover" />
           </div>
 
           <div className={`bg-neutral-50 rounded-3xl p-8 flex items-center justify-center text-center transition-all duration-500 hover:shadow-lg ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '200ms' }}>
@@ -55,8 +55,8 @@ export function TargetUsersSection() {
             </div>
           </div>
 
-          <div className={`bg-neutral-100 rounded-3xl overflow-hidden aspect-[4/3] flex items-center justify-center transition-all duration-500 hover:scale-105 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '300ms' }}>
-            <Briefcase className="w-16 h-16 text-neutral-400" />
+          <div className={`bg-neutral-100 rounded-3xl overflow-hidden aspect-[4/3] transition-all duration-500 hover:scale-105 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '300ms' }}>
+            <img src="/bule-pasar.webp" alt="Working professionals" className="w-full h-full object-cover" />
           </div>
 
           {/* Row 2: text - image - text */}
@@ -67,8 +67,8 @@ export function TargetUsersSection() {
             </div>
           </div>
 
-          <div className={`bg-neutral-100 rounded-3xl overflow-hidden aspect-[4/3] flex items-center justify-center transition-all duration-500 hover:scale-105 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '500ms' }}>
-            <Globe className="w-16 h-16 text-neutral-400" />
+          <div className={`bg-neutral-100 rounded-3xl overflow-hidden aspect-[4/3] transition-all duration-500 hover:scale-105 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '500ms' }}>
+            <img src="/lokal.webp" alt="International travelers" className="w-full h-full object-cover" />
           </div>
 
           <div className={`bg-neutral-50 rounded-3xl p-8 flex items-center justify-center text-center transition-all duration-500 hover:shadow-lg ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '600ms' }}>
