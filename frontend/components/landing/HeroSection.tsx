@@ -122,7 +122,7 @@ export function HeroSection() {
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in-up">
           <div className="inline-block px-4 py-2 bg-neutral-100 rounded-full mb-6">
-            <p className="text-sm text-neutral-600">Structured learning • On-chain proof</p>
+            <p className="text-sm text-neutral-600">Learn Indonesian Regional Languages</p>
           </div>
           
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-neutral-900 leading-tight mb-6">
@@ -132,7 +132,7 @@ export function HeroSection() {
           </h1>
           
           <p className="text-lg text-neutral-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Kasturi helps newcomers learn regional languages through short, conversation-based lessons. Complete a module, earn EXP as a progress signal, and receive a non-transferable credential (SBT) that anyone can publicly verify.
+            Learn regional languages through short, practical lessons. Track your progress, earn certificates, and prove your language skills to anyone.
           </p>
           
           <div className="flex gap-4 justify-center flex-wrap">
@@ -149,7 +149,7 @@ export function HeroSection() {
             )}
             <Link href="/verify">
               <Button variant="outline" size="lg">
-                Verify Credential
+                Verify Certificate
               </Button>
             </Link>
           </div>

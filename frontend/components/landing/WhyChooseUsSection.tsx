@@ -13,39 +13,39 @@ import { useInView } from '@/hooks/useInView';
 const advantages = [
   {
     icon: BookOpen,
-    title: 'Structured Learning',
+    title: 'Easy to Follow',
     description:
-      'Short, conversation-based lessons in a clear order—easy to follow without external guidance.',
+      'Short, conversation-based lessons in a clear order—learn at your own pace without confusion.',
   },
   {
     icon: LineChart,
-    title: 'Progress Signal (EXP)',
+    title: 'Track Your Progress',
     description:
-      'EXP indicates learning progress and completion eligibility—it is not a financial asset.',
+      'See your learning journey with points that show how far you\'ve come and what\'s next.',
   },
   {
     icon: Award,
-    title: 'Non-transferable Credential (SBT)',
+    title: 'Get Certificates',
     description:
-      'After finishing a program, you receive on-chain proof of completion that cannot be transferred.',
+      'Earn certificates after completing lessons that prove your language skills.',
   },
   {
     icon: ShieldCheck,
-    title: 'Public Verification',
+    title: 'Trusted & Secure',
     description:
-      'Third parties can verify completion without logging in and without relying on the platform operator.',
+      'Your certificates can be verified by anyone, anytime—no need to contact us.',
   },
   {
     icon: Gift,
-    title: 'Utility Rewards (Vouchers)',
+    title: 'Earn Rewards',
     description:
-      'Completion unlocks the option to convert EXP into clear, finite utility benefits (e.g., vouchers).',
+      'Exchange your points for vouchers and other rewards as you complete lessons.',
   },
   {
     icon: ClipboardCheck,
-    title: 'Hidden Web3 Complexity',
+    title: 'Simple Login',
     description:
-      'Easy login via Privy (email/social/wallet). Blockchain runs quietly in the background.',
+      'Sign in easily with email, Google, or Twitter—no complicated setup required.',
   },
 ];
 

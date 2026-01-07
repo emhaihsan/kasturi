@@ -19,14 +19,14 @@ export function LearningMethodSection() {
           'Learn through real scenarios (greetings, markets, directions) in a clear sequence. Focus on practical usage, not excessive theory.',
       },
       {
-        title: 'Practice & evaluation to determine progress',
+        title: 'Practice with quizzes',
         description:
-          'Complete multiple-choice exercises to test understanding. Progress determines EXP and completion eligibility (off-chain judgment, on-chain state).',
+          'Complete multiple-choice exercises to test your understanding. Your progress determines when you can move to the next level.',
       },
       {
-        title: 'Publicly verifiable proof of completion',
+        title: 'Get verified certificates',
         description:
-          'When you finish a module, you receive a non-transferable credential (SBT). Anyone can verify completion without logging in via the verification page.',
+          'When you finish a module, you receive a certificate. Anyone can verify your certificate without logging in via our verification page.',
       },
     ],
     []
@@ -54,7 +54,7 @@ export function LearningMethodSection() {
             </h2>
 
             <p className="text-neutral-500 mb-10">
-              The flow is simple: learn → practice → complete. Web3 runs in the background to make your completion proof credible.
+              The flow is simple: learn → practice → complete. Get certificates that prove your skills.
             </p>
 
             <div className="divide-y divide-neutral-200 border-t border-neutral-200">

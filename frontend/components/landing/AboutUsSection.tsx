@@ -20,13 +20,13 @@ export function AboutUsSection() {
             <h2 className="text-4xl sm:text-5xl font-bold text-neutral-900 leading-tight">
               Learn Regional Languages
               <br />
-              With Verifiable Proof
+              With Trusted Certificates
             </h2>
           </div>
 
           <div className="lg:pt-12">
             <p className="text-lg text-neutral-600 leading-relaxed mb-8">
-              Kasturi solves the problem of unstructured learning with no credible proof. We combine practical, conversation-based lessons with a non-transferable credential (SBT) that can be publicly verified.
+              Learn regional languages with structured, conversation-based lessons. Get certificates that prove your language skills and can be verified by anyone, anywhere.
             </p>
 
             <Link href="/about">

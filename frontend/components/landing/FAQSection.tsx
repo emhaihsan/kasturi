@@ -15,35 +15,31 @@ export function FAQSection() {
     () => [
       {
         q: 'What is Kasturi?',
-        a: 'Kasturi is a structured way to learn Indonesian regional languages. After completing a module, you can receive on-chain proof of completion (a non-transferable credential/SBT) that can be publicly verified.',
+        a: 'Kasturi is a platform to learn Indonesian regional languages through structured lessons. After completing a module, you receive a certificate that can be verified by anyone.',
       },
       {
-        q: 'Which languages are supported right now?',
-        a: 'Currently, Banjar and Ambonese Malay are available. Content is organized into short, real conversation-based lessons.',
+        q: 'Which languages are available?',
+        a: 'Currently, Banjar and Ambonese Malay are available. Content is organized into short, conversation-based lessons.',
       },
       {
-        q: 'What is EXP? Is it a token or money?',
-        a: 'EXP is a learning progress signal. It is not a financial asset and is not meant for speculation. EXP is used to indicate completion eligibility and redemption access.',
+        q: 'How do I track my progress?',
+        a: 'You earn points as you complete lessons. These points show your learning progress and unlock rewards when you finish modules.',
       },
       {
-        q: 'What is a non-transferable credential (SBT)?',
-        a: 'An SBT credential is proof of completion that cannot be transferred. A user can hold a credential for a specific program/module, and its status can be checked publicly.',
+        q: 'What are certificates?',
+        a: 'Certificates are proof that you completed a language module. They are permanent and can be verified by anyone using our verification page.',
       },
       {
-        q: 'How can someone verify my completion?',
-        a: 'Use the Verify page. Third parties do not need to log in to check completion status (completed / not completed).',
+        q: 'How can someone verify my certificate?',
+        a: 'Use the Verify page on our website. Anyone can check your certificate status without needing to create an account.',
       },
       {
-        q: 'What is stored on-chain vs off-chain?',
-        a: 'On-chain stores publicly verifiable state: credential existence, EXP balance, and redemption state. Off-chain handles content, assessments, and deciding when a user is eligible for EXP/credentials.',
+        q: 'What rewards can I get?',
+        a: 'After completing lessons, you can exchange your points for vouchers and other benefits.',
       },
       {
-        q: 'What are utility rewards (vouchers)?',
-        a: 'After completion, EXP can be used to redeem utility benefits (e.g., vouchers/merchandise access). Redemption is simple and the benefits are finite.',
-      },
-      {
-        q: 'Do I need a wallet first?',
-        a: 'Not necessarily. Login is simplified with Privy (email/social/wallet). Web3 complexity is hidden to keep the UX simple.',
+        q: 'Do I need special software to use Kasturi?',
+        a: 'No. Just sign in with your email, Google, or Twitter account. Everything works in your web browser.',
       },
     ],
     []
