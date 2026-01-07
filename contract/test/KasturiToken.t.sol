@@ -15,6 +15,8 @@ contract KasturiTokenTest is Test {
     event MinterUpdated(address indexed minter, bool status);
     event TokensClaimed(address indexed user, uint256 expAmount, uint256 tokenAmount);
     event TokensBurned(address indexed user, uint256 amount);
+    event FaucetClaimed(address indexed user, uint256 amount);
+    event FaucetConfigUpdated(uint256 amount, uint256 cooldown, bool enabled);
 
     function setUp() public {
         token = new KasturiToken();
@@ -196,6 +198,108 @@ contract KasturiTokenTest is Test {
         
         assertEq(token.balanceOf(user1), 600);
         assertEq(token.balanceOf(user2), 400);
+    }
+
+    // ============ Faucet Tests ============
+
+    function test_ClaimFaucet_Success() public {
+        vm.expectEmit(true, false, false, true);
+        emit FaucetClaimed(user1, 1000 * 1e18);
+        
+        vm.prank(user1);
+        token.claimFaucet();
+        
+        assertEq(token.balanceOf(user1), 1000 * 1e18);
+        assertEq(token.lastFaucetClaim(user1), block.timestamp);
+    }
+
+    function test_ClaimFaucet_MultipleClaims() public {
+        vm.prank(user1);
+        token.claimFaucet();
+        assertEq(token.balanceOf(user1), 1000 * 1e18);
+        
+        // Fast forward 1 day
+        vm.warp(block.timestamp + 1 days);
+        
+        vm.prank(user1);
+        token.claimFaucet();
+        assertEq(token.balanceOf(user1), 2000 * 1e18);
+    }
+
+    function test_ClaimFaucet_RevertIfCooldownActive() public {
+        vm.prank(user1);
+        token.claimFaucet();
+        
+        // Try to claim again immediately
+        vm.prank(user1);
+        vm.expectRevert(KasturiToken.FaucetCooldownActive.selector);
+        token.claimFaucet();
+    }
+
+    function test_ClaimFaucet_RevertIfDisabled() public {
+        token.setFaucetConfig(1000 * 1e18, 1 days, false);
+        
+        vm.prank(user1);
+        vm.expectRevert(KasturiToken.FaucetDisabled.selector);
+        token.claimFaucet();
+    }
+
+    function test_SetFaucetConfig_ByOwner() public {
+        vm.expectEmit(false, false, false, true);
+        emit FaucetConfigUpdated(500 * 1e18, 12 hours, true);
+        
+        token.setFaucetConfig(500 * 1e18, 12 hours, true);
+        
+        assertEq(token.faucetAmount(), 500 * 1e18);
+        assertEq(token.faucetCooldown(), 12 hours);
+        assertTrue(token.faucetEnabled());
+    }
+
+    function test_SetFaucetConfig_RevertIfNotOwner() public {
+        vm.prank(user1);
+        vm.expectRevert(abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", user1));
+        token.setFaucetConfig(500 * 1e18, 12 hours, true);
+    }
+
+    function test_CanClaimFaucet_True() public view {
+        assertTrue(token.canClaimFaucet(user1));
+    }
+
+    function test_CanClaimFaucet_FalseIfCooldown() public {
+        vm.prank(user1);
+        token.claimFaucet();
+        
+        assertFalse(token.canClaimFaucet(user1));
+    }
+
+    function test_CanClaimFaucet_FalseIfDisabled() public {
+        token.setFaucetConfig(1000 * 1e18, 1 days, false);
+        assertFalse(token.canClaimFaucet(user1));
+    }
+
+    function test_TimeUntilNextClaim_Zero() public view {
+        assertEq(token.timeUntilNextClaim(user1), 0);
+    }
+
+    function test_TimeUntilNextClaim_AfterClaim() public {
+        vm.prank(user1);
+        token.claimFaucet();
+        
+        uint256 timeUntil = token.timeUntilNextClaim(user1);
+        assertEq(timeUntil, 1 days);
+    }
+
+    function test_TimeUntilNextClaim_MaxIfDisabled() public {
+        token.setFaucetConfig(1000 * 1e18, 1 days, false);
+        assertEq(token.timeUntilNextClaim(user1), type(uint256).max);
+    }
+
+    function test_TimeUntilNextClaim_ZeroAfterCooldown() public {
+        vm.prank(user1);
+        token.claimFaucet();
+        
+        vm.warp(block.timestamp + 1 days);
+        assertEq(token.timeUntilNextClaim(user1), 0);
     }
 
     // ============ Fuzz Tests ============

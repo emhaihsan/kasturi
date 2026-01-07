@@ -15,6 +15,11 @@ contract DeployScript is Script {
     uint256 public constant FOOD_VOUCHER_PRICE = 100 * 1e18;
     uint256 public constant TRAVEL_VOUCHER_PRICE = 500 * 1e18;
 
+    // Faucet configuration (for demo)
+    uint256 public constant FAUCET_AMOUNT = 1000 * 1e18; // 1000 tokens per claim
+    uint256 public constant FAUCET_COOLDOWN = 1 days; // 1 day cooldown
+    bool public constant FAUCET_ENABLED = true; // Enable for demo
+
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         
@@ -45,6 +50,9 @@ contract DeployScript is Script {
         // 6. Set base URI for SBT
         sbt.setBaseURI("https://api.kasturi.id/sbt/");
 
+        // 7. Configure faucet for demo (users can claim free tokens)
+        token.setFaucetConfig(FAUCET_AMOUNT, FAUCET_COOLDOWN, FAUCET_ENABLED);
+
         vm.stopBroadcast();
 
         // Log deployed addresses
@@ -59,6 +67,9 @@ contract DeployScript is Script {
         console.log("EXP to Token Rate:", EXP_TO_TOKEN_RATE);
         console.log("Food Voucher Price:", FOOD_VOUCHER_PRICE);
         console.log("Travel Voucher Price:", TRAVEL_VOUCHER_PRICE);
+        console.log("Faucet Amount:", FAUCET_AMOUNT);
+        console.log("Faucet Cooldown:", FAUCET_COOLDOWN);
+        console.log("Faucet Enabled:", FAUCET_ENABLED);
         console.log("==================================");
     }
 }
