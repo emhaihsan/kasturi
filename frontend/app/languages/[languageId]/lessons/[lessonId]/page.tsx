@@ -18,6 +18,7 @@ import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useLesson, getYouTubeEmbedUrl } from '@/lib/hooks/usePrograms';
+import { useLessonProgress } from '@/lib/hooks/useLessonProgress';
 
 type Tab = 'materi' | 'exercises';
 
@@ -27,8 +28,9 @@ export default function LessonDetailPage() {
   const programId = params.languageId as string;
   const lessonId = params.lessonId as string;
 
-  const { user, completeLesson, updateExerciseScore } = useAppStore();
+  const { user, updateExerciseScore } = useAppStore();
   const { lesson, loading, error } = useLesson(lessonId);
+  const { completeLesson } = useLessonProgress();
   const [activeTab, setActiveTab] = useState<Tab>('materi');
   const [currentExercise, setCurrentExercise] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -80,7 +82,7 @@ export default function LessonDetailPage() {
     }
   };
 
-  const handleNextExercise = () => {
+  const handleNextExercise = async () => {
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise((prev) => prev + 1);
       setSelectedAnswer(null);
@@ -88,15 +90,15 @@ export default function LessonDetailPage() {
     } else {
       const score = Math.round((correctAnswers / exercises.length) * 100);
       if (score >= 70 && !isCompleted) {
-        completeLesson(lesson.id, lesson.expReward);
+        await completeLesson(lesson.id, lesson.expReward, score);
       }
       setActiveTab('materi');
     }
   };
 
-  const handleCompleteLesson = () => {
+  const handleCompleteLesson = async () => {
     if (!isCompleted) {
-      completeLesson(lesson.id, lesson.expReward);
+      await completeLesson(lesson.id, lesson.expReward);
     }
     router.push(`/languages/${programId}`);
   };

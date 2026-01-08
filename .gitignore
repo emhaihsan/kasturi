@@ -88,6 +88,7 @@ lcov.info
 /package-lock.json
 /yarn.lock
 
+/additional_docs
 SETUP.md
 QUICKSTART.md
 DATABASE_SETUP.md

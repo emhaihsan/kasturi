@@ -64,7 +64,7 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-neutral-900 mb-1">
-              Welcome, {user?.name || privyUser?.email?.address?.split('@')[0] || 'Learner'}!
+              Welcome, {user?.name && !user.name.startsWith('0x') ? user.name : (privyUser?.email?.address?.split('@')[0] || 'Learner')}!
             </h1>
             <p className="text-neutral-500">Track your learning progress</p>
           </div>

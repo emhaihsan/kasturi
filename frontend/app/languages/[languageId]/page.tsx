@@ -1,21 +1,49 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Clock, Star, CheckCircle, Lock, Play } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Star, CheckCircle, Lock, Play, Award, ExternalLink, Loader2 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { usePrograms } from '@/lib/hooks/usePrograms';
+import { useCredential } from '@/lib/hooks/useCredential';
+import { useWallet } from '@/lib/hooks/useWallet';
 
 export default function LanguageDetailPage() {
   const params = useParams();
   const programId = params.languageId as string;
   const { user } = useAppStore();
   const { programs, loading } = usePrograms();
+  const { claimCredential, claiming, checkCredential } = useCredential();
+  const { getExplorerUrl } = useWallet();
+  
+  const [hasCredential, setHasCredential] = useState(false);
+  const [credentialTxHash, setCredentialTxHash] = useState<string | null>(null);
+  const [claimError, setClaimError] = useState<string | null>(null);
+  const [claimSuccess, setClaimSuccess] = useState(false);
 
   const program = programs.find((p) => p.id === programId);
   const programLessons = program?.lessons || [];
+
+  const completedLessons = programLessons.filter(
+    (lesson) => user?.progress[lesson.id]?.completed
+  ).length;
+  const progress = programLessons.length > 0 ? (completedLessons / programLessons.length) * 100 : 0;
+  const isComplete = completedLessons === programLessons.length && programLessons.length > 0;
+
+  // Check if user already has credential
+  useEffect(() => {
+    async function checkExistingCredential() {
+      if (program?.programId && isComplete) {
+        const has = await checkCredential(program.programId);
+        setHasCredential(has);
+      }
+    }
+    checkExistingCredential();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [program?.programId, isComplete]);
 
   if (loading) {
     return (
@@ -38,10 +66,23 @@ export default function LanguageDetailPage() {
     );
   }
 
-  const completedLessons = programLessons.filter(
-    (lesson) => user?.progress[lesson.id]?.completed
-  ).length;
-  const progress = programLessons.length > 0 ? (completedLessons / programLessons.length) * 100 : 0;
+  // Handle claim credential
+  const handleClaimCredential = async () => {
+    if (!program?.programId) return;
+    
+    setClaimError(null);
+    setClaimSuccess(false);
+    
+    const result = await claimCredential(program.programId);
+    
+    if (result.success && result.credential) {
+      setClaimSuccess(true);
+      setHasCredential(true);
+      setCredentialTxHash(result.credential.txHash);
+    } else {
+      setClaimError(result.error || 'Failed to claim credential');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -96,6 +137,70 @@ export default function LanguageDetailPage() {
                   style={{ width: `${progress}%` }}
                 />
               </div>
+
+              {/* Credential Claim Section */}
+              {isComplete && (
+                <div className="mt-6 pt-6 border-t border-white/20">
+                  {hasCredential || claimSuccess ? (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-amber-400 flex items-center justify-center">
+                          <Award className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-white">Sertifikat Diterbitkan! 🎉</p>
+                          <p className="text-emerald-200 text-sm">Soulbound Token telah dicetak di wallet Anda</p>
+                        </div>
+                      </div>
+                      {credentialTxHash && (
+                        <a
+                          href={getExplorerUrl(credentialTxHash, 'tx')}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-full text-sm transition-colors"
+                        >
+                          Lihat di Explorer
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-amber-400/20 flex items-center justify-center">
+                          <Award className="w-6 h-6 text-amber-300" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-white">Selamat! Program Selesai 🎉</p>
+                          <p className="text-emerald-200 text-sm">Klaim sertifikat Soulbound Token Anda</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <button
+                          onClick={handleClaimCredential}
+                          disabled={claiming}
+                          className="flex items-center gap-2 px-6 py-2.5 bg-amber-400 hover:bg-amber-500 disabled:bg-amber-400/50 text-neutral-900 font-semibold rounded-full transition-colors"
+                        >
+                          {claiming ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Minting...
+                            </>
+                          ) : (
+                            <>
+                              <Award className="w-4 h-4" />
+                              Cetak Sertifikat
+                            </>
+                          )}
+                        </button>
+                        {claimError && (
+                          <p className="text-red-300 text-xs">{claimError}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

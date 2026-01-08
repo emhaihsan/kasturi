@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { PrivyProvider } from "@/components/providers/PrivyProvider";
+import { AuthSync } from "@/components/auth/AuthSync";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
@@ -35,11 +36,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <PrivyProvider>
-          <Navbar />
-          <main className="pt-16">
-            {children}
-          </main>
-          <Footer />
+          <AuthSync>
+            <Navbar />
+            <main className="pt-16">
+              {children}
+            </main>
+            <Footer />
+          </AuthSync>
         </PrivyProvider>
       </body>
     </html>

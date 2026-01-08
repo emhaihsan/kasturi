@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { usePrivy } from '@privy-io/react-auth';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, Wallet, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useAppStore } from '@/lib/store';
+import { useWallet } from '@/lib/hooks/useWallet';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +16,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { login, logout, authenticated, user: privyUser, ready } = usePrivy();
   const { user, setUser, setAuthenticated, isAuthenticated } = useAppStore();
+  const { address, balanceFormatted, isEmbedded, getExplorerUrl, refreshWallet } = useWallet();
 
   const isLandingPage = pathname === '/';
   const isLoggedIn = authenticated || isAuthenticated;
@@ -150,6 +152,12 @@ export function Navbar() {
                   Pelajaran
                 </Link>
                 <Link 
+                  href="/wallet" 
+                  className={`px-4 py-2 rounded-full text-sm transition-colors ${pathname === '/wallet' ? 'bg-neutral-100 text-neutral-900 font-medium' : 'text-neutral-600 hover:text-neutral-900'}`}
+                >
+                  Wallet
+                </Link>
+                <Link 
                   href="/rewards" 
                   className={`px-4 py-2 rounded-full text-sm transition-colors ${pathname === '/rewards' ? 'bg-neutral-100 text-neutral-900 font-medium' : 'text-neutral-600 hover:text-neutral-900'}`}
                 >
@@ -159,6 +167,20 @@ export function Navbar() {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
+              {address && (
+                <a
+                  href={getExplorerUrl(address)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 rounded-full text-sm transition-colors"
+                  title="View on Lisk Sepolia Explorer"
+                >
+                  <Wallet className="w-4 h-4 text-emerald-600" />
+                  <span className="font-medium text-emerald-700">{balanceFormatted} ETH</span>
+                  <ExternalLink className="w-3 h-3 text-emerald-500" />
+                </a>
+              )}
+
               <div className="flex items-center gap-2 px-4 py-2 bg-neutral-100 rounded-full text-sm">
                 <span className="text-neutral-500">EXP</span>
                 <span className="font-semibold text-neutral-900">{user?.totalExp || 0}</span>
@@ -175,11 +197,34 @@ export function Navbar() {
                 </button>
 
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-neutral-200 py-2">
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-neutral-200 py-2">
                     <div className="px-4 py-3 border-b border-neutral-100">
-                      <p className="text-sm font-medium text-neutral-900">{user?.name || 'Learner'}</p>
-                      <p className="text-xs text-neutral-500 truncate">{user?.email || user?.address}</p>
+                      <p className="text-sm font-medium text-neutral-900">
+                        {user?.name && !user.name.startsWith('0x') ? user.name : 'Learner'}
+                      </p>
+                      <p className="text-xs text-neutral-500 truncate">{user?.email}</p>
+                      {address && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <span className="text-xs text-neutral-400">Wallet:</span>
+                          <code className="text-xs text-emerald-600 font-mono">
+                            {address.slice(0, 6)}...{address.slice(-4)}
+                          </code>
+                          {isEmbedded && (
+                            <span className="text-xs bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded">
+                              Embedded
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <p className="text-xs text-neutral-400 mt-1">Lisk Sepolia</p>
                     </div>
+                    <Link
+                      href="/settings"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      Pengaturan Profil
+                    </Link>
                     <Link
                       href="/verify"
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50"
@@ -223,6 +268,13 @@ export function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Pelajaran
+              </Link>
+              <Link
+                href="/wallet"
+                className={`block px-4 py-3 rounded-xl text-sm ${pathname === '/wallet' ? 'bg-neutral-100 text-neutral-900 font-medium' : 'text-neutral-600'}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Wallet
               </Link>
               <Link
                 href="/rewards"
