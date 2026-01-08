@@ -2,26 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useWallet } from './useWallet';
-import { createPublicClient, http } from 'viem';
 
-// Lisk Sepolia chain
-const liskSepolia = {
-  id: 4202,
-  name: 'Lisk Sepolia',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Sepolia Ether',
-    symbol: 'ETH',
-  },
-  rpcUrls: {
-    default: { http: ['https://rpc.sepolia-api.lisk.com'] },
-  },
-} as const;
-
-const publicClient = createPublicClient({
-  chain: liskSepolia,
-  transport: http('https://rpc.sepolia-api.lisk.com'),
-});
+// Contract address from env
+const KASTURI_SBT_ADDRESS = process.env.NEXT_PUBLIC_KASTURI_SBT || '0x994275a953074accf218c9b5b77ea55cef00d17b';
 
 export interface NFT {
   tokenId: string;
@@ -29,6 +12,8 @@ export interface NFT {
   name: string;
   description?: string;
   image?: string;
+  txHash?: string;
+  issuedAt?: string;
   type: 'ERC721' | 'ERC1155';
 }
 
@@ -37,60 +22,41 @@ export function useNFTs() {
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch NFTs from known contracts (KasturiSBT)
+  // Fetch NFTs from our database API (more reliable than on-chain query)
   const fetchNFTs = useCallback(async () => {
     if (!address) return;
 
     setLoading(true);
     try {
-      const kasturiSBTAddress = process.env.NEXT_PUBLIC_KASTURI_SBT_ADDRESS as `0x${string}`;
+      // Fetch credentials from our API
+      const response = await fetch(`/api/credentials?walletAddress=${address}`);
       
-      if (!kasturiSBTAddress) {
-        console.warn('KasturiSBT address not configured');
+      if (!response.ok) {
+        console.error('Failed to fetch credentials');
+        setNfts([]);
         return;
       }
 
-      // Simple ERC721 balanceOf check
-      const balance = await publicClient.readContract({
-        address: kasturiSBTAddress,
-        abi: [
-          {
-            inputs: [{ name: 'owner', type: 'address' }],
-            name: 'balanceOf',
-            outputs: [{ name: '', type: 'uint256' }],
-            stateMutability: 'view',
-            type: 'function',
-          },
-        ],
-        functionName: 'balanceOf',
-        args: [address as `0x${string}`],
-      });
-
+      const data = await response.json();
       const nftList: NFT[] = [];
-
-      // If user has SBTs, fetch them
-      if (Number(balance) > 0) {
-        // For simplicity, we'll fetch user's credentials from our API
-        const response = await fetch(`/api/credentials?walletAddress=${address}`);
-        if (response.ok) {
-          const data = await response.json();
-          
-          data.credentials?.forEach((cred: any) => {
-            nftList.push({
-              tokenId: cred.id,
-              contractAddress: kasturiSBTAddress,
-              name: `${cred.programName} Certificate`,
-              description: `Soulbound Token for completing ${cred.programName}`,
-              image: '/icon.webp', // Default image
-              type: 'ERC721',
-            });
-          });
-        }
-      }
+      
+      data.credentials?.forEach((cred: any) => {
+        nftList.push({
+          tokenId: cred.id,
+          contractAddress: KASTURI_SBT_ADDRESS,
+          name: `${cred.programName} Certificate`,
+          description: `Soulbound Token for completing ${cred.programName}`,
+          image: '/icon.webp',
+          txHash: cred.txHash,
+          issuedAt: cred.issuedAt,
+          type: 'ERC721',
+        });
+      });
 
       setNfts(nftList);
     } catch (error) {
       console.error('Error fetching NFTs:', error);
+      setNfts([]);
     } finally {
       setLoading(false);
     }

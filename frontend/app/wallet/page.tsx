@@ -12,9 +12,11 @@ import {
   ArrowLeft,
   Image as ImageIcon,
   Loader2,
+  Award,
 } from 'lucide-react';
 import { useWallet } from '@/lib/hooks/useWallet';
 import { useNFTs } from '@/lib/hooks/useNFTs';
+import { useTokenExchange } from '@/lib/hooks/useTokenExchange';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { usePrivy } from '@privy-io/react-auth';
@@ -31,9 +33,12 @@ export default function WalletPage() {
     getExplorerUrl,
   } = useWallet();
   const { nfts, loading: nftsLoading, refreshNFTs } = useNFTs();
+  const { expStatus, exchanging, exchangeExpForTokens, refreshExpStatus } = useTokenExchange();
 
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'tokens' | 'nfts'>('tokens');
+  const [exchangeSuccess, setExchangeSuccess] = useState<string | null>(null);
+  const [exchangeError, setExchangeError] = useState<string | null>(null);
 
   if (!authenticated) {
     return (
@@ -58,7 +63,22 @@ export default function WalletPage() {
   };
 
   const handleRefresh = async () => {
-    await Promise.all([refreshWallet(), refreshNFTs()]);
+    await Promise.all([refreshWallet(), refreshNFTs(), refreshExpStatus()]);
+  };
+
+  const handleExchangeExp = async () => {
+    if (expStatus.availableExp <= 0) return;
+    
+    setExchangeError(null);
+    setExchangeSuccess(null);
+
+    const result = await exchangeExpForTokens(expStatus.availableExp);
+    
+    if (result.success) {
+      setExchangeSuccess(result.explorerUrl || null);
+    } else {
+      setExchangeError(result.error || 'Exchange failed');
+    }
   };
 
   return (
@@ -172,6 +192,75 @@ export default function WalletPage() {
         {/* Tokens Tab */}
         {activeTab === 'tokens' && (
           <div className="space-y-6">
+            {/* EXP Exchange Card */}
+            <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+                      <Award className="w-6 h-6 text-amber-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Exchange EXP → KASTURI</h3>
+                      <p className="text-sm text-gray-500">Convert your learning EXP to tokens</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <div className="text-center p-3 bg-white rounded-lg">
+                    <p className="text-xs text-gray-500 mb-1">Total EXP</p>
+                    <p className="text-xl font-bold text-gray-900">{expStatus.totalExp}</p>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-lg">
+                    <p className="text-xs text-gray-500 mb-1">Claimed</p>
+                    <p className="text-xl font-bold text-gray-500">{expStatus.claimedExp}</p>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-lg">
+                    <p className="text-xs text-gray-500 mb-1">Available</p>
+                    <p className="text-xl font-bold text-amber-600">{expStatus.availableExp}</p>
+                  </div>
+                </div>
+
+                {exchangeSuccess && (
+                  <div className="mb-4 p-3 bg-emerald-100 border border-emerald-200 rounded-lg">
+                    <p className="text-sm text-emerald-700">
+                      ✓ Exchange successful!{' '}
+                      <a href={exchangeSuccess} target="_blank" rel="noopener noreferrer" className="underline">
+                        View transaction
+                      </a>
+                    </p>
+                  </div>
+                )}
+
+                {exchangeError && (
+                  <div className="mb-4 p-3 bg-red-100 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-700">{exchangeError}</p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleExchangeExp}
+                  disabled={exchanging || expStatus.availableExp <= 0}
+                  className="w-full"
+                >
+                  {exchanging ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Exchanging...
+                    </>
+                  ) : expStatus.availableExp > 0 ? (
+                    `Exchange ${expStatus.availableExp} EXP → ${expStatus.availableExp} KASTURI`
+                  ) : (
+                    'No EXP available'
+                  )}
+                </Button>
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  Rate: 1 EXP = 1 KASTURI Token
+                </p>
+              </div>
+            </Card>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card hover className="cursor-not-allowed opacity-75">
                 <div className="p-6 flex items-center gap-4">
@@ -250,31 +339,41 @@ export default function WalletPage() {
                 {nfts.map((nft) => (
                   <Card key={nft.tokenId} hover>
                     <div className="p-4">
-                      <div className="aspect-square rounded-lg bg-gradient-to-br from-emerald-100 to-teal-100 mb-4 flex items-center justify-center">
-                        <img
-                          src={nft.image || '/icon.webp'}
-                          alt={nft.name}
-                          className="w-24 h-24 object-contain"
-                        />
+                      <div className="aspect-square rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 mb-4 flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 opacity-10">
+                          <div className="absolute top-2 left-2 right-2 bottom-2 border-2 border-white rounded-lg" />
+                        </div>
+                        <div className="text-center text-white p-4">
+                          <Award className="w-12 h-12 mx-auto mb-2" />
+                          <p className="text-xs font-medium">SOULBOUND TOKEN</p>
+                        </div>
                       </div>
                       <h3 className="font-semibold text-gray-900 mb-1">
                         {nft.name}
                       </h3>
-                      <p className="text-sm text-gray-500 mb-3 line-clamp-2">
+                      <p className="text-sm text-gray-500 mb-2 line-clamp-2">
                         {nft.description}
                       </p>
+                      {nft.issuedAt && (
+                        <p className="text-xs text-gray-400 mb-3">
+                          Issued: {new Date(nft.issuedAt).toLocaleDateString('id-ID')}
+                        </p>
+                      )}
                       <div className="flex items-center justify-between">
                         <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-                          {nft.type}
+                          Soulbound
                         </span>
-                        <a
-                          href={getExplorerUrl(nft.contractAddress)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-emerald-600 hover:text-emerald-700"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
+                        {nft.txHash && (
+                          <a
+                            href={`https://sepolia-blockscout.lisk.com/tx/${nft.txHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-emerald-600 hover:text-emerald-700 flex items-center gap-1 text-xs"
+                          >
+                            View TX
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
                       </div>
                     </div>
                   </Card>

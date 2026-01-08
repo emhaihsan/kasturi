@@ -77,22 +77,31 @@ export function useCredential() {
 
   /**
    * Check if user has credential for a program
+   * Returns { hasCredential, txHash, issuedAt } 
    */
-  const checkCredential = useCallback(async (programId: string): Promise<boolean> => {
-    if (!address) return false;
+  const checkCredential = useCallback(async (programId: string): Promise<{
+    hasCredential: boolean;
+    txHash?: string;
+    issuedAt?: string;
+  }> => {
+    if (!address) return { hasCredential: false };
 
     try {
       const response = await fetch(
         `/api/credentials/check?walletAddress=${address}&programId=${programId}`
       );
       
-      if (!response.ok) return false;
+      if (!response.ok) return { hasCredential: false };
       
       const data = await response.json();
-      return data.hasCredential;
+      return {
+        hasCredential: data.hasCredential,
+        txHash: data.credential?.txHash,
+        issuedAt: data.credential?.issuedAt,
+      };
     } catch (error) {
       console.error('Error checking credential:', error);
-      return false;
+      return { hasCredential: false };
     }
   }, [address]);
 

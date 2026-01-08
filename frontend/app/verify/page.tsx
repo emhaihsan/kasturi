@@ -1,21 +1,27 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, CheckCircle, XCircle, Award, ExternalLink, Shield, User } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Award, ExternalLink, Shield, User, Download } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useInView } from '@/hooks/useInView';
+import Certificate from '@/components/Certificate';
+
+interface Credential {
+  id: string;
+  programId: string;
+  programName: string;
+  language: string;
+  issuedAt: string;
+  txHash: string;
+  recipientName: string;
+}
 
 interface VerificationResult {
   found: boolean;
   address?: string;
-  credentials?: {
-    programId: string;
-    languageName: string;
-    issuedAt: string;
-    tokenId: number;
-    verified: boolean;
-  }[];
+  displayName?: string;
+  credentials?: Credential[];
   totalExp?: number;
 }
 
@@ -26,35 +32,51 @@ export default function VerifyPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState<VerificationResult | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [selectedCert, setSelectedCert] = useState<Credential | null>(null);
 
   const handleVerify = async () => {
     if (!address.trim()) return;
     
     setIsSearching(true);
     setHasSearched(true);
+    setSelectedCert(null);
     
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      // Fetch credentials from API
+      const response = await fetch(`/api/credentials?walletAddress=${address}`);
+      
+      if (!response.ok) {
+        setResult({ found: false });
+        return;
+      }
 
-    if (address.toLowerCase().startsWith('0x') && address.length >= 10) {
-      setResult({
-        found: true,
-        address: address,
-        credentials: [
-          {
-            programId: 'banjar-basic',
-            languageName: 'Bahasa Banjar',
-            issuedAt: '2026-01-05',
-            tokenId: 1234,
-            verified: true,
-          },
-        ],
-        totalExp: 450,
-      });
-    } else {
+      const data = await response.json();
+      
+      if (data.credentials && data.credentials.length > 0) {
+        setResult({
+          found: true,
+          address: address,
+          displayName: data.user?.displayName,
+          credentials: data.credentials.map((cred: any) => ({
+            id: cred.id,
+            programId: cred.programId,
+            programName: cred.programName,
+            language: cred.language || 'banjar',
+            issuedAt: cred.issuedAt,
+            txHash: cred.txHash,
+            recipientName: data.user?.displayName || 'Anonymous Learner',
+          })),
+          totalExp: data.totalExp || 0,
+        });
+      } else {
+        setResult({ found: false });
+      }
+    } catch (error) {
+      console.error('Error verifying:', error);
       setResult({ found: false });
+    } finally {
+      setIsSearching(false);
     }
-    
-    setIsSearching(false);
   };
 
   return (
@@ -130,29 +152,37 @@ export default function VerifyPage() {
                 {result.credentials?.map((cred, index) => (
                   <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
                     <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 text-white">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
-                          <Award className="w-8 h-8" />
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
+                            <Award className="w-8 h-8" />
+                          </div>
+                          <div>
+                            <h4 className="text-xl font-bold">{cred.programName}</h4>
+                            <p className="text-green-100">Program Completion Certificate</p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="text-xl font-bold">{cred.languageName}</h4>
-                          <p className="text-green-100">Program Completion Certificate</p>
-                        </div>
+                        <button
+                          onClick={() => setSelectedCert(cred)}
+                          className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          View Certificate
+                        </button>
                       </div>
                     </div>
                     <CardContent className="p-6">
                       <div className="grid sm:grid-cols-2 gap-4 mb-6">
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Program ID</p>
-                          <p className="font-mono text-gray-900">{cred.programId}</p>
+                          <p className="text-sm text-gray-500 mb-1">Recipient</p>
+                          <p className="font-medium text-gray-900">{cred.recipientName}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Token ID</p>
-                          <p className="font-mono text-gray-900">#{cred.tokenId}</p>
+                          <p className="text-sm text-gray-500 mb-1">TX Hash</p>
+                          <p className="font-mono text-gray-900 text-xs truncate">{cred.txHash}</p>
                         </div>
                         <div>
                           <p className="text-sm text-neutral-500 mb-1">Issue Date</p>
-                          <p className="text-neutral-900">{new Date(cred.issuedAt).toLocaleDateString('en-US', { dateStyle: 'long' })}</p>
+                          <p className="text-neutral-900">{new Date(cred.issuedAt).toLocaleDateString('id-ID', { dateStyle: 'long' })}</p>
                         </div>
                         <div>
                           <p className="text-sm text-neutral-500 mb-1">Status</p>
@@ -164,7 +194,7 @@ export default function VerifyPage() {
                       </div>
                       
                       <a
-                        href={`https://blockscout.lisk.com/token/${result.address}`}
+                        href={`https://sepolia-blockscout.lisk.com/tx/${cred.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition-colors"
@@ -223,6 +253,50 @@ export default function VerifyPage() {
           </div>
         </div>
       </div>
+
+      {/* Certificate Modal */}
+      {selectedCert && result?.address && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="p-4 border-b flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Certificate Preview</h3>
+              <button
+                onClick={() => setSelectedCert(null)}
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-4 flex justify-center overflow-auto">
+              <Certificate
+                programName={selectedCert.programName}
+                recipientName={selectedCert.recipientName}
+                recipientAddress={result.address}
+                issuedAt={selectedCert.issuedAt}
+                txHash={selectedCert.txHash}
+                language={selectedCert.language}
+              />
+            </div>
+            <div className="p-4 border-t flex justify-end gap-3">
+              <a
+                href={`https://sepolia-blockscout.lisk.com/tx/${selectedCert.txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg font-medium flex items-center gap-2"
+              >
+                <ExternalLink className="w-4 h-4" />
+                View on Blockscout
+              </a>
+              <button
+                onClick={() => setSelectedCert(null)}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

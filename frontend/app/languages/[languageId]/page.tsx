@@ -37,8 +37,11 @@ export default function LanguageDetailPage() {
   useEffect(() => {
     async function checkExistingCredential() {
       if (program?.programId && isComplete) {
-        const has = await checkCredential(program.programId);
-        setHasCredential(has);
+        const result = await checkCredential(program.programId);
+        setHasCredential(result.hasCredential);
+        if (result.txHash) {
+          setCredentialTxHash(result.txHash);
+        }
       }
     }
     checkExistingCredential();

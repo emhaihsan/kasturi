@@ -50,8 +50,20 @@ export async function GET(request: NextRequest) {
       })
     );
 
+    // Calculate total EXP
+    const userProgress = await prisma.userProgress.findMany({
+      where: { userId: user.id },
+      select: { expEarned: true },
+    });
+    const totalExp = userProgress.reduce((sum, p) => sum + p.expEarned, 0);
+
     return NextResponse.json({
       credentials: credentialsWithPrograms,
+      user: {
+        displayName: user.displayName,
+        walletAddress: user.walletAddress,
+      },
+      totalExp,
     });
   } catch (error) {
     console.error('Error fetching credentials:', error);
