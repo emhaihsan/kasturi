@@ -20,6 +20,7 @@ export const languages: Language[] = [
     totalLessons: 10,
     totalExp: 1000,
     difficulty: 'beginner',
+    comingSoon: true,
   },
 ];
 

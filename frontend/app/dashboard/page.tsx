@@ -16,12 +16,8 @@ import { useAppStore } from '@/lib/store';
 import { languages, lessons } from '@/lib/data';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { useInView } from '@/hooks/useInView';
 
 export default function DashboardPage() {
-  const { ref: headerRef, isInView: headerInView } = useInView();
-  const { ref: statsRef, isInView: statsInView } = useInView();
-  const { ref: contentRef, isInView: contentInView } = useInView();
   const { authenticated, login, user: privyUser } = usePrivy();
   const { user } = useAppStore();
 
@@ -74,14 +70,14 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-white pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8" ref={headerRef}>
-          <div className={`transition-all duration-700 ${headerInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+          <div>
             <h1 className="text-2xl font-bold text-neutral-900 mb-1">
               Welcome, {user?.name || privyUser?.email?.address?.split('@')[0] || 'Learner'}!
             </h1>
             <p className="text-neutral-500">Track your learning progress</p>
           </div>
-          <div className={`transition-all duration-700 delay-200 ${headerInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div>
             <Link href="/languages">
               <Button className="mt-4 md:mt-0">
                 Continue Learning
@@ -90,28 +86,28 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" ref={statsRef}>
-          <div className={`p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-all duration-500 ${statsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-shadow">
             <p className="text-xs text-neutral-500 mb-1">Total EXP</p>
             <p className="text-2xl font-bold text-neutral-900">{user?.totalExp || 0}</p>
           </div>
-          <div className={`p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-all duration-500 delay-[100ms] ${statsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-shadow">
             <p className="text-xs text-neutral-500 mb-1">Tokens</p>
             <p className="text-2xl font-bold text-neutral-900">{user?.tokenBalance || 0}</p>
           </div>
-          <div className={`p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-all duration-500 delay-[200ms] ${statsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-shadow">
             <p className="text-xs text-neutral-500 mb-1">Lessons</p>
             <p className="text-2xl font-bold text-neutral-900">{totalCompletedLessons}</p>
           </div>
-          <div className={`p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-all duration-500 delay-[300ms] ${statsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-shadow">
             <p className="text-xs text-neutral-500 mb-1">Certificates</p>
             <p className="text-2xl font-bold text-neutral-900">{user?.credentials?.length || 0}</p>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8" ref={contentRef}>
+        <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <Card className={`transition-all duration-700 hover:shadow-xl ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <Card className="hover:shadow-xl transition-shadow">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold text-neutral-900">
@@ -121,39 +117,53 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {languageProgress.map((lang) => (
-                    <Link key={lang.id} href={`/languages/${lang.id}`}>
-                      <div className="group">
+                  {languageProgress.map((lang) => {
+                    const isComingSoon = lang.comingSoon;
+                    return (
+                    <Link key={lang.id} href={isComingSoon ? '#' : `/languages/${lang.id}`} className={isComingSoon ? 'cursor-not-allowed' : ''}>
+                      <div className={`group ${isComingSoon ? 'opacity-60' : ''}`}>
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-3">
                             <span className="text-xl">{lang.flag}</span>
                             <div>
-                              <p className="font-medium text-neutral-900 text-sm">
-                                {lang.name}
-                              </p>
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium text-neutral-900 text-sm">
+                                  {lang.name}
+                                </p>
+                                {isComingSoon && (
+                                  <span className="px-2 py-0.5 bg-neutral-200 text-neutral-600 text-xs rounded-full">
+                                    Coming Soon
+                                  </span>
+                                )}
+                              </div>
                               <p className="text-xs text-neutral-500">
-                                {lang.completed} / {lang.total} lessons
+                                {isComingSoon ? 'Available soon' : `${lang.completed} / ${lang.total} lessons`}
                               </p>
                             </div>
                           </div>
-                          <span className="text-sm font-medium text-neutral-900">
-                            {Math.round(lang.progress)}%
-                          </span>
+                          {!isComingSoon && (
+                            <span className="text-sm font-medium text-neutral-900">
+                              {Math.round(lang.progress)}%
+                            </span>
+                          )}
                         </div>
-                        <div className="h-1.5 bg-neutral-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-green-500 rounded-full transition-all duration-500"
-                            style={{ width: `${lang.progress}%` }}
-                          />
-                        </div>
+                        {!isComingSoon && (
+                          <div className="h-1.5 bg-neutral-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-green-500 rounded-full transition-all duration-500"
+                              style={{ width: `${lang.progress}%` }}
+                            />
+                          </div>
+                        )}
                       </div>
                     </Link>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className={`transition-all duration-700 delay-200 hover:shadow-xl ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <Card className="hover:shadow-xl transition-shadow">
               <CardHeader>
                 <h2 className="font-semibold text-neutral-900">
                   Recent Activity
@@ -197,7 +207,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-8">
-            <Card className={`transition-all duration-700 delay-300 hover:shadow-xl ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <Card className="hover:shadow-xl transition-shadow">
               <CardHeader>
                 <h2 className="font-semibold text-neutral-900">
                   Achievements
@@ -244,7 +254,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <div className={`bg-neutral-900 rounded-2xl p-6 text-white transition-all duration-700 delay-400 hover:scale-105 ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <div className="bg-neutral-900 rounded-2xl p-6 text-white hover:scale-105 transition-transform">
               <h3 className="font-semibold mb-4">Overall Progress</h3>
               <div className="flex items-end gap-2 mb-4">
                 <span className="text-4xl font-bold">{Math.round(overallProgress)}%</span>

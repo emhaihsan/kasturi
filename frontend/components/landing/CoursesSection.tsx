@@ -52,19 +52,41 @@ export function CoursesSection() {
           {featured.map((lang, idx) => {
             const displayName = overrides[lang.id]?.name ?? lang.name;
             const displayDescription = overrides[lang.id]?.description ?? lang.description;
-            return (
-            <Link key={lang.id} href={`/languages/${lang.id}`} className={`group transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: `${idx * 150}ms` }}>
-              <div>
-                <div className="aspect-[16/10] bg-neutral-200 rounded-3xl overflow-hidden mb-6">
-                  <img src={overrides[lang.id]?.image || ''} alt={displayName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
+            const isComingSoon = lang.comingSoon;
 
-                <h3 className="text-xl font-semibold text-neutral-900 mb-2">{displayName}</h3>
-                <p className="text-sm text-neutral-500 leading-relaxed line-clamp-2">
-                  {displayDescription}
-                </p>
-              </div>
-            </Link>
+            return (
+              <Link
+                key={lang.id}
+                href={isComingSoon ? '#' : `/languages/${lang.id}`}
+                className={`group transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'} ${
+                  isComingSoon ? 'cursor-not-allowed' : ''
+                }`}
+                style={{ transitionDelay: `${idx * 150}ms` }}
+              >
+                <div className="relative">
+                  <div className="relative aspect-[16/10] bg-neutral-200 rounded-3xl overflow-hidden mb-6">
+                    <img
+                      src={overrides[lang.id]?.image || ''}
+                      alt={displayName}
+                      className={`w-full h-full object-cover transition-transform duration-500 ${
+                        isComingSoon ? 'brightness-50 group-hover:scale-100' : 'group-hover:scale-105'
+                      }`}
+                    />
+                    {isComingSoon && (
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                        <span className="px-4 py-2 bg-black/70 text-white text-xs font-semibold uppercase tracking-wide rounded-full">
+                          Coming Soon
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <h3 className="text-xl font-semibold text-neutral-900 mb-2">{displayName}</h3>
+                  <p className="text-sm text-neutral-500 leading-relaxed line-clamp-2">
+                    {displayDescription}
+                  </p>
+                </div>
+              </Link>
             );
           })}
         </div>

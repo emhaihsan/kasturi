@@ -7,6 +7,7 @@ export interface Language {
   totalLessons: number;
   totalExp: number;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  comingSoon?: boolean;
 }
 
 export interface Lesson {
