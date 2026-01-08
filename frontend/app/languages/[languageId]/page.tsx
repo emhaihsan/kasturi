@@ -3,36 +3,45 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, Clock, Star, CheckCircle, Lock, Play } from 'lucide-react';
-import { languages, lessons } from '@/lib/data';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { usePrograms } from '@/lib/hooks/usePrograms';
 
 export default function LanguageDetailPage() {
   const params = useParams();
-  const languageId = params.languageId as string;
+  const programId = params.languageId as string;
   const { user } = useAppStore();
+  const { programs, loading } = usePrograms();
 
-  const language = languages.find((l) => l.id === languageId);
-  const languageLessons = lessons[languageId] || [];
+  const program = programs.find((p) => p.id === programId);
+  const programLessons = program?.lessons || [];
 
-  if (!language) {
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-neutral-500">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!program) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Bahasa tidak ditemukan</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Program tidak ditemukan</h1>
           <Link href="/languages" className="text-emerald-600 hover:underline">
-            Kembali ke daftar bahasa
+            Kembali ke daftar program
           </Link>
         </div>
       </div>
     );
   }
 
-  const completedLessons = languageLessons.filter(
+  const completedLessons = programLessons.filter(
     (lesson) => user?.progress[lesson.id]?.completed
   ).length;
-  const progress = languageLessons.length > 0 ? (completedLessons / languageLessons.length) * 100 : 0;
+  const progress = programLessons.length > 0 ? (completedLessons / programLessons.length) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -48,26 +57,26 @@ export default function LanguageDetailPage() {
 
           <div className="flex flex-col md:flex-row items-start gap-8">
             <div className="w-24 h-24 rounded-3xl bg-white/10 backdrop-blur flex items-center justify-center text-5xl">
-              {language.flag}
+              🏝️
             </div>
 
             <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-2">{language.name}</h1>
-              <p className="text-emerald-100 text-lg mb-4">{language.region}</p>
-              <p className="text-emerald-50 max-w-2xl mb-6">{language.description}</p>
+              <h1 className="text-4xl font-bold mb-2">{program.name}</h1>
+              <p className="text-emerald-100 text-lg mb-4">Kalimantan Selatan</p>
+              <p className="text-emerald-50 max-w-2xl mb-6">{program.description}</p>
 
               <div className="flex flex-wrap items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-emerald-200" />
-                  <span>{language.totalLessons} Pelajaran</span>
+                  <span>{programLessons.length} Pelajaran</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-5 h-5 text-emerald-200" />
-                  <span>~{language.totalLessons * 10} menit</span>
+                  <span>~{programLessons.length * 10} menit</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="w-5 h-5 text-amber-300" />
-                  <span>+{language.totalExp} EXP Total</span>
+                  <span>+{program.totalExp} EXP Total</span>
                 </div>
               </div>
             </div>
@@ -78,7 +87,7 @@ export default function LanguageDetailPage() {
               <div className="flex items-center justify-between mb-3">
                 <span className="font-medium">Progress Anda</span>
                 <span className="text-emerald-200">
-                  {completedLessons} / {languageLessons.length} Pelajaran
+                  {completedLessons} / {programLessons.length} Pelajaran
                 </span>
               </div>
               <div className="h-3 bg-white/20 rounded-full overflow-hidden">
@@ -96,14 +105,14 @@ export default function LanguageDetailPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Daftar Pelajaran</h2>
 
         <div className="space-y-4">
-          {languageLessons.map((lesson, index) => {
+          {programLessons.map((lesson, index) => {
             const isCompleted = user?.progress[lesson.id]?.completed;
-            const isLocked = index > 0 && !user?.progress[languageLessons[index - 1].id]?.completed && !isCompleted;
+            const isLocked = index > 0 && !user?.progress[programLessons[index - 1].id]?.completed && !isCompleted;
 
             return (
               <Link
                 key={lesson.id}
-                href={isLocked ? '#' : `/languages/${languageId}/lessons/${lesson.id}`}
+                href={isLocked ? '#' : `/languages/${programId}/lessons/${lesson.id}`}
                 className={isLocked ? 'cursor-not-allowed' : ''}
               >
                 <Card
@@ -125,7 +134,7 @@ export default function LanguageDetailPage() {
                       ) : isLocked ? (
                         <Lock className="w-6 h-6" />
                       ) : (
-                        lesson.order
+                        lesson.orderIndex
                       )}
                     </div>
 

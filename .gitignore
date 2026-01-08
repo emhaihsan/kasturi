@@ -89,3 +89,5 @@ lcov.info
 /yarn.lock
 
 SETUP.md
+QUICKSTART.md
+DATABASE_SETUP.md
