@@ -1,0 +1,143 @@
+// Kasturi Database Schema
+// Using Prisma ORM for PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER & AUTHENTICATION
+// ============================================================================
+
+model User {
+  id            String   @id @default(cuid())
+  walletAddress String   @unique @map("wallet_address")
+  email         String?
+  displayName   String?  @map("display_name")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  progress           UserProgress[]
+  voucherRedemptions VoucherRedemption[]
+  credentials        IssuedCredential[]
+
+  @@map("users")
+}
+
+// ============================================================================
+// LEARNING CONTENT (Bahasa Banjar)
+// ============================================================================
+
+model Program {
+  id          String   @id @default(cuid())
+  programId   String   @unique @map("program_id") // keccak256 hash for on-chain
+  name        String
+  description String?
+  language    String   @default("banjar")
+  level       String   @default("beginner") // beginner, intermediate, advanced
+  totalExp    Int      @default(0) @map("total_exp")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  lessons Lesson[]
+
+  @@map("programs")
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  programId   String   @map("program_id")
+  title       String
+  description String?
+  content     Json     // Vocabulary, exercises, etc.
+  expReward   Int      @map("exp_reward")
+  orderIndex  Int      @map("order_index")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  program  Program        @relation(fields: [programId], references: [id])
+  progress UserProgress[]
+
+  @@unique([programId, orderIndex])
+  @@map("lessons")
+}
+
+// ============================================================================
+// USER PROGRESS (Off-chain EXP tracking)
+// ============================================================================
+
+model UserProgress {
+  id            String    @id @default(cuid())
+  userId        String    @map("user_id")
+  lessonId      String    @map("lesson_id")
+  completedAt   DateTime  @default(now()) @map("completed_at")
+  expEarned     Int       @map("exp_earned")
+  score         Int?      // Quiz score if applicable
+  
+  // On-chain claim tracking
+  claimedOnChain Boolean  @default(false) @map("claimed_on_chain")
+  claimTxHash    String?  @map("claim_tx_hash")
+  claimedAt      DateTime? @map("claimed_at")
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id])
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+
+  @@unique([userId, lessonId])
+  @@map("user_progress")
+}
+
+// ============================================================================
+// VOUCHER REDEMPTIONS (Off-chain tracking for fulfillment)
+// ============================================================================
+
+model VoucherRedemption {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  voucherId      Int      @map("voucher_id") // ERC-1155 token ID
+  voucherName    String   @map("voucher_name")
+  amount         Int      @default(1)
+  
+  // Redemption tracking
+  redemptionCode String?  @unique @map("redemption_code")
+  status         String   @default("pending") // pending, fulfilled, cancelled, expired
+  redeemedAt     DateTime @default(now()) @map("redeemed_at")
+  fulfilledAt    DateTime? @map("fulfilled_at")
+  
+  // On-chain reference
+  txHash         String?  @map("tx_hash")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("voucher_redemptions")
+}
+
+// ============================================================================
+// CREDENTIAL TRACKING (Off-chain cache for issued credentials)
+// ============================================================================
+
+model IssuedCredential {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  programId   String   @map("program_id")
+  txHash      String   @unique @map("tx_hash")
+  issuedAt    DateTime @default(now()) @map("issued_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("issued_credentials")
+}
