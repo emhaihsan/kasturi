@@ -24,12 +24,12 @@ export async function GET(request: NextRequest) {
     }) as bigint;
     
     // voucher IDs start from 1, so nextVoucherId = totalTypes + 1
-    const nextVoucherId = totalTypes + 1n;
+    const nextVoucherId = totalTypes + BigInt(1);
 
     const voucherTypes = [];
 
     // Fetch all voucher types
-    for (let i = 1n; i < nextVoucherId; i++) {
+    for (let i = BigInt(1); i < nextVoucherId; i++) {
       try {
         const [name, price, isActive] = await publicClient.readContract({
           address: KASTURI_VOUCHER,
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         }) as [string, bigint, boolean];
 
         if (isActive) {
-          let balance = 0n;
+          let balance = BigInt(0);
           if (walletAddress) {
             balance = await publicClient.readContract({
               address: KASTURI_VOUCHER,

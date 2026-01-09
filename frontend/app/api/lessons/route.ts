@@ -12,30 +12,48 @@ export async function GET(request: NextRequest) {
       const programs = await prisma.program.findMany({
         where: { isActive: true },
         include: {
-          lessons: {
+          modules: {
             where: { isActive: true },
-            orderBy: { orderIndex: 'asc' },
-            select: {
-              id: true,
-              title: true,
-              description: true,
-              expReward: true,
-              orderIndex: true,
+            include: {
+              lessons: {
+                where: { isActive: true },
+                orderBy: { orderIndex: 'asc' },
+                select: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  expReward: true,
+                  orderIndex: true,
+                },
+              },
             },
           },
         },
       });
 
-      return NextResponse.json({ programs });
+      const programsWithLessons = programs.map((p) => ({
+        id: p.id,
+        programId: p.programId,
+        name: p.name,
+        language: p.language,
+        lessons: p.modules.flatMap((m) => m.lessons),
+      }));
+
+      return NextResponse.json({ programs: programsWithLessons });
     }
 
     // Return lessons for specific program
     const program = await prisma.program.findUnique({
       where: { programId },
       include: {
-        lessons: {
+        modules: {
           where: { isActive: true },
-          orderBy: { orderIndex: 'asc' },
+          include: {
+            lessons: {
+              where: { isActive: true },
+              orderBy: { orderIndex: 'asc' },
+            },
+          },
         },
       },
     });
@@ -47,7 +65,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ program });
+    const programWithLessons = {
+      id: program.id,
+      programId: program.programId,
+      name: program.name,
+      language: program.language,
+      lessons: program.modules.flatMap((m) => m.lessons),
+    };
+
+    return NextResponse.json({ program: programWithLessons });
   } catch (error) {
     console.error('Error fetching lessons:', error);
     return NextResponse.json(

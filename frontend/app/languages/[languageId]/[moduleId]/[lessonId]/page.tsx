@@ -63,6 +63,8 @@ export default function LessonDetailPage() {
   const vocabulary = lesson.content?.vocabulary || [];
   const exercises = lesson.content?.exercises || [];
 
+  const embedUrl = lesson.videoUrl ? (getYouTubeEmbedUrl(lesson.videoUrl) || undefined) : undefined;
+
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
   };
@@ -132,11 +134,11 @@ export default function LessonDetailPage() {
           </div>
         </div>
 
-        {lesson.videoUrl && (
+        {embedUrl && (
           <div className="mb-8">
             <div className="aspect-video rounded-2xl overflow-hidden bg-neutral-100">
               <iframe
-                src={getYouTubeEmbedUrl(lesson.videoUrl || '')}
+                src={embedUrl}
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

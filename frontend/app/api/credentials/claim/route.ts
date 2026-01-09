@@ -34,8 +34,13 @@ export async function POST(request: NextRequest) {
     let program = await prisma.program.findUnique({
       where: { programId },
       include: {
-        lessons: {
+        modules: {
           where: { isActive: true },
+          include: {
+            lessons: {
+              where: { isActive: true },
+            },
+          },
         },
       },
     });
@@ -45,8 +50,13 @@ export async function POST(request: NextRequest) {
       program = await prisma.program.findUnique({
         where: { id: programId },
         include: {
-          lessons: {
+          modules: {
             where: { isActive: true },
+            include: {
+              lessons: {
+                where: { isActive: true },
+              },
+            },
           },
         },
       });
@@ -60,24 +70,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('✅ Found program:', program.name, 'with', program.lessons.length, 'lessons');
+    const totalLessons = program.modules.reduce((sum: number, m: any) => sum + (m.lessons?.length || 0), 0);
+    console.log('✅ Found program:', program.name, 'with', totalLessons, 'lessons');
 
     // Check if user has completed all lessons
     const completedLessons = await prisma.userProgress.count({
       where: {
         userId: user.id,
-        lesson: { programId: program.id },
+        lesson: {
+          isActive: true,
+          module: {
+            programId: program.id,
+          },
+        },
       },
     });
 
-    console.log('📊 User progress:', completedLessons, '/', program.lessons.length);
+    console.log('📊 User progress:', completedLessons, '/', totalLessons);
 
-    if (completedLessons < program.lessons.length) {
+    if (completedLessons < totalLessons) {
       return NextResponse.json(
         { 
-          error: `Program not completed. Completed ${completedLessons} of ${program.lessons.length} lessons.`,
+          error: `Program not completed. Completed ${completedLessons} of ${totalLessons} lessons.`,
           completed: completedLessons,
-          required: program.lessons.length,
+          required: totalLessons,
         },
         { status: 400 }
       );

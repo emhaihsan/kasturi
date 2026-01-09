@@ -118,7 +118,7 @@ export function useContracts() {
         args: [address],
       }) as bigint;
     } catch (e) {
-      return 0n;
+      return BigInt(0);
     }
   }, [publicClient]);
 
@@ -135,7 +135,7 @@ export function useContracts() {
         args: [address, BigInt(voucherId)],
       }) as bigint;
     } catch (e) {
-      return 0n;
+      return BigInt(0);
     }
   }, [publicClient]);
 
