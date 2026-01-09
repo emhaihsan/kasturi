@@ -140,8 +140,8 @@ export function Navbar() {
     );
   }
 
-  // Navbar untuk logged-in users
-  if (isLoggedIn && !isLandingPage) {
+  // Navbar untuk logged-in users (termasuk di landing page)
+  if (isLoggedIn) {
     return (
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-neutral-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -323,5 +323,18 @@ export function Navbar() {
     );
   }
 
-  return null;
+  // Fallback navbar untuk halaman lain saat tidak login
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-neutral-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/icon.webp" alt="Kasturi" className="w-8 h-8" />
+            <span className="text-xl font-bold text-neutral-900">Kasturi</span>
+          </Link>
+          <Button onClick={handleLogin}>Connect</Button>
+        </div>
+      </div>
+    </nav>
+  );
 }

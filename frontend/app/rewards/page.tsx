@@ -1,14 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Coins, Gift, Check, Loader2, ExternalLink } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { vouchers } from '@/lib/data';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { usePrivy } from '@privy-io/react-auth';
 import { useInView } from '@/hooks/useInView';
 import { useWallet } from '@/lib/hooks/useWallet';
+import { useContracts } from '@/lib/hooks/use-contracts';
+
+interface OnChainVoucher {
+  id: string;
+  name: string;
+  price: string;
+  isActive: boolean;
+  userBalance: string;
+}
 
 export default function RewardsPage() {
   const { ref: heroRef, isInView: heroInView } = useInView();
@@ -16,14 +24,46 @@ export default function RewardsPage() {
   const { ref: contentRef, isInView: contentInView } = useInView();
   const { user, addVoucher } = useAppStore();
   const { authenticated, login } = usePrivy();
-  const { tokenBalanceFormatted, refreshWallet } = useWallet();
+  const { address, tokenBalanceFormatted, refreshWallet } = useWallet();
+  const { purchaseVoucher, redeemVoucher, loading: contractLoading } = useContracts();
+  
   const [isPurchasing, setIsPurchasing] = useState<string | null>(null);
+  const [isRedeeming, setIsRedeeming] = useState<string | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [onChainVouchers, setOnChainVouchers] = useState<OnChainVoucher[]>([]);
+  const [loadingVouchers, setLoadingVouchers] = useState(true);
+  const [txHash, setTxHash] = useState<string | null>(null);
 
-  const handlePurchaseVoucher = async (voucher: typeof vouchers[0]) => {
-    const tokenBalance = parseInt(tokenBalanceFormatted) || 0;
-    if (tokenBalance < voucher.tokenCost) {
+  // Fetch on-chain vouchers
+  useEffect(() => {
+    async function fetchVouchers() {
+      if (!address) {
+        setLoadingVouchers(false);
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/vouchers?walletAddress=${address}`);
+        if (response.ok) {
+          const data = await response.json();
+          setOnChainVouchers(data.vouchers || []);
+        }
+      } catch (error) {
+        console.error('Error fetching vouchers:', error);
+      } finally {
+        setLoadingVouchers(false);
+      }
+    }
+    
+    fetchVouchers();
+  }, [address, purchaseSuccess]);
+
+  const handlePurchaseVoucher = async (voucher: OnChainVoucher) => {
+    const tokenBalance = parseFloat(tokenBalanceFormatted) || 0;
+    const voucherPrice = parseFloat(voucher.price) / 1e18; // Convert from wei
+    
+    if (tokenBalance < voucherPrice) {
       setPurchaseError('Saldo KASTURI tidak cukup');
       return;
     }
@@ -31,17 +71,37 @@ export default function RewardsPage() {
     setIsPurchasing(voucher.id);
     setPurchaseError(null);
     setPurchaseSuccess(null);
+    setTxHash(null);
     
     try {
-      // TODO: Implement on-chain voucher purchase
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      addVoucher({ ...voucher, redeemed: false });
+      const result = await purchaseVoucher(parseInt(voucher.id), 1);
+      setTxHash(result.hash);
       setPurchaseSuccess(`Berhasil membeli voucher ${voucher.name}!`);
       await refreshWallet();
-    } catch (error) {
-      setPurchaseError('Gagal membeli voucher');
+    } catch (error: any) {
+      console.error('Purchase error:', error);
+      setPurchaseError(error.message || 'Gagal membeli voucher');
     } finally {
       setIsPurchasing(null);
+    }
+  };
+
+  const handleRedeemVoucher = async (voucher: OnChainVoucher) => {
+    setIsRedeeming(voucher.id);
+    setPurchaseError(null);
+    setPurchaseSuccess(null);
+    setTxHash(null);
+    
+    try {
+      const result = await redeemVoucher(parseInt(voucher.id), 1);
+      setTxHash(result.hash);
+      setPurchaseSuccess(`Berhasil menukar voucher ${voucher.name}!`);
+      await refreshWallet();
+    } catch (error: any) {
+      console.error('Redeem error:', error);
+      setPurchaseError(error.message || 'Gagal menukar voucher');
+    } finally {
+      setIsRedeeming(null);
     }
   };
 
@@ -164,38 +224,70 @@ export default function RewardsPage() {
           </Card>
         </div>
 
+        {/* Transaction Success Link */}
+        {txHash && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
+            <p className="text-blue-700 text-sm">Transaksi berhasil!</p>
+            <a
+              href={`https://sepolia-blockscout.lisk.com/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              Lihat di Blockscout
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        )}
+
         <div>
           <h2 className={`text-2xl font-bold text-neutral-900 mb-6 transition-all duration-700 ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Katalog Voucher NFT</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {vouchers.map((voucher) => {
-              const tokenBalance = parseInt(tokenBalanceFormatted) || 0;
-              const canPurchase = tokenBalance >= voucher.tokenCost;
-              const alreadyOwned = user?.vouchers?.some((v) => v.id === voucher.id);
+          
+          {loadingVouchers ? (
+            <div className="text-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto text-emerald-600 mb-4" />
+              <p className="text-neutral-500">Loading vouchers...</p>
+            </div>
+          ) : onChainVouchers.length === 0 ? (
+            <div className="text-center py-12">
+              <Gift className="w-16 h-16 mx-auto text-neutral-300 mb-4" />
+              <p className="text-neutral-500">Belum ada voucher tersedia di blockchain.</p>
+              <p className="text-neutral-400 text-sm mt-2">Admin perlu membuat voucher type terlebih dahulu.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {onChainVouchers.map((voucher) => {
+                const tokenBalance = parseFloat(tokenBalanceFormatted) || 0;
+                const voucherPrice = parseFloat(voucher.price) / 1e18;
+                const canPurchase = tokenBalance >= voucherPrice;
+                const ownedCount = parseInt(voucher.userBalance) || 0;
 
-              return (
-                <Card key={voucher.id} hover className={`overflow-hidden transition-all duration-500 hover:scale-105 ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                  <div className="aspect-square bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
-                    <Gift className="w-16 h-16 text-amber-400" />
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-neutral-900 mb-1">{voucher.name}</h3>
-                    <p className="text-sm text-neutral-500 mb-4 line-clamp-2">{voucher.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-amber-600 font-bold">
-                        <Coins className="w-4 h-4" />
-                        <span>{voucher.tokenCost} KSTR</span>
+                return (
+                  <Card key={voucher.id} hover className={`overflow-hidden transition-all duration-500 hover:scale-105 ${contentInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                    <div className="aspect-video bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                      <Gift className="w-16 h-16 text-amber-400" />
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-neutral-900 mb-1">{voucher.name}</h3>
+                      <p className="text-sm text-neutral-500 mb-4">Voucher ID: #{voucher.id}</p>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-1 text-amber-600 font-bold">
+                          <Coins className="w-4 h-4" />
+                          <span>{voucherPrice.toFixed(0)} KSTR</span>
+                        </div>
+                        {ownedCount > 0 && (
+                          <span className="text-sm text-emerald-600 font-medium">
+                            Owned: {ownedCount}
+                          </span>
+                        )}
                       </div>
-                      {alreadyOwned ? (
-                        <span className="text-sm text-green-600 font-medium flex items-center gap-1">
-                          <Check className="w-4 h-4" />
-                          Owned
-                        </span>
-                      ) : (
+                      <div className="flex gap-2">
                         <Button
                           size="sm"
                           variant={canPurchase ? 'primary' : 'outline'}
                           disabled={!canPurchase || isPurchasing === voucher.id}
                           onClick={() => handlePurchaseVoucher(voucher)}
+                          className="flex-1"
                         >
                           {isPurchasing === voucher.id ? (
                             <>
@@ -206,13 +298,27 @@ export default function RewardsPage() {
                             'Beli'
                           )}
                         </Button>
-                      )}
+                        {ownedCount > 0 && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={isRedeeming === voucher.id}
+                            onClick={() => handleRedeemVoucher(voucher)}
+                          >
+                            {isRedeeming === voucher.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              'Tukar'
+                            )}
+                          </Button>
+                        )}
                     </div>
                   </CardContent>
                 </Card>
               );
-            })}
-          </div>
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-// GET /api/lessons/[id] - Get a specific lesson
+// GET /api/lessons/[id] - Get a specific lesson by lessonId or internal id
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -9,8 +9,13 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const lesson = await prisma.lesson.findUnique({
-      where: { id },
+    const lesson = await prisma.lesson.findFirst({
+      where: {
+        OR: [
+          { lessonId: id },
+          { id: id },
+        ],
+      },
       include: {
         module: {
           select: {

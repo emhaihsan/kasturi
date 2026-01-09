@@ -2,16 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { issueCredential, setCredentialTokenURI } from '@/lib/backend-wallet';
 import { uploadSBTMetadata } from '@/lib/pinata';
-import { generateCertificateSVG } from '@/lib/certificate-generator';
 import { keccak256, toHex } from 'viem';
-import PinataClient from '@pinata/sdk';
 
-const pinata = new PinataClient({
-  pinataApiKey: process.env.PINATA_API_KEY!,
-  pinataSecretApiKey: process.env.PINATA_SECRET_KEY!,
-});
-
-// POST /api/test-mint - Test mint SBT with full metadata (for testing purposes)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -31,45 +23,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate a unique programId based on program name
     const programId = keccak256(toHex(`test-${programName}-${Date.now()}`));
     const formattedWallet = walletAddress.toLowerCase() as `0x${string}`;
 
-    // Issue credential on-chain first
     console.log('🔗 Issuing credential on-chain...');
     const result = await issueCredential(formattedWallet, programId);
     console.log('✅ Credential issued! TxHash:', result.hash);
 
-    // Generate certificate SVG
-    console.log('📸 Generating certificate image...');
-    const certificateData = {
-      programName,
-      recipientName,
-      recipientAddress: walletAddress,
-      issuedAt: new Date().toISOString(),
-      txHash: result.hash,
-      language,
-    };
-    
-    const svgDataUrl = generateCertificateSVG(certificateData);
-    
-    // Upload SVG to Pinata
-    console.log('🖼️ Uploading certificate to IPFS...');
-    const { Readable } = await import('stream');
-    const base64Data = svgDataUrl.split(',')[1];
-    const buffer = Buffer.from(base64Data, 'base64');
-    const stream = Readable.from(buffer);
-    
-    const imageResult = await pinata.pinFileToIPFS(stream, {
-      pinataMetadata: {
-        name: `kasturi-cert-${result.hash.slice(0, 10)}.svg`,
-      },
+    console.log('📸 Generating certificate PNG...');
+    const origin = new URL(request.url).origin;
+    const certResponse = await fetch(`${origin}/api/certificate/image`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        programName,
+        recipientName,
+        recipientAddress: walletAddress,
+        issuedAt: new Date().toISOString(),
+        txHash: result.hash,
+        language,
+      }),
     });
+
+    if (!certResponse.ok) {
+      const errorData = await certResponse.json();
+      throw new Error(`Certificate generation failed: ${errorData.error}`);
+    }
+
+    const certData = await certResponse.json();
+    const certificateImageUrl = certData.ipfsUrl;
+    const imageIpfsHash = certData.ipfsHash;
+    console.log('🖼️ Certificate PNG uploaded:', certificateImageUrl);
     
-    const certificateImageUrl = `ipfs://${imageResult.IpfsHash}`;
-    console.log('🖼️ Certificate image uploaded:', certificateImageUrl);
-    
-    // Upload metadata with certificate image
     console.log('📦 Uploading metadata to IPFS...');
     const metadataUrl = await uploadSBTMetadata(
       programName,
@@ -83,7 +68,6 @@ export async function POST(request: NextRequest) {
     );
     console.log('📦 Metadata uploaded:', metadataUrl);
 
-    // Set tokenURI on-chain so wallets can display metadata
     if (result.tokenId !== null) {
       console.log('🔗 Setting tokenURI on-chain for tokenId:', result.tokenId.toString());
       await setCredentialTokenURI(result.tokenId, metadataUrl);
@@ -92,7 +76,6 @@ export async function POST(request: NextRequest) {
       console.warn('⚠️ tokenId not found from receipt logs; cannot set tokenURI on-chain');
     }
 
-    // Get or create user for database record
     let user = await prisma.user.findUnique({
       where: { walletAddress: formattedWallet },
     });
@@ -106,7 +89,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Save credential to database
     const credential = await prisma.issuedCredential.create({
       data: {
         userId: user.id,
@@ -116,11 +98,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Get IPFS gateway URLs for preview
-    const gateway = process.env.NEXT_PUBLIC_PINATA_GATEWAY || 'https://gateway.pinata.cloud/ipfs';
-    const imageHttpUrl = `${gateway}/${imageResult.IpfsHash}`;
+    const gateway = process.env.NEXT_PUBLIC_PINATA_GATEWAY || 'gateway.pinata.cloud';
+    const imageHttpUrl = `https://${gateway}/ipfs/${imageIpfsHash}`;
     const metadataHash = metadataUrl.replace('ipfs://', '');
-    const metadataHttpUrl = `${gateway}/${metadataHash}`;
+    const metadataHttpUrl = `https://${gateway}/ipfs/${metadataHash}`;
 
     return NextResponse.json({
       success: true,

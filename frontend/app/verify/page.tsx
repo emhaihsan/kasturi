@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, CheckCircle, XCircle, Award, ExternalLink, Shield, User, Download } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Award, ExternalLink, Shield, User, Hash } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useInView } from '@/hooks/useInView';
@@ -15,6 +15,7 @@ interface Credential {
   issuedAt: string;
   txHash: string;
   recipientName: string;
+  recipientAddress?: string;
 }
 
 interface VerificationResult {
@@ -23,53 +24,89 @@ interface VerificationResult {
   displayName?: string;
   credentials?: Credential[];
   totalExp?: number;
+  // For single certificate lookup
+  singleCredential?: Credential;
 }
 
 export default function VerifyPage() {
   const { ref: heroRef, isInView: heroInView } = useInView();
   const { ref: infoRef, isInView: infoInView } = useInView();
-  const [address, setAddress] = useState('');
+  const [searchType, setSearchType] = useState<'wallet' | 'certificate'>('certificate');
+  const [searchInput, setSearchInput] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState<VerificationResult | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedCert, setSelectedCert] = useState<Credential | null>(null);
 
   const handleVerify = async () => {
-    if (!address.trim()) return;
+    if (!searchInput.trim()) return;
     
     setIsSearching(true);
     setHasSearched(true);
     setSelectedCert(null);
+    setResult(null);
     
     try {
-      // Fetch credentials from API
-      const response = await fetch(`/api/credentials?walletAddress=${address}`);
-      
-      if (!response.ok) {
-        setResult({ found: false });
-        return;
-      }
+      if (searchType === 'certificate') {
+        // Lookup by certificate ID
+        const response = await fetch(`/api/credentials/${searchInput.trim()}`);
+        
+        if (!response.ok) {
+          setResult({ found: false });
+          return;
+        }
 
-      const data = await response.json();
-      
-      if (data.credentials && data.credentials.length > 0) {
-        setResult({
-          found: true,
-          address: address,
-          displayName: data.user?.displayName,
-          credentials: data.credentials.map((cred: any) => ({
-            id: cred.id,
-            programId: cred.programId,
-            programName: cred.programName,
-            language: cred.language || 'banjar',
-            issuedAt: cred.issuedAt,
-            txHash: cred.txHash,
-            recipientName: data.user?.displayName || 'Anonymous Learner',
-          })),
-          totalExp: data.totalExp || 0,
-        });
+        const data = await response.json();
+        
+        if (data.credential) {
+          setResult({
+            found: true,
+            singleCredential: {
+              id: data.credential.id,
+              programId: data.credential.programId,
+              programName: data.credential.programName,
+              language: data.credential.language || 'banjar',
+              issuedAt: data.credential.issuedAt,
+              txHash: data.credential.txHash,
+              recipientName: data.credential.recipientName,
+              recipientAddress: data.credential.recipientAddress,
+            },
+            address: data.credential.recipientAddress,
+          });
+        } else {
+          setResult({ found: false });
+        }
       } else {
-        setResult({ found: false });
+        // Lookup by wallet address
+        const response = await fetch(`/api/credentials?walletAddress=${searchInput}`);
+        
+        if (!response.ok) {
+          setResult({ found: false });
+          return;
+        }
+
+        const data = await response.json();
+        
+        if (data.credentials && data.credentials.length > 0) {
+          setResult({
+            found: true,
+            address: searchInput,
+            displayName: data.user?.displayName,
+            credentials: data.credentials.map((cred: any) => ({
+              id: cred.id,
+              programId: cred.programId,
+              programName: cred.programName,
+              language: cred.language || 'banjar',
+              issuedAt: cred.issuedAt,
+              txHash: cred.txHash,
+              recipientName: data.user?.displayName || 'Anonymous Learner',
+              recipientAddress: data.user?.walletAddress,
+            })),
+            totalExp: data.totalExp || 0,
+          });
+        } else {
+          setResult({ found: false });
+        }
       }
     } catch (error) {
       console.error('Error verifying:', error);
@@ -88,27 +125,49 @@ export default function VerifyPage() {
           </div>
           <h1 className={`text-4xl font-bold text-neutral-900 mb-4 transition-all duration-700 delay-100 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Verify Certificate</h1>
           <p className={`text-xl text-neutral-600 max-w-xl mx-auto transition-all duration-700 delay-200 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            Verify on-chain learning certificates without logging in. Just enter the wallet address.
+            Verify on-chain learning certificates without logging in. Enter certificate ID or wallet address.
           </p>
         </div>
 
         <Card className={`mb-8 transition-all duration-700 delay-300 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <CardContent className="p-6">
+            {/* Search Type Toggle */}
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => { setSearchType('certificate'); setSearchInput(''); setResult(null); setHasSearched(false); }}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${searchType === 'certificate' ? 'bg-green-600 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+              >
+                <Hash className="w-4 h-4 inline mr-2" />
+                Certificate ID
+              </button>
+              <button
+                onClick={() => { setSearchType('wallet'); setSearchInput(''); setResult(null); setHasSearched(false); }}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${searchType === 'wallet' ? 'bg-green-600 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+              >
+                <User className="w-4 h-4 inline mr-2" />
+                Wallet Address
+              </button>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1 relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                {searchType === 'certificate' ? (
+                  <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                ) : (
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                )}
                 <input
                   type="text"
-                  placeholder="Enter wallet address (0x...)"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder={searchType === 'certificate' ? 'Enter certificate ID (e.g., cm...)' : 'Enter wallet address (0x...)'}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
                   className="w-full pl-12 pr-4 py-3 rounded-xl border border-neutral-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
                 />
               </div>
               <Button
                 onClick={handleVerify}
-                disabled={!address.trim() || isSearching}
+                disabled={!searchInput.trim() || isSearching}
                 isLoading={isSearching}
                 size="lg"
               >
@@ -123,33 +182,108 @@ export default function VerifyPage() {
           <div className="space-y-6">
             {result.found ? (
               <>
-                <Card className="border-green-200 bg-green-50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
-                        <CheckCircle className="w-6 h-6 text-white" />
+                {/* Single Certificate Result */}
+                {result.singleCredential ? (
+                  <>
+                    <Card className="border-green-200 bg-green-50">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+                            <CheckCircle className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h2 className="text-xl font-bold text-green-800">Certificate Verified</h2>
+                            <p className="text-green-600 text-sm">This certificate is valid and recorded on-chain</p>
+                          </div>
+                        </div>
+                        
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div className="bg-white rounded-xl p-4">
+                            <p className="text-sm text-neutral-500 mb-1">Certificate ID</p>
+                            <p className="font-mono text-neutral-900 text-sm break-all">{result.singleCredential.id}</p>
+                          </div>
+                          <div className="bg-white rounded-xl p-4">
+                            <p className="text-sm text-neutral-500 mb-1">Wallet Address</p>
+                            <p className="font-mono text-neutral-900 text-sm break-all">{result.address}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                      <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 text-white">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
+                              <Award className="w-8 h-8" />
+                            </div>
+                            <div>
+                              <h4 className="text-xl font-bold">{result.singleCredential.programName}</h4>
+                              <p className="text-green-100">Program Completion Certificate</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => setSelectedCert(result.singleCredential!)}
+                            className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+                          >
+                            View Certificate
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <h2 className="text-xl font-bold text-green-800">Verified</h2>
-                        <p className="text-green-600 text-sm">Address has valid certificates</p>
-                      </div>
-                    </div>
+                      <CardContent className="p-6">
+                        <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                          <div>
+                            <p className="text-sm text-gray-500 mb-1">Recipient</p>
+                            <p className="font-medium text-gray-900">{result.singleCredential.recipientName}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-500 mb-1">Issue Date</p>
+                            <p className="text-gray-900">{new Date(result.singleCredential.issuedAt).toLocaleDateString('id-ID', { dateStyle: 'long' })}</p>
+                          </div>
+                        </div>
+                        
+                        <a
+                          href={`https://sepolia-blockscout.lisk.com/tx/${result.singleCredential.txHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          View on Blockscout
+                        </a>
+                      </CardContent>
+                    </Card>
+                  </>
+                ) : (
+                  /* Wallet Address Results */
+                  <>
+                    <Card className="border-green-200 bg-green-50">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+                            <CheckCircle className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h2 className="text-xl font-bold text-green-800">Verified</h2>
+                            <p className="text-green-600 text-sm">Address has valid certificates</p>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-white rounded-xl p-4 mb-4">
+                          <p className="text-sm text-neutral-500 mb-1">Wallet Address</p>
+                          <p className="font-mono text-neutral-900 break-all">{result.address}</p>
+                        </div>
+
+                        <div className="bg-white rounded-xl p-4">
+                          <p className="text-sm text-neutral-500 mb-1">Total EXP</p>
+                          <p className="text-2xl font-bold text-green-600">{result.totalExp} EXP</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <h3 className="text-xl font-bold text-neutral-900">Certificates Found ({result.credentials?.length || 0})</h3>
                     
-                    <div className="bg-white rounded-xl p-4 mb-4">
-                      <p className="text-sm text-neutral-500 mb-1">Wallet Address</p>
-                      <p className="font-mono text-neutral-900 break-all">{result.address}</p>
-                    </div>
-
-                    <div className="bg-white rounded-xl p-4">
-                      <p className="text-sm text-neutral-500 mb-1">Total EXP</p>
-                      <p className="text-2xl font-bold text-green-600">{result.totalExp} EXP</p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <h3 className="text-xl font-bold text-neutral-900">Certificates Found</h3>
-                
-                {result.credentials?.map((cred, index) => (
+                    {result.credentials?.map((cred, index) => (
                   <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
                     <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 text-white">
                       <div className="flex items-center justify-between">
@@ -204,7 +338,9 @@ export default function VerifyPage() {
                       </a>
                     </CardContent>
                   </Card>
-                ))}
+                    ))}
+                  </>
+                )}
               </>
             ) : (
               <Card className="border-red-200 bg-red-50">

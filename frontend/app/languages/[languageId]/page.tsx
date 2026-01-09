@@ -297,18 +297,9 @@ export default function LanguageDetailPage() {
                       </span>
                     </div>
 
-                    {user && (
-                      <div>
-                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                          <span>Progress</span>
-                          <span>{module.completedLessons || 0} / {module.lessonCount}</span>
-                        </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-emerald-500 rounded-full transition-all"
-                            style={{ width: `${moduleProgress}%` }}
-                          />
-                        </div>
+                    {user && (module.completedLessons || 0) > 0 && (
+                      <div className="text-sm text-emerald-600 font-medium">
+                        {module.completedLessons} / {module.lessonCount} pelajaran selesai
                       </div>
                     )}
                   </div>

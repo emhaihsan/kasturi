@@ -79,6 +79,11 @@ interface LessonDetail extends Lesson {
     name: string;
     language: string;
   };
+  // Override nullable fields from Prisma
+  videoUrl: string | null;
+  thumbnailUrl: string | null;
+  duration: string | null;
+  description: string | null;
 }
 
 export function useLesson(lessonId: string) {
@@ -89,7 +94,7 @@ export function useLesson(lessonId: string) {
   useEffect(() => {
     async function fetchLesson() {
       try {
-        const res = await fetch(`/api/programs/x/lessons/${lessonId}`);
+        const res = await fetch(`/api/lessons/${lessonId}`);
         if (!res.ok) throw new Error('Failed to fetch lesson');
         const data = await res.json();
         setLesson(data.lesson);

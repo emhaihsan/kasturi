@@ -66,6 +66,7 @@ async function main() {
 
   const lessons = [
     {
+      lessonId: 'cinta-janji-perpisahan',
       title: 'Cinta, Janji, dan Perpisahan',
       description: 'Belajar ekspresi cinta dan perpisahan dalam Bahasa Banjar melalui lirik lagu',
       expReward: 10,
@@ -113,6 +114,7 @@ async function main() {
       },
     },
     {
+      lessonId: 'curhat-nasib-humor',
       title: 'Curhat, Nasib, dan Humor Banjar',
       description: 'Belajar mengekspresikan keluhan dan humor dalam Bahasa Banjar',
       expReward: 10,
@@ -158,6 +160,7 @@ async function main() {
       },
     },
     {
+      lessonId: 'ayuha-ikhlas-melepaskan',
       title: 'Ayuha - Ikhlas dan Melepaskan',
       description: 'Belajar ekspresi keikhlasan dan melepaskan dalam Bahasa Banjar',
       expReward: 10,
@@ -204,6 +207,7 @@ async function main() {
       },
     },
     {
+      lessonId: 'ratik-wara-salah-paham',
       title: 'Ratik Wara - Salah Paham dan Harga Diri',
       description: 'Belajar mengekspresikan kekecewaan dan harga diri dalam Bahasa Banjar',
       expReward: 10,
@@ -250,6 +254,7 @@ async function main() {
       },
     },
     {
+      lessonId: 'rakai-cemburu-kenyataan',
       title: 'Rakai - Cemburu dan Kenyataan Pahit',
       description: 'Belajar mengekspresikan kecemburuan dan menghadapi kenyataan dalam Bahasa Banjar',
       expReward: 10,
@@ -309,10 +314,7 @@ async function main() {
 
     const lesson = await prisma.lesson.upsert({
       where: {
-        moduleId_orderIndex: {
-          moduleId: module.id,
-          orderIndex: lessonData.orderIndex,
-        },
+        lessonId: lessonData.lessonId,
       },
       update: {
         title: lessonData.title,
@@ -324,6 +326,7 @@ async function main() {
         duration: lessonData.duration,
       },
       create: {
+        lessonId: lessonData.lessonId,
         moduleId: module.id,
         title: lessonData.title,
         description: lessonData.description,

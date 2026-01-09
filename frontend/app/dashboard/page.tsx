@@ -96,65 +96,95 @@ export default function DashboardPage() {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <Card className="hover:shadow-xl transition-shadow">
+          {/* Show "Start Learning" CTA if user has no progress */}
+          {totalCompletedLessons === 0 ? (
+            <Card className="hover:shadow-xl transition-shadow">
+              <CardContent className="p-8">
+                <div className="text-center">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center mx-auto mb-6">
+                    <BookOpen className="w-10 h-10 text-emerald-600" />
+                  </div>
+                  <h2 className="text-xl font-bold text-neutral-900 mb-2">
+                    Mulai Perjalanan Belajarmu!
+                  </h2>
+                  <p className="text-neutral-500 mb-6 max-w-md mx-auto">
+                    Kamu belum memulai pelajaran apapun. Pilih bahasa daerah yang ingin kamu pelajari dan mulai petualangan budayamu sekarang!
+                  </p>
+                  <Link href="/languages">
+                    <Button size="lg" className="px-8">
+                      <BookOpen className="w-5 h-5 mr-2" />
+                      Mulai Belajar Sekarang
+                    </Button>
+                  </Link>
+                  
+                  {/* Available languages preview */}
+                  {!programsLoading && languageProgress.length > 0 && (
+                    <div className="mt-8 pt-6 border-t border-neutral-100">
+                      <p className="text-sm text-neutral-500 mb-4">Bahasa yang tersedia:</p>
+                      <div className="flex flex-wrap justify-center gap-3">
+                        {languageProgress.filter(l => !l.comingSoon).map((lang) => (
+                          <Link 
+                            key={lang.id} 
+                            href={`/languages/${lang.id}`}
+                            className="flex items-center gap-2 px-4 py-2 bg-neutral-50 hover:bg-emerald-50 border border-neutral-200 hover:border-emerald-300 rounded-full transition-colors"
+                          >
+                            <span>{lang.flag}</span>
+                            <span className="text-sm font-medium text-neutral-700">{lang.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            /* Show progress if user has started learning */
+            <Card className="hover:shadow-xl transition-shadow">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold text-neutral-900">
-                    Language Progress
+                    Progress Belajar
                   </h2>
+                  <Link href="/languages" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                    Lihat Semua →
+                  </Link>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   {programsLoading ? (
                     <div className="text-center py-8 text-neutral-500">Loading...</div>
+                  ) : languageProgress.filter(l => !l.comingSoon).length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-neutral-500">Belum ada bahasa tersedia</p>
+                    </div>
                   ) : (
-                    languageProgress.map((lang) => {
-                      const isComingSoon = lang.comingSoon;
-                      return (
-                      <Link key={lang.id} href={isComingSoon ? '#' : `/languages/${lang.id}`} className={isComingSoon ? 'cursor-not-allowed' : ''}>
-                        <div className={`group ${isComingSoon ? 'opacity-60' : ''}`}>
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-3">
-                            <span className="text-xl">{lang.flag}</span>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <p className="font-medium text-neutral-900 text-sm">
+                    languageProgress.filter(l => !l.comingSoon).map((lang) => (
+                      <Link key={lang.id} href={`/languages/${lang.id}`}>
+                        <div className="group p-4 rounded-xl hover:bg-neutral-50 transition-colors">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl">{lang.flag}</span>
+                              <div>
+                                <p className="font-medium text-neutral-900">
                                   {lang.name}
                                 </p>
-                                {isComingSoon && (
-                                  <span className="px-2 py-0.5 bg-neutral-200 text-neutral-600 text-xs rounded-full">
-                                    Coming Soon
-                                  </span>
-                                )}
+                                <p className="text-sm text-neutral-500">
+                                  {lang.total} pelajaran tersedia
+                                </p>
                               </div>
-                              <p className="text-xs text-neutral-500">
-                                {isComingSoon ? 'Available soon' : `${lang.completed} / ${lang.total} lessons`}
-                              </p>
                             </div>
+                            <ChevronRight className="w-5 h-5 text-neutral-400 group-hover:text-emerald-600 transition-colors" />
                           </div>
-                          {!isComingSoon && (
-                            <span className="text-sm font-medium text-neutral-900">
-                              {Math.round(lang.progress)}%
-                            </span>
-                          )}
                         </div>
-                        {!isComingSoon && (
-                          <div className="h-1.5 bg-neutral-100 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-green-500 rounded-full transition-all duration-500"
-                              style={{ width: `${lang.progress}%` }}
-                            />
-                          </div>
-                        )}
-                      </div>
                       </Link>
-                      );
-                    })
+                    ))
                   )}
                 </div>
               </CardContent>
-          </Card>
+            </Card>
+          )}
         </div>
       </div>
     </div>

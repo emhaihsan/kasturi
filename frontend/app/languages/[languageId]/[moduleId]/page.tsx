@@ -160,7 +160,7 @@ export default function ModuleDetailPage() {
             return (
               <Link
                 key={lesson.id}
-                href={isLocked ? '#' : `/languages/${languageId}/${moduleId}/lessons/${lesson.id}`}
+                href={isLocked ? '#' : `/languages/${languageId}/${moduleId}/${lesson.id}`}
                 className={isLocked ? 'cursor-not-allowed' : ''}
               >
                 <Card
