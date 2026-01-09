@@ -6,24 +6,30 @@ export async function GET() {
     const programs = await prisma.program.findMany({
       where: { isActive: true },
       include: {
-        lessons: {
+        modules: {
           where: { isActive: true },
-          orderBy: { orderIndex: 'asc' },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            videoUrl: true,
-            thumbnailUrl: true,
-            duration: true,
-            expReward: true,
-            orderIndex: true,
+          include: {
+            lessons: {
+              where: { isActive: true },
+            },
           },
         },
       },
     });
 
-    return NextResponse.json({ programs });
+    // Calculate lesson count for each program
+    const programsWithLessonCount = programs.map(program => ({
+      id: program.id,
+      programId: program.programId,
+      name: program.name,
+      description: program.description,
+      language: program.language,
+      level: 'beginner',
+      totalExp: program.totalExp,
+      lessonCount: program.modules.reduce((sum, module) => sum + module.lessons.length, 0),
+    }));
+
+    return NextResponse.json({ programs: programsWithLessonCount });
   } catch (error) {
     console.error('Error fetching programs:', error);
     return NextResponse.json(

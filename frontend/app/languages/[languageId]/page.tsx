@@ -3,35 +3,71 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Clock, Star, CheckCircle, Lock, Play, Award, ExternalLink, Loader2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Star, CheckCircle, Play, Award, ExternalLink, Loader2, FolderOpen, ArrowRight } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { usePrograms } from '@/lib/hooks/usePrograms';
 import { useCredential } from '@/lib/hooks/useCredential';
 import { useWallet } from '@/lib/hooks/useWallet';
 
+interface Module {
+  id: string;
+  moduleId: string;
+  name: string;
+  description: string;
+  level: string;
+  totalExp: number;
+  orderIndex: number;
+  lessonCount: number;
+  completedLessons?: number;
+}
+
+interface Program {
+  id: string;
+  programId: string;
+  name: string;
+  description: string;
+  language: string;
+  totalExp: number;
+  modules: Module[];
+}
+
 export default function LanguageDetailPage() {
   const params = useParams();
-  const programId = params.languageId as string;
+  const languageId = params.languageId as string;
   const { user } = useAppStore();
-  const { programs, loading } = usePrograms();
   const { claimCredential, claiming, checkCredential } = useCredential();
   const { getExplorerUrl } = useWallet();
   
+  const [program, setProgram] = useState<Program | null>(null);
+  const [loading, setLoading] = useState(true);
   const [hasCredential, setHasCredential] = useState(false);
   const [credentialTxHash, setCredentialTxHash] = useState<string | null>(null);
   const [claimError, setClaimError] = useState<string | null>(null);
   const [claimSuccess, setClaimSuccess] = useState(false);
 
-  const program = programs.find((p) => p.id === programId);
-  const programLessons = program?.lessons || [];
+  // Fetch program with modules
+  useEffect(() => {
+    async function fetchProgram() {
+      try {
+        const response = await fetch(`/api/programs/${languageId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setProgram(data.program);
+        }
+      } catch (error) {
+        console.error('Error fetching program:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProgram();
+  }, [languageId]);
 
-  const completedLessons = programLessons.filter(
-    (lesson) => user?.progress[lesson.id]?.completed
-  ).length;
-  const progress = programLessons.length > 0 ? (completedLessons / programLessons.length) * 100 : 0;
-  const isComplete = completedLessons === programLessons.length && programLessons.length > 0;
+  // Calculate total progress across all modules
+  const totalLessons = program?.modules.reduce((sum, m) => sum + m.lessonCount, 0) || 0;
+  const completedLessons = program?.modules.reduce((sum, m) => sum + (m.completedLessons || 0), 0) || 0;
+  const progress = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
+  const isComplete = completedLessons === totalLessons && totalLessons > 0;
 
   // Check if user already has credential
   useEffect(() => {
@@ -60,9 +96,9 @@ export default function LanguageDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Program tidak ditemukan</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Bahasa tidak ditemukan</h1>
           <Link href="/languages" className="text-emerald-600 hover:underline">
-            Kembali ke daftar program
+            Kembali ke daftar bahasa
           </Link>
         </div>
       </div>
@@ -87,6 +123,14 @@ export default function LanguageDetailPage() {
     }
   };
 
+  const languageFlags: Record<string, string> = {
+    banjar: '🏝️',
+    jawa: '🏛️',
+    sunda: '🌄',
+    minang: '🏔️',
+    bali: '🌺',
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white py-16">
@@ -96,27 +140,26 @@ export default function LanguageDetailPage() {
             className="inline-flex items-center gap-2 text-emerald-100 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Kembali
+            Kembali ke Daftar Bahasa
           </Link>
 
           <div className="flex flex-col md:flex-row items-start gap-8">
             <div className="w-24 h-24 rounded-3xl bg-white/10 backdrop-blur flex items-center justify-center text-5xl">
-              🏝️
+              {languageFlags[program.language] || '📚'}
             </div>
 
             <div className="flex-1">
               <h1 className="text-4xl font-bold mb-2">{program.name}</h1>
-              <p className="text-emerald-100 text-lg mb-4">Kalimantan Selatan</p>
               <p className="text-emerald-50 max-w-2xl mb-6">{program.description}</p>
 
               <div className="flex flex-wrap items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-emerald-200" />
-                  <span>{programLessons.length} Pelajaran</span>
+                  <FolderOpen className="w-5 h-5 text-emerald-200" />
+                  <span>{program.modules.length} Modul</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-emerald-200" />
-                  <span>~{programLessons.length * 10} menit</span>
+                  <BookOpen className="w-5 h-5 text-emerald-200" />
+                  <span>{totalLessons} Pelajaran</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="w-5 h-5 text-amber-300" />
@@ -131,7 +174,7 @@ export default function LanguageDetailPage() {
               <div className="flex items-center justify-between mb-3">
                 <span className="font-medium">Progress Anda</span>
                 <span className="text-emerald-200">
-                  {completedLessons} / {programLessons.length} Pelajaran
+                  {completedLessons} / {totalLessons} Pelajaran
                 </span>
               </div>
               <div className="h-3 bg-white/20 rounded-full overflow-hidden">
@@ -174,7 +217,7 @@ export default function LanguageDetailPage() {
                           <Award className="w-6 h-6 text-amber-300" />
                         </div>
                         <div>
-                          <p className="font-semibold text-white">Selamat! Program Selesai 🎉</p>
+                          <p className="font-semibold text-white">Selamat! Semua Modul Selesai 🎉</p>
                           <p className="text-emerald-200 text-sm">Klaim sertifikat Soulbound Token Anda</p>
                         </div>
                       </div>
@@ -210,67 +253,63 @@ export default function LanguageDetailPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Daftar Pelajaran</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Pilih Modul Pelajaran</h2>
 
-        <div className="space-y-4">
-          {programLessons.map((lesson, index) => {
-            const isCompleted = user?.progress[lesson.id]?.completed;
-            const isLocked = index > 0 && !user?.progress[programLessons[index - 1].id]?.completed && !isCompleted;
+        <div className="grid gap-6 md:grid-cols-2">
+          {program.modules.map((module) => {
+            const moduleProgress = module.lessonCount > 0 
+              ? ((module.completedLessons || 0) / module.lessonCount) * 100 
+              : 0;
+            const isModuleComplete = (module.completedLessons || 0) === module.lessonCount && module.lessonCount > 0;
 
             return (
-              <Link
-                key={lesson.id}
-                href={isLocked ? '#' : `/languages/${programId}/lessons/${lesson.id}`}
-                className={isLocked ? 'cursor-not-allowed' : ''}
-              >
-                <Card
-                  hover={!isLocked}
-                  className={`${isLocked ? 'opacity-60' : ''} ${isCompleted ? 'border-emerald-200 bg-emerald-50/50' : ''}`}
-                >
-                  <div className="p-6 flex items-center gap-6">
-                    <div
-                      className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold ${
-                        isCompleted
-                          ? 'bg-emerald-500 text-white'
-                          : isLocked
-                          ? 'bg-gray-200 text-gray-400'
-                          : 'bg-emerald-100 text-emerald-600'
-                      }`}
-                    >
-                      {isCompleted ? (
-                        <CheckCircle className="w-7 h-7" />
-                      ) : isLocked ? (
-                        <Lock className="w-6 h-6" />
-                      ) : (
-                        lesson.orderIndex
-                      )}
+              <Link key={module.id} href={`/languages/${languageId}/${module.moduleId}`}>
+                <Card hover className={`h-full ${isModuleComplete ? 'border-emerald-200 bg-emerald-50/50' : ''}`}>
+                  <div className="p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
+                        isModuleComplete ? 'bg-emerald-500' : 'bg-emerald-100'
+                      }`}>
+                        {isModuleComplete ? (
+                          <CheckCircle className="w-7 h-7 text-white" />
+                        ) : (
+                          <FolderOpen className={`w-7 h-7 ${isModuleComplete ? 'text-white' : 'text-emerald-600'}`} />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">{module.name}</h3>
+                        <p className="text-gray-600 text-sm line-clamp-2">{module.description}</p>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-gray-400" />
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {lesson.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm line-clamp-1">
-                        {lesson.description}
-                      </p>
-                    </div>
-
-                    <div className="hidden sm:flex items-center gap-6 text-sm text-gray-500">
+                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4" />
-                        <span>{lesson.duration}</span>
+                        <BookOpen className="w-4 h-4" />
+                        <span>{module.lessonCount} Pelajaran</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-amber-600 font-medium">
-                        <Star className="w-4 h-4 fill-amber-400" />
-                        <span>+{lesson.expReward} EXP</span>
+                      <div className="flex items-center gap-1.5">
+                        <Star className="w-4 h-4 text-amber-500" />
+                        <span>+{module.totalExp} EXP</span>
                       </div>
+                      <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs capitalize">
+                        {module.level}
+                      </span>
                     </div>
 
-                    {!isLocked && !isCompleted && (
-                      <Button size="sm" className="hidden sm:flex">
-                        <Play className="w-4 h-4 mr-1" />
-                        Mulai
-                      </Button>
+                    {user && (
+                      <div>
+                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                          <span>Progress</span>
+                          <span>{module.completedLessons || 0} / {module.lessonCount}</span>
+                        </div>
+                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-emerald-500 rounded-full transition-all"
+                            style={{ width: `${moduleProgress}%` }}
+                          />
+                        </div>
+                      </div>
                     )}
                   </div>
                 </Card>
@@ -278,6 +317,13 @@ export default function LanguageDetailPage() {
             );
           })}
         </div>
+
+        {program.modules.length === 0 && (
+          <div className="text-center py-16">
+            <FolderOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">Belum ada modul tersedia untuk bahasa ini.</p>
+          </div>
+        )}
       </div>
     </div>
   );

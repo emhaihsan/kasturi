@@ -2,40 +2,63 @@
 // Run with: npx prisma db seed
 
 import { PrismaClient } from '@prisma/client';
-import { createHash } from 'crypto';
 
 const prisma = new PrismaClient();
-
-// Generate programId from name (keccak256 hash)
-function generateProgramId(name: string): string {
-  return '0x' + createHash('sha3-256').update(name).digest('hex');
-}
 
 async function main() {
   console.log('🌱 Seeding Kasturi database...');
 
   // ============================================================================
-  // Create Bahasa Banjar Program
+  // Create Bahasa Banjar Program (Language)
   // ============================================================================
   
-  const programName = 'bahasa-banjar-basic';
-  const programId = generateProgramId(programName);
+  const programId = 'bahasa-banjar';
 
   const program = await prisma.program.upsert({
     where: { programId },
-    update: {},
+    update: {
+      name: 'Bahasa Banjar',
+      description: 'Bahasa daerah yang digunakan oleh suku Banjar di Kalimantan Selatan. Pelajari cara berkomunikasi dengan penduduk lokal dalam kehidupan sehari-hari.',
+      totalExp: 50,
+    },
     create: {
       programId,
-      name: 'Bahasa Banjar Basic',
-      description: 'Learn the basics of Bahasa Banjar, the traditional language of South Kalimantan',
+      name: 'Bahasa Banjar',
+      description: 'Bahasa daerah yang digunakan oleh suku Banjar di Kalimantan Selatan. Pelajari cara berkomunikasi dengan penduduk lokal dalam kehidupan sehari-hari.',
       language: 'banjar',
-      level: 'beginner',
       totalExp: 50,
       isActive: true,
     },
   });
 
   console.log(`✅ Created program: ${program.name} (${program.programId})`);
+
+  // ============================================================================
+  // Create Module: Belajar Bahasa Banjar Lewat Lagu
+  // ============================================================================
+
+  const moduleId = 'belajar-banjar-lewat-lagu';
+
+  const module = await prisma.module.upsert({
+    where: { moduleId },
+    update: {
+      name: 'Belajar Bahasa Banjar Lewat Lagu',
+      description: 'Pelajari Bahasa Banjar melalui lirik lagu-lagu populer karya Tommy Kaganangan. Cara menyenangkan untuk memahami ekspresi dan emosi dalam bahasa daerah.',
+      totalExp: 50,
+    },
+    create: {
+      moduleId,
+      programId: program.id,
+      name: 'Belajar Bahasa Banjar Lewat Lagu',
+      description: 'Pelajari Bahasa Banjar melalui lirik lagu-lagu populer karya Tommy Kaganangan. Cara menyenangkan untuk memahami ekspresi dan emosi dalam bahasa daerah.',
+      level: 'beginner',
+      totalExp: 50,
+      orderIndex: 1,
+      isActive: true,
+    },
+  });
+
+  console.log(`  ✅ Created module: ${module.name}`);
 
   // ============================================================================
   // Create Lessons
@@ -286,8 +309,8 @@ async function main() {
 
     const lesson = await prisma.lesson.upsert({
       where: {
-        programId_orderIndex: {
-          programId: program.id,
+        moduleId_orderIndex: {
+          moduleId: module.id,
           orderIndex: lessonData.orderIndex,
         },
       },
@@ -301,7 +324,7 @@ async function main() {
         duration: lessonData.duration,
       },
       create: {
-        programId: program.id,
+        moduleId: module.id,
         title: lessonData.title,
         description: lessonData.description,
         content: lessonData.content,
@@ -314,12 +337,13 @@ async function main() {
       },
     });
 
-    console.log(`  ✅ Lesson ${lesson.orderIndex}: ${lesson.title}`);
+    console.log(`    ✅ Lesson ${lesson.orderIndex}: ${lesson.title}`);
   }
 
   console.log('\n🎉 Seeding completed!');
-  console.log(`\n📋 Program ID (for on-chain): ${programId}`);
-  console.log('   Use this when issuing credentials via smart contract');
+  console.log(`\n📋 Program ID (for on-chain credential): ${programId}`);
+  console.log(`📋 Module ID: ${moduleId}`);
+  console.log('   Use Program ID when issuing credentials via smart contract');
 }
 
 main()

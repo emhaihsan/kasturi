@@ -11,8 +11,8 @@ interface CertificateData {
 }
 
 /**
- * Generate certificate SVG as a data URL
- * This creates an SVG image that can be uploaded to IPFS
+ * Generate certificate SVG
+ * This creates an SVG image that will be converted to PNG
  */
 export function generateCertificateSVG(data: CertificateData): string {
   const formattedDate = new Date(data.issuedAt).toLocaleDateString('id-ID', {
@@ -21,8 +21,9 @@ export function generateCertificateSVG(data: CertificateData): string {
     year: 'numeric',
   });
 
-  const shortAddress = `${data.recipientAddress.slice(0, 6)}...${data.recipientAddress.slice(-4)}`;
-  const shortTxHash = `${data.txHash.slice(0, 10)}...${data.txHash.slice(-8)}`;
+  // Use full address instead of shortened
+  const fullAddress = data.recipientAddress;
+  const blockscoutUrl = `https://sepolia-blockscout.lisk.com/tx/${data.txHash}`;
 
   const svg = `
     <svg width="800" height="566" xmlns="http://www.w3.org/2000/svg">
@@ -47,68 +48,78 @@ export function generateCertificateSVG(data: CertificateData): string {
       <rect x="16" y="16" width="768" height="534" fill="none" stroke="white" stroke-opacity="0.3" stroke-width="2" rx="8"/>
       <rect x="24" y="24" width="752" height="518" fill="none" stroke="white" stroke-opacity="0.2" stroke-width="1" rx="8"/>
       
-      <!-- Header -->
-      <text x="400" y="80" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white" text-anchor="middle">KASTURI</text>
-      <text x="400" y="105" font-family="Arial, sans-serif" font-size="12" fill="#d1fae5" text-anchor="middle" letter-spacing="3">LEARN • EARN • PRESERVE</text>
+      <!-- Logo (simplified leaf icon) -->
+      <circle cx="400" cy="70" r="25" fill="#fbbf24" opacity="0.9"/>
+      <path d="M 400 55 Q 410 65 400 75 Q 390 65 400 55" fill="white"/>
+      <circle cx="400" cy="70" r="12" fill="none" stroke="white" stroke-width="2"/>
       
-      <!-- Award Icon (simplified) -->
-      <circle cx="400" cy="180" r="30" fill="#fbbf24" opacity="0.9"/>
-      <polygon points="400,160 410,185 390,185" fill="white"/>
-      <circle cx="400" cy="180" r="15" fill="none" stroke="white" stroke-width="2"/>
+      <!-- Brand Name -->
+      <text x="400" y="115" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">KASTURI</text>
+      <text x="400" y="135" font-family="Arial, sans-serif" font-size="10" fill="#d1fae5" text-anchor="middle" letter-spacing="2">LEARN • EARN • PRESERVE</text>
       
       <!-- Certificate Title -->
-      <text x="400" y="240" font-family="Arial, sans-serif" font-size="14" fill="#d1fae5" text-anchor="middle">CERTIFICATE OF COMPLETION</text>
-      <text x="400" y="275" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="white" text-anchor="middle">${data.programName}</text>
+      <text x="400" y="175" font-family="Arial, sans-serif" font-size="14" fill="#d1fae5" text-anchor="middle">CERTIFICATE OF COMPLETION</text>
+      <text x="400" y="210" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="white" text-anchor="middle">${data.programName}</text>
       
       <!-- Recipient Info -->
-      <text x="400" y="315" font-family="Arial, sans-serif" font-size="12" fill="#d1fae5" text-anchor="middle">This is to certify that</text>
-      <text x="400" y="345" font-family="Arial, sans-serif" font-size="22" font-weight="600" fill="white" text-anchor="middle">${data.recipientName}</text>
-      <text x="400" y="370" font-family="monospace" font-size="11" fill="#a7f3d0" text-anchor="middle">${shortAddress}</text>
-      <text x="400" y="400" font-family="Arial, sans-serif" font-size="11" fill="#d1fae5" text-anchor="middle">has successfully completed the ${data.language || 'language'} learning program</text>
+      <text x="400" y="255" font-family="Arial, sans-serif" font-size="12" fill="#d1fae5" text-anchor="middle">This is to certify that</text>
+      <text x="400" y="285" font-family="Arial, sans-serif" font-size="20" font-weight="600" fill="white" text-anchor="middle">${data.recipientName}</text>
+      <text x="400" y="310" font-family="monospace" font-size="10" fill="#a7f3d0" text-anchor="middle">${fullAddress}</text>
+      <text x="400" y="340" font-family="Arial, sans-serif" font-size="11" fill="#d1fae5" text-anchor="middle">has successfully completed the ${data.language || 'language'} learning program</text>
       
       <!-- Footer -->
-      <text x="120" y="480" font-family="Arial, sans-serif" font-size="10" fill="#a7f3d0">Issue Date</text>
-      <text x="120" y="500" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="white">${formattedDate}</text>
+      <text x="120" y="420" font-family="Arial, sans-serif" font-size="10" fill="#a7f3d0">Issue Date</text>
+      <text x="120" y="440" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="white">${formattedDate}</text>
       
-      <!-- Shield Icon (simplified) -->
-      <rect x="620" y="465" width="30" height="35" fill="#a7f3d0" opacity="0.3" rx="2"/>
-      <text x="660" y="480" font-family="Arial, sans-serif" font-size="10" fill="#a7f3d0">Verified On-Chain</text>
-      <text x="660" y="500" font-family="monospace" font-size="10" fill="white">${shortTxHash}</text>
+      <!-- QR Code placeholder (white square) -->
+      <rect x="640" y="400" width="80" height="80" fill="white" rx="4"/>
+      <text x="680" y="495" font-family="Arial, sans-serif" font-size="8" fill="#059669" text-anchor="middle">Verify On-Chain</text>
+      
+      <!-- QR Code pattern (simplified) -->
+      <rect x="645" y="405" width="70" height="70" fill="none" stroke="#059669" stroke-width="1"/>
+      <rect x="650" y="410" width="10" height="10" fill="#059669"/>
+      <rect x="670" y="410" width="10" height="10" fill="#059669"/>
+      <rect x="650" y="430" width="10" height="10" fill="#059669"/>
+      <rect x="670" y="430" width="10" height="10" fill="#059669"/>
+      <rect x="650" y="450" width="10" height="10" fill="#059669"/>
+      <rect x="670" y="450" width="10" height="10" fill="#059669"/>
+      <rect x="690" y="410" width="10" height="10" fill="#059669"/>
+      <rect x="710" y="410" width="10" height="10" fill="#059669"/>
+      <rect x="690" y="430" width="10" height="10" fill="#059669"/>
+      <rect x="710" y="430" width="10" height="10" fill="#059669"/>
+      <rect x="690" y="450" width="10" height="10" fill="#059669"/>
+      <rect x="710" y="450" width="10" height="10" fill="#059669"/>
       
       <!-- Bottom Border -->
-      <line x1="80" y1="520" x2="720" y2="520" stroke="white" stroke-opacity="0.2" stroke-width="1"/>
-      <text x="80" y="540" font-family="Arial, sans-serif" font-size="9" fill="#a7f3d0">Soulbound Token • Lisk Sepolia</text>
-      <text x="720" y="540" font-family="monospace" font-size="8" fill="#a7f3d0" text-anchor="end">sepolia-blockscout.lisk.com</text>
+      <line x1="80" y1="510" x2="720" y2="510" stroke="white" stroke-opacity="0.2" stroke-width="1"/>
+      <text x="80" y="530" font-family="Arial, sans-serif" font-size="9" fill="#a7f3d0">Soulbound Token • Lisk Sepolia</text>
+      <text x="720" y="530" font-family="monospace" font-size="8" fill="#a7f3d0" text-anchor="end">sepolia-blockscout.lisk.com</text>
     </svg>
   `;
 
-  // Convert SVG to data URL
-  const svgBase64 = Buffer.from(svg.trim()).toString('base64');
-  return `data:image/svg+xml;base64,${svgBase64}`;
+  return svg.trim();
 }
 
 /**
- * Upload certificate image to Pinata
+ * Upload certificate image to Pinata as PNG
  */
 export async function uploadCertificateImage(
   certificateData: CertificateData
 ): Promise<string> {
   try {
     // Generate SVG
-    const svgDataUrl = generateCertificateSVG(certificateData);
+    const svgString = generateCertificateSVG(certificateData);
     
-    // Convert data URL to buffer
-    const base64Data = svgDataUrl.split(',')[1];
-    const buffer = Buffer.from(base64Data, 'base64');
-    
-    // Upload to Pinata via API route
-    const formData = new FormData();
-    const blob = new Blob([buffer], { type: 'image/svg+xml' });
-    formData.append('file', blob, `certificate-${certificateData.txHash.slice(0, 10)}.svg`);
-    
+    // Send SVG to backend to convert to PNG and upload
     const response = await fetch('/api/upload/certificate', {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        svg: svgString,
+        filename: `certificate-${certificateData.txHash.slice(0, 10)}.png`,
+      }),
     });
     
     if (!response.ok) {

@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { getBackendWallet, getPublicClient } from '@/lib/backend-wallet';
-import { CONTRACTS, KasturiTokenABI } from '@/lib/contracts';
+import { mintTokensFromEXP } from '@/lib/backend-wallet';
 
-// POST /api/tokens/faucet - Claim free tokens from faucet
+// Faucet configuration (off-chain tracking)
+const FAUCET_AMOUNT = 1000; // 1000 KASTURI tokens
+const FAUCET_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+// POST /api/tokens/faucet - Claim free tokens from faucet (GASLESS)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -18,9 +21,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const normalizedAddress = walletAddress.toLowerCase();
+
     // Get user
     const user = await prisma.user.findUnique({
-      where: { walletAddress: walletAddress.toLowerCase() },
+      where: { walletAddress: normalizedAddress },
     });
 
     if (!user) {
@@ -30,47 +35,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user can claim from faucet (on-chain check)
-    const publicClient = getPublicClient();
-    const canClaim = await publicClient.readContract({
-      address: CONTRACTS.KasturiToken,
-      abi: KasturiTokenABI,
-      functionName: 'canClaimFaucet',
-      args: [walletAddress.toLowerCase() as `0x${string}`],
+    // Check last faucet claim from database
+    const lastClaim = await prisma.faucetClaim.findFirst({
+      where: { walletAddress: normalizedAddress },
+      orderBy: { claimedAt: 'desc' },
     });
 
-    if (!canClaim) {
-      // Get time until next claim
-      const timeUntilNext = await publicClient.readContract({
-        address: CONTRACTS.KasturiToken,
-        abi: KasturiTokenABI,
-        functionName: 'timeUntilNextClaim',
-        args: [walletAddress.toLowerCase() as `0x${string}`],
-      });
-
-      const hours = Number(timeUntilNext) / 3600;
-      return NextResponse.json(
-        { 
-          error: `Faucet cooldown active. Try again in ${hours.toFixed(1)} hours.`,
-          timeUntilNext: Number(timeUntilNext),
-        },
-        { status: 400 }
-      );
+    if (lastClaim) {
+      const timeSinceLastClaim = Date.now() - lastClaim.claimedAt.getTime();
+      if (timeSinceLastClaim < FAUCET_COOLDOWN_MS) {
+        const timeUntilNext = Math.ceil((FAUCET_COOLDOWN_MS - timeSinceLastClaim) / 1000);
+        const hours = timeUntilNext / 3600;
+        return NextResponse.json(
+          { 
+            error: `Faucet cooldown active. Try again in ${hours.toFixed(1)} hours.`,
+            timeUntilNext,
+          },
+          { status: 400 }
+        );
+      }
     }
 
-    // Return faucet info - user will claim directly from frontend
-    // claimFaucet() mints to msg.sender, so user must call it themselves
-    const faucetAmount = await publicClient.readContract({
-      address: CONTRACTS.KasturiToken,
-      abi: KasturiTokenABI,
-      functionName: 'faucetAmount',
+    // Mint tokens using backend wallet (GASLESS for user)
+    console.log('🔗 Minting faucet tokens via backend...');
+    const result = await mintTokensFromEXP(
+      normalizedAddress as `0x${string}`,
+      FAUCET_AMOUNT
+    );
+    console.log('✅ Faucet tokens minted! TxHash:', result.hash);
+
+    // Record the faucet claim in database
+    await prisma.faucetClaim.create({
+      data: {
+        userId: user.id,
+        walletAddress: normalizedAddress,
+        amount: FAUCET_AMOUNT,
+        txHash: result.hash,
+      },
     });
 
     return NextResponse.json({
       success: true,
-      canClaim: true,
-      amount: Number(faucetAmount) / 1e18,
-      message: 'Ready to claim from faucet',
+      txHash: result.hash,
+      amount: FAUCET_AMOUNT,
+      explorerUrl: `https://sepolia-blockscout.lisk.com/tx/${result.hash}`,
     });
   } catch (error) {
     console.error('❌ Error claiming faucet:', error);
@@ -94,32 +102,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const publicClient = getPublicClient();
-    
-    const canClaim = await publicClient.readContract({
-      address: CONTRACTS.KasturiToken,
-      abi: KasturiTokenABI,
-      functionName: 'canClaimFaucet',
-      args: [walletAddress.toLowerCase() as `0x${string}`],
+    const normalizedAddress = walletAddress.toLowerCase();
+
+    // Check last faucet claim from database
+    const lastClaim = await prisma.faucetClaim.findFirst({
+      where: { walletAddress: normalizedAddress },
+      orderBy: { claimedAt: 'desc' },
     });
 
-    const timeUntilNext = await publicClient.readContract({
-      address: CONTRACTS.KasturiToken,
-      abi: KasturiTokenABI,
-      functionName: 'timeUntilNextClaim',
-      args: [walletAddress.toLowerCase() as `0x${string}`],
-    });
+    let canClaim = true;
+    let timeUntilNext = 0;
 
-    const faucetAmount = await publicClient.readContract({
-      address: CONTRACTS.KasturiToken,
-      abi: KasturiTokenABI,
-      functionName: 'faucetAmount',
-    });
+    if (lastClaim) {
+      const timeSinceLastClaim = Date.now() - lastClaim.claimedAt.getTime();
+      if (timeSinceLastClaim < FAUCET_COOLDOWN_MS) {
+        canClaim = false;
+        timeUntilNext = Math.ceil((FAUCET_COOLDOWN_MS - timeSinceLastClaim) / 1000);
+      }
+    }
 
     return NextResponse.json({
       canClaim,
-      timeUntilNext: Number(timeUntilNext),
-      faucetAmount: Number(faucetAmount) / 1e18,
+      timeUntilNext,
+      faucetAmount: FAUCET_AMOUNT,
     });
   } catch (error) {
     console.error('Error checking faucet status:', error);

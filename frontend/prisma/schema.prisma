@@ -27,35 +27,62 @@ model User {
   progress           UserProgress[]
   voucherRedemptions VoucherRedemption[]
   credentials        IssuedCredential[]
+  faucetClaims       FaucetClaim[]
 
   @@map("users")
 }
 
 // ============================================================================
-// LEARNING CONTENT (Bahasa Banjar)
+// LEARNING CONTENT
+// Hierarchy: Language (static) → Module → Lesson
 // ============================================================================
 
+// Language Program - represents a language (e.g., Bahasa Banjar)
 model Program {
   id          String   @id @default(cuid())
-  programId   String   @unique @map("program_id") // keccak256 hash for on-chain
-  name        String
+  programId   String   @unique @map("program_id") // keccak256 hash for on-chain credential
+  name        String   // e.g., "Bahasa Banjar"
   description String?
-  language    String   @default("banjar")
-  level       String   @default("beginner") // beginner, intermediate, advanced
+  language    String   @unique @default("banjar") // language code: banjar, jawa, sunda, etc.
+  imageUrl    String?  @map("image_url")
   totalExp    Int      @default(0) @map("total_exp")
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  lessons Lesson[]
+  modules Module[]
 
   @@map("programs")
 }
 
+// Module - a group of lessons within a language (e.g., "Belajar Bahasa Banjar Lewat Lagu")
+model Module {
+  id          String   @id @default(cuid())
+  moduleId    String   @unique @map("module_id") // keccak256 hash for tracking
+  programId   String   @map("program_id")
+  name        String   // e.g., "Belajar Bahasa Banjar Lewat Lagu"
+  description String?
+  imageUrl    String?  @map("image_url")
+  level       String   @default("beginner") // beginner, intermediate, advanced
+  totalExp    Int      @default(0) @map("total_exp")
+  orderIndex  Int      @default(0) @map("order_index")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  program Program  @relation(fields: [programId], references: [id])
+  lessons Lesson[]
+
+  @@unique([programId, orderIndex])
+  @@map("modules")
+}
+
+// Lesson - individual lesson within a module
 model Lesson {
   id           String   @id @default(cuid())
-  programId    String   @map("program_id")
+  moduleId     String   @map("module_id")
   title        String
   description  String?
   content      Json     // Vocabulary, exercises, etc.
@@ -69,10 +96,10 @@ model Lesson {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  program  Program        @relation(fields: [programId], references: [id])
+  module   Module         @relation(fields: [moduleId], references: [id])
   progress UserProgress[]
 
-  @@unique([programId, orderIndex])
+  @@unique([moduleId, orderIndex])
   @@map("lessons")
 }
 
@@ -144,4 +171,23 @@ model IssuedCredential {
 
   @@index([userId])
   @@map("issued_credentials")
+}
+
+// ============================================================================
+// FAUCET CLAIMS (Off-chain cooldown tracking for gasless faucet)
+// ============================================================================
+
+model FaucetClaim {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  walletAddress String   @map("wallet_address")
+  amount        Int      @default(1000) // Tokens claimed
+  txHash        String   @unique @map("tx_hash")
+  claimedAt     DateTime @default(now()) @map("claimed_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([walletAddress])
+  @@map("faucet_claims")
 }

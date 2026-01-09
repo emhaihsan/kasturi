@@ -18,6 +18,7 @@ contract KasturiSBTTest is Test {
     event CredentialIssued(address indexed user, bytes32 indexed programId, uint256 tokenId);
     event OperatorUpdated(address indexed operator, bool status);
     event BaseURIUpdated(string newBaseURI);
+    event TokenURIUpdated(uint256 indexed tokenId, string tokenURI);
 
     function setUp() public {
         sbt = new KasturiSBT();
@@ -74,6 +75,98 @@ contract KasturiSBTTest is Test {
         
         string memory uri = sbt.tokenURI(1);
         assertEq(uri, "https://api.kasturi.id/metadata/1");
+    }
+
+    function test_TokenURI_EmptyWhenNoBaseURIAndNoTokenURI() public {
+        sbt.issueCredential(user1, programBanjar);
+        
+        string memory uri = sbt.tokenURI(1);
+        assertEq(uri, "");
+    }
+
+    function test_TokenURI_RevertIfTokenDoesNotExist() public {
+        vm.expectRevert(KasturiSBT.InvalidProgram.selector);
+        sbt.tokenURI(999);
+    }
+
+    // ============ SetTokenURI Tests ============
+
+    function test_SetTokenURI_ByOwner() public {
+        uint256 tokenId = sbt.issueCredential(user1, programBanjar);
+        string memory metadataUri = "ipfs://QmTest123/metadata.json";
+        
+        vm.expectEmit(true, false, false, true);
+        emit TokenURIUpdated(tokenId, metadataUri);
+        
+        sbt.setTokenURI(tokenId, metadataUri);
+        
+        string memory uri = sbt.tokenURI(tokenId);
+        assertEq(uri, metadataUri);
+    }
+
+    function test_SetTokenURI_ByOperator() public {
+        sbt.setOperator(operator, true);
+        uint256 tokenId = sbt.issueCredential(user1, programBanjar);
+        string memory metadataUri = "ipfs://QmTest456/metadata.json";
+        
+        vm.prank(operator);
+        sbt.setTokenURI(tokenId, metadataUri);
+        
+        string memory uri = sbt.tokenURI(tokenId);
+        assertEq(uri, metadataUri);
+    }
+
+    function test_SetTokenURI_OverridesBaseURI() public {
+        sbt.setBaseURI("https://api.kasturi.id/metadata/");
+        uint256 tokenId = sbt.issueCredential(user1, programBanjar);
+        
+        // Initially uses baseURI
+        assertEq(sbt.tokenURI(tokenId), "https://api.kasturi.id/metadata/1");
+        
+        // After setTokenURI, uses specific URI
+        string memory metadataUri = "ipfs://QmCustom/metadata.json";
+        sbt.setTokenURI(tokenId, metadataUri);
+        assertEq(sbt.tokenURI(tokenId), metadataUri);
+    }
+
+    function test_SetTokenURI_CanUpdateExisting() public {
+        uint256 tokenId = sbt.issueCredential(user1, programBanjar);
+        
+        string memory uri1 = "ipfs://QmFirst/metadata.json";
+        sbt.setTokenURI(tokenId, uri1);
+        assertEq(sbt.tokenURI(tokenId), uri1);
+        
+        // Update to new URI
+        string memory uri2 = "ipfs://QmSecond/metadata.json";
+        sbt.setTokenURI(tokenId, uri2);
+        assertEq(sbt.tokenURI(tokenId), uri2);
+    }
+
+    function test_SetTokenURI_RevertIfUnauthorized() public {
+        uint256 tokenId = sbt.issueCredential(user1, programBanjar);
+        
+        vm.prank(user1);
+        vm.expectRevert(KasturiSBT.UnauthorizedAction.selector);
+        sbt.setTokenURI(tokenId, "ipfs://QmTest/metadata.json");
+    }
+
+    function test_SetTokenURI_RevertIfTokenDoesNotExist() public {
+        vm.expectRevert(KasturiSBT.InvalidProgram.selector);
+        sbt.setTokenURI(999, "ipfs://QmTest/metadata.json");
+    }
+
+    function test_SetTokenURI_MultipleTokens() public {
+        uint256 token1 = sbt.issueCredential(user1, programBanjar);
+        uint256 token2 = sbt.issueCredential(user2, programAmbon);
+        
+        string memory uri1 = "ipfs://QmToken1/metadata.json";
+        string memory uri2 = "ipfs://QmToken2/metadata.json";
+        
+        sbt.setTokenURI(token1, uri1);
+        sbt.setTokenURI(token2, uri2);
+        
+        assertEq(sbt.tokenURI(token1), uri1);
+        assertEq(sbt.tokenURI(token2), uri2);
     }
 
     // ============ Issue Credential Tests ============
@@ -218,5 +311,13 @@ contract KasturiSBTTest is Test {
         
         assertEq(tokenId, 1);
         assertTrue(sbt.hasCredential(user1, programId));
+    }
+
+    function testFuzz_SetTokenURI(string memory metadataUri) public {
+        uint256 tokenId = sbt.issueCredential(user1, programBanjar);
+        
+        sbt.setTokenURI(tokenId, metadataUri);
+        
+        assertEq(sbt.tokenURI(tokenId), metadataUri);
     }
 }

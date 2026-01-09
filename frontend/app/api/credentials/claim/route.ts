@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { issueCredential } from '@/lib/backend-wallet';
+import { issueCredential, setCredentialTokenURI } from '@/lib/backend-wallet';
 
 // POST /api/credentials/claim - Claim credential after completing a program
 export async function POST(request: NextRequest) {
@@ -149,6 +149,15 @@ export async function POST(request: NextRequest) {
       );
       
       console.log('📦 Metadata uploaded:', metadataUrl);
+
+      // Store tokenURI on-chain so wallets can display metadata
+      if (result.tokenId !== null) {
+        console.log('🔗 Setting tokenURI on-chain for tokenId:', result.tokenId.toString());
+        await setCredentialTokenURI(result.tokenId, metadataUrl);
+        console.log('✅ tokenURI set on-chain');
+      } else {
+        console.warn('⚠️ tokenId not found from receipt logs; cannot set tokenURI on-chain');
+      }
       
       // Update credential with metadata URL
       await prisma.issuedCredential.update({

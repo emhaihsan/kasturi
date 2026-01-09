@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 /**
  * @title KasturiSBT
@@ -28,10 +29,14 @@ contract KasturiSBT is ERC721, Ownable {
     // Base URI for metadata
     string private _baseTokenURI;
 
+    // Mapping of tokenId to full tokenURI (ipfs://...)
+    mapping(uint256 => string) private _tokenURIs;
+
     // Events
     event CredentialIssued(address indexed user, bytes32 indexed programId, uint256 tokenId);
     event OperatorUpdated(address indexed operator, bool status);
     event BaseURIUpdated(string newBaseURI);
+    event TokenURIUpdated(uint256 indexed tokenId, string tokenURI);
 
     // Errors
     error UnauthorizedAction();
@@ -81,6 +86,16 @@ contract KasturiSBT is ERC721, Ownable {
     function setBaseURI(string calldata baseURI) external onlyOwner {
         _baseTokenURI = baseURI;
         emit BaseURIUpdated(baseURI);
+    }
+
+    /**
+     * @notice Set tokenURI for a specific tokenId (full URI)
+     * @dev This enables wallets/explorers to fetch metadata directly from on-chain URI
+     */
+    function setTokenURI(uint256 tokenId, string calldata newTokenURI) external onlyAuthorized {
+        if (_ownerOf(tokenId) == address(0)) revert InvalidProgram();
+        _tokenURIs[tokenId] = newTokenURI;
+        emit TokenURIUpdated(tokenId, newTokenURI);
     }
 
     /**
@@ -170,6 +185,25 @@ contract KasturiSBT is ERC721, Ownable {
      */
     function totalCredentials() external view returns (uint256) {
         return _tokenIdCounter - 1;
+    }
+
+    /**
+     * @notice Return token URI (prefers per-token URI when set)
+     */
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        if (_ownerOf(tokenId) == address(0)) revert InvalidProgram();
+
+        string memory uri = _tokenURIs[tokenId];
+        if (bytes(uri).length > 0) {
+            return uri;
+        }
+
+        string memory baseURI = _baseURI();
+        if (bytes(baseURI).length == 0) {
+            return "";
+        }
+
+        return string.concat(baseURI, Strings.toString(tokenId));
     }
 
     /**

@@ -25,7 +25,8 @@ type Tab = 'materi' | 'exercises';
 export default function LessonDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const programId = params.languageId as string;
+  const languageId = params.languageId as string;
+  const moduleId = params.moduleId as string;
   const lessonId = params.lessonId as string;
 
   const { user, updateExerciseScore } = useAppStore();
@@ -50,8 +51,8 @@ export default function LessonDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Pelajaran tidak ditemukan</h1>
-          <Link href="/languages" className="text-emerald-600 hover:underline">
-            Kembali ke daftar bahasa
+          <Link href={`/languages/${languageId}/${moduleId}`} className="text-emerald-600 hover:underline">
+            Kembali ke daftar pelajaran
           </Link>
         </div>
       </div>
@@ -100,7 +101,7 @@ export default function LessonDetailPage() {
     if (!isCompleted) {
       await completeLesson(lesson.id, lesson.expReward);
     }
-    router.push(`/languages/${programId}`);
+    router.push(`/languages/${languageId}/${moduleId}`);
   };
 
   const tabs = [
@@ -114,11 +115,11 @@ export default function LessonDetailPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link
-              href={`/languages/${programId}`}
+              href={`/languages/${languageId}/${moduleId}`}
               className="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">{lesson.program.name}</span>
+              <span className="hidden sm:inline">Kembali ke Modul</span>
             </Link>
 
             <div className="flex items-center gap-2">
@@ -168,34 +169,33 @@ export default function LessonDetailPage() {
         {activeTab === 'materi' && (
           <div className="space-y-8">
             <div>
-
-                   <div className="mb-8">
-              {embedUrl && (
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Play className="w-5 h-5 text-emerald-600" />
-                    Video Pelajaran
-                  </h2>
-                  <Card className="overflow-hidden">
-                    <div className="aspect-video ">
-                      <iframe
-                        src={embedUrl}
-                        title={lesson.title}
-                        className="w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  </Card>
-                </div>
-              )}
-            </div>
+              <div className="mb-8">
+                {embedUrl && (
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <Play className="w-5 h-5 text-emerald-600" />
+                      Video Pelajaran
+                    </h2>
+                    <Card className="overflow-hidden">
+                      <div className="aspect-video">
+                        <iframe
+                          src={embedUrl}
+                          title={lesson.title}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    </Card>
+                  </div>
+                )}
+              </div>
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-emerald-600" />
                 Kosakata Penting
               </h2>
               <div className="space-y-4">
-                {vocabulary.map((vocab, index) => (
+                {vocabulary.map((vocab: any, index: number) => (
                   <Card key={index} className="p-6">
                     <div className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold flex-shrink-0">
@@ -220,7 +220,6 @@ export default function LessonDetailPage() {
               </div>
             </div>
 
-       
             <div className="flex justify-end">
               <Button onClick={() => setActiveTab('exercises')} size="lg">
                 Mulai Latihan
@@ -237,7 +236,7 @@ export default function LessonDetailPage() {
                 Soal {currentExercise + 1} dari {exercises.length}
               </span>
               <div className="flex gap-1">
-                {exercises.map((_, idx) => (
+                {exercises.map((_: any, idx: number) => (
                   <div
                     key={idx}
                     className={`w-8 h-2 rounded-full ${
@@ -256,7 +255,7 @@ export default function LessonDetailPage() {
               <h3 className="text-xl font-semibold text-gray-900 mb-6">{exercise.question}</h3>
 
               <div className="space-y-3 mb-8">
-                {exercise.options?.map((option, idx) => {
+                {exercise.options?.map((option: string, idx: number) => {
                   const isSelected = selectedAnswer === option;
                   const isCorrect = idx === exercise.correct;
                   const showCorrect = showResult && isCorrect;
@@ -286,7 +285,6 @@ export default function LessonDetailPage() {
                   );
                 })}
               </div>
-
 
               <div className="flex justify-end gap-4">
                 {!showResult ? (

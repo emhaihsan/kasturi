@@ -12,12 +12,19 @@ export async function GET(
     const lesson = await prisma.lesson.findUnique({
       where: { id },
       include: {
-        program: {
+        module: {
           select: {
             id: true,
-            programId: true,
+            moduleId: true,
             name: true,
-            language: true,
+            program: {
+              select: {
+                id: true,
+                programId: true,
+                name: true,
+                language: true,
+              },
+            },
           },
         },
       },

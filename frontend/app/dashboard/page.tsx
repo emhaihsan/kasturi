@@ -46,15 +46,14 @@ export default function DashboardPage() {
   ).length;
 
   const languageProgress = programs.map((program) => {
-    const completed = program.lessons.filter((l) => user?.progress[l.id]?.completed).length;
     return {
-      id: program.id,
+      id: program.programId, // Use programId for routing
       name: program.name,
       flag: '🏝️',
-      completed,
-      total: program.lessons.length,
-      progress: program.lessons.length > 0 ? (completed / program.lessons.length) * 100 : 0,
-      comingSoon: false,
+      completed: 0,
+      total: program.lessonCount || 0,
+      progress: 0,
+      comingSoon: program.isActive === false,
     };
   });
 

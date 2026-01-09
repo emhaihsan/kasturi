@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useWallet } from './useWallet';
-import { useWallets } from '@privy-io/react-auth';
-import { CONTRACTS, KasturiTokenABI } from '@/lib/contracts';
 
 interface FaucetStatus {
   canClaim: boolean;
@@ -21,7 +19,6 @@ interface FaucetResult {
 
 export function useFaucet() {
   const { address } = useWallet();
-  const { wallets } = useWallets();
   const [faucetStatus, setFaucetStatus] = useState<FaucetStatus>({
     canClaim: false,
     timeUntilNext: 0,
@@ -52,7 +49,7 @@ export function useFaucet() {
     }
   }, [address]);
 
-  // Claim from faucet - user calls contract directly
+  // Claim from faucet - GASLESS via backend API
   const claimFaucet = useCallback(async (): Promise<FaucetResult> => {
     if (!address) {
       return { success: false, error: 'Wallet not connected' };
@@ -62,36 +59,28 @@ export function useFaucet() {
       return { success: false, error: 'Faucet cooldown active' };
     }
 
-    const wallet = wallets.find(w => w.address.toLowerCase() === address.toLowerCase());
-    if (!wallet) {
-      return { success: false, error: 'Wallet not available' };
-    }
-
     setClaiming(true);
     try {
-      // Get Ethereum provider from Privy wallet
-      const provider = await wallet.getEthereumProvider();
-      
-      // User calls claimFaucet() directly on the contract
-      const tx = await provider.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: address,
-          to: CONTRACTS.KasturiToken,
-          data: '0x4fe15335', // claimFaucet() function selector
-        }],
+      const response = await fetch('/api/tokens/faucet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress: address }),
       });
 
-      console.log('✅ Faucet claim transaction sent:', tx);
+      const data = await response.json();
 
-      // Wait a bit then refresh
-      setTimeout(() => fetchFaucetStatus(), 3000);
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Faucet claim failed' };
+      }
+
+      // Refresh faucet status after successful claim
+      await fetchFaucetStatus();
 
       return {
         success: true,
-        txHash: tx as string,
-        amount: faucetStatus.faucetAmount,
-        explorerUrl: `https://sepolia-blockscout.lisk.com/tx/${tx}`,
+        txHash: data.txHash,
+        amount: data.amount,
+        explorerUrl: data.explorerUrl,
       };
     } catch (error) {
       console.error('Error claiming faucet:', error);
@@ -102,7 +91,7 @@ export function useFaucet() {
     } finally {
       setClaiming(false);
     }
-  }, [address, wallets, faucetStatus.canClaim, faucetStatus.faucetAmount, fetchFaucetStatus]);
+  }, [address, faucetStatus.canClaim, fetchFaucetStatus]);
 
   useEffect(() => {
     if (address) {

@@ -1,7 +1,7 @@
 // Backend Wallet for server-side contract interactions
 // Used for: minting tokens, issuing credentials, granting vouchers
 
-import { createWalletClient, createPublicClient, http, parseUnits } from 'viem';
+import { createWalletClient, createPublicClient, http, parseUnits, decodeEventLog } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { 
   CONTRACTS, 
@@ -134,7 +134,50 @@ export async function issueCredential(
   
   const publicClient = getPublicClient();
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+  let tokenId: bigint | null = null;
+  for (const log of receipt.logs) {
+    try {
+      const decoded = decodeEventLog({
+        abi: KasturiSBTABI,
+        data: log.data,
+        topics: log.topics,
+      });
+
+      if (decoded.eventName === 'CredentialIssued') {
+        const args = decoded.args as unknown as { tokenId: bigint };
+        tokenId = args.tokenId;
+        break;
+      }
+    } catch {
+      // ignore non-matching logs
+    }
+  }
   
+  return {
+    hash,
+    status: receipt.status,
+    blockNumber: receipt.blockNumber,
+    tokenId,
+  };
+}
+
+/**
+ * Set tokenURI for an issued credential tokenId
+ */
+export async function setCredentialTokenURI(tokenId: bigint, tokenURI: string) {
+  const wallet = getBackendWallet();
+
+  const hash = await wallet.writeContract({
+    address: CONTRACTS.KasturiSBT,
+    abi: KasturiSBTABI,
+    functionName: 'setTokenURI',
+    args: [tokenId, tokenURI],
+  });
+
+  const publicClient = getPublicClient();
+  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
   return {
     hash,
     status: receipt.status,

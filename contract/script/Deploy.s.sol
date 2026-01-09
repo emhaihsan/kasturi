@@ -47,11 +47,11 @@ contract DeployScript is Script {
         voucher.createVoucherType("Voucher Makan", FOOD_VOUCHER_PRICE);
         voucher.createVoucherType("Voucher Wisata", TRAVEL_VOUCHER_PRICE);
 
-        // 6. Set base URI for SBT
-        sbt.setBaseURI("https://api.kasturi.id/sbt/");
-
-        // 7. Configure faucet for demo (users can claim free tokens)
+        // 6. Configure faucet for demo (users can claim free tokens)
         token.setFaucetConfig(FAUCET_AMOUNT, FAUCET_COOLDOWN, FAUCET_ENABLED);
+
+        // Note: SBT tokenURI will be set per-token via backend after minting
+        // using setTokenURI(tokenId, ipfsUri) for each credential issued
 
         vm.stopBroadcast();
 

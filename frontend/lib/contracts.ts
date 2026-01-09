@@ -6,10 +6,10 @@ export const RPC_URL = process.env.NEXT_PUBLIC_LISK_RPC_URL || 'https://rpc.sepo
 
 // Contract Addresses (Lisk Sepolia)
 export const CONTRACTS = {
-  KasturiToken: '0x7d04aac310638b6ef69af7c653c400c6265da9b2' as `0x${string}`,
-  KasturiSBT: '0x994275a953074accf218c9b5b77ea55cef00d17b' as `0x${string}`,
-  KasturiVoucher: '0x56331e159abc80d772cc617cb6ed3d5961e566e2' as `0x${string}`,
-  Kasturi: '0x4c3cb569a7178d4704f3a1756d2099ffa4f78144' as `0x${string}`,
+  KasturiToken: '0x7F120b4E0Fa01B425C3FCc8A3F6d29d5E853F342' as `0x${string}`,
+  KasturiSBT: '0x19c9A5AF2d19fC596FcEA5Ce3C35Db1FECd876Ba' as `0x${string}`,
+  KasturiVoucher: '0x7614C13cD1b629262161de25857AEb502cB54499' as `0x${string}`,
+  Kasturi: '0x7c9FC13bFD2AE91e1eE41d0281120A47454a6Eb5' as `0x${string}`,
 } as const;
 
 // Deployer/Backend wallet address
@@ -130,6 +130,13 @@ export const KasturiSBTABI = [
     type: 'function',
   },
   {
+    inputs: [{ name: 'tokenId', type: 'uint256' }],
+    name: 'tokenURI',
+    outputs: [{ name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       { name: 'user', type: 'address' },
       { name: 'programId', type: 'bytes32' },
@@ -178,6 +185,16 @@ export const KasturiSBTABI = [
     ],
     name: 'issueCredential',
     outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { name: 'tokenId', type: 'uint256' },
+      { name: 'newTokenURI', type: 'string' },
+    ],
+    name: 'setTokenURI',
+    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },

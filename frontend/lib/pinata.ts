@@ -49,10 +49,9 @@ export async function uploadSBTMetadata(
   language?: string
 ): Promise<string> {
   const metadata: SBTMetadata = {
-    name: `Kasturi Certificate: ${programName}`,
-    description: `This soulbound credential certifies that ${recipientName} has successfully completed the "${programName}" program on Kasturi, a decentralized language learning platform for regional Indonesian languages.`,
+    name: `Certificate of Completion: ${programName}`,
+    description: `This credential certifies that ${recipientName} has successfully completed the "${programName}" program on Kasturi, a decentralized language learning platform for regional Indonesian languages.`,
     image: certificateImageUrl,
-    external_url: `https://kasturi.app/verify?address=${userAddress}`,
     attributes: [
       {
         trait_type: 'Program',

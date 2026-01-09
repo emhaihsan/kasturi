@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
 
+interface Module {
+  id: string;
+  moduleId: string;
+  name: string;
+  description: string | null;
+  lessons: Lesson[];
+}
+
 interface Program {
   id: string;
   programId: string;
@@ -8,7 +16,10 @@ interface Program {
   language: string;
   level: string;
   totalExp: number;
+  isActive: boolean;
+  lessonCount?: number;
   lessons: Lesson[];
+  modules?: Module[];
 }
 
 interface Lesson {
