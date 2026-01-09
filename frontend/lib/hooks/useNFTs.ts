@@ -40,18 +40,41 @@ export function useNFTs() {
       const data = await response.json();
       const nftList: NFT[] = [];
       
-      data.credentials?.forEach((cred: any) => {
+      // Fetch metadata for each credential if metadataUrl exists
+      for (const cred of data.credentials || []) {
+        let image = '/icon.webp';
+        let name = `${cred.programName} Certificate`;
+        let description = `Soulbound Token for completing ${cred.programName}`;
+
+        // Try to fetch metadata from IPFS if available
+        if (cred.metadataUrl) {
+          try {
+            const metadataUrl = cred.metadataUrl.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
+            const metaResponse = await fetch(metadataUrl);
+            if (metaResponse.ok) {
+              const metadata = await metaResponse.json();
+              if (metadata.name) name = metadata.name;
+              if (metadata.description) description = metadata.description;
+              if (metadata.image) {
+                image = metadata.image.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
+              }
+            }
+          } catch (e) {
+            console.error('Failed to fetch NFT metadata:', e);
+          }
+        }
+
         nftList.push({
           tokenId: cred.id,
           contractAddress: KASTURI_SBT_ADDRESS,
-          name: `${cred.programName} Certificate`,
-          description: `Soulbound Token for completing ${cred.programName}`,
-          image: '/icon.webp',
+          name,
+          description,
+          image,
           txHash: cred.txHash,
           issuedAt: cred.issuedAt,
           type: 'ERC721',
         });
-      });
+      }
 
       setNfts(nftList);
     } catch (error) {

@@ -192,7 +192,16 @@ export default function RewardsPage() {
                 </div>
                 <div>
                   <p className="text-green-100 text-sm">My Vouchers</p>
-                  <p className="text-3xl font-bold">{user?.vouchers?.length || 0}</p>
+                  {loadingVouchers ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <p className="text-2xl font-bold">...</p>
+                    </div>
+                  ) : (
+                    <p className="text-3xl font-bold">
+                      {onChainVouchers.reduce((sum, v) => sum + parseInt(v.userBalance || '0'), 0)}
+                    </p>
+                  )}
                 </div>
               </div>
               <p className="text-green-100 text-sm">
@@ -220,29 +229,48 @@ export default function RewardsPage() {
               <h2 className="text-xl font-bold text-neutral-900">Your Vouchers</h2>
             </CardHeader>
             <CardContent>
-              {user?.vouchers && user.vouchers.length > 0 ? (
+              {loadingVouchers ? (
+                <div className="text-center py-8">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto text-emerald-600 mb-3" />
+                  <p className="text-neutral-500">Loading your vouchers...</p>
+                </div>
+              ) : onChainVouchers.filter(v => parseInt(v.userBalance) > 0).length > 0 ? (
                 <div className="space-y-3">
-                  {user.vouchers.map((voucher) => (
+                  {onChainVouchers.filter(v => parseInt(v.userBalance) > 0).map((voucher) => (
                     <div
                       key={voucher.id}
-                      className={`flex items-center gap-4 p-4 rounded-xl border ${
-                        voucher.redeemed ? 'bg-gray-50 border-gray-200' : 'bg-emerald-50 border-emerald-200'
-                      }`}
+                      className="flex items-center gap-4 p-4 rounded-xl border bg-emerald-50 border-emerald-200"
                     >
-                      <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center">
-                        <Gift className={`w-6 h-6 ${voucher.redeemed ? 'text-neutral-400' : 'text-green-600'}`} />
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-white flex-shrink-0">
+                        <Image
+                          src={getVoucherMetadata(voucher.id).image}
+                          alt={voucher.name}
+                          width={64}
+                          height={64}
+                          className="object-cover w-full h-full"
+                        />
                       </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-neutral-900">{voucher.name}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-neutral-900 truncate">{voucher.name}</p>
                         <p className="text-sm text-neutral-500">
-                          {voucher.redeemed ? 'Redeemed' : 'Active'}
+                          Owned: {voucher.userBalance}
                         </p>
                       </div>
-                      {voucher.redeemed ? (
-                        <Check className="w-5 h-5 text-neutral-400" />
-                      ) : (
-                        <Button size="sm" variant="outline">Redeem</Button>
-                      )}
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        disabled={isRedeeming === voucher.id}
+                        onClick={() => handleRedeemVoucher(voucher)}
+                      >
+                        {isRedeeming === voucher.id ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                            Redeeming...
+                          </>
+                        ) : (
+                          'Redeem'
+                        )}
+                      </Button>
                     </div>
                   ))}
                 </div>

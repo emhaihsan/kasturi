@@ -13,3 +13,5 @@ docs/
 
 # Dotenv file
 .env
+
+UPDATE_VOUCHER_URI.md

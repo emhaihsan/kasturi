@@ -49,10 +49,10 @@ export default function WalletPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Wallet tidak tersedia</h1>
-          <p className="text-gray-600 mb-4">Silakan login terlebih dahulu</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Wallet not available</h1>
+          <p className="text-gray-600 mb-4">Please login first</p>
           <Button onClick={() => router.push('/dashboard')}>
-            Kembali ke Dashboard
+            Back to Dashboard
           </Button>
         </div>
       </div>
@@ -109,7 +109,7 @@ export default function WalletPage() {
             className="inline-flex items-center gap-2 text-emerald-100 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Kembali
+            Back
           </button>
 
           <div className="flex items-center justify-between mb-8">
@@ -118,7 +118,7 @@ export default function WalletPage() {
                 <Wallet className="w-8 h-8" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold mb-1">Wallet Saya</h1>
+                <h1 className="text-3xl font-bold mb-1">My Wallet</h1>
                 <p className="text-emerald-100">
                   {isEmbedded ? 'Embedded Wallet' : 'External Wallet'}
                 </p>
@@ -349,7 +349,7 @@ export default function WalletPage() {
                     <Send className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Kirim ETH</h3>
+                    <h3 className="font-semibold text-gray-900">Send ETH</h3>
                     <p className="text-sm text-gray-500">Coming soon</p>
                   </div>
                 </div>
@@ -361,7 +361,7 @@ export default function WalletPage() {
                     <Download className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Terima ETH</h3>
+                    <h3 className="font-semibold text-gray-900">Receive ETH</h3>
                     <p className="text-sm text-gray-500">Use address above</p>
                   </div>
                 </div>
@@ -424,13 +424,13 @@ export default function WalletPage() {
                     <ImageIcon className="w-8 h-8 text-gray-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Belum ada NFT
+                    No NFTs yet
                   </h3>
                   <p className="text-gray-500 mb-6">
-                    Selesaikan program pembelajaran untuk mendapatkan Soulbound Token
+                    Complete learning programs to earn Soulbound Tokens
                   </p>
                   <Button onClick={() => router.push('/languages')}>
-                    Mulai Belajar
+                    Start Learning
                   </Button>
                 </div>
               </Card>
@@ -440,10 +440,19 @@ export default function WalletPage() {
                   <Card key={nft.tokenId} hover>
                     <div className="p-4">
                       <div className="aspect-square rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 mb-4 flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 opacity-10">
-                          <div className="absolute top-2 left-2 right-2 bottom-2 border-2 border-white rounded-lg" />
-                        </div>
-                        <div className="text-center text-white p-4">
+                        {nft.image && nft.image !== '/icon.webp' ? (
+                          <img 
+                            src={nft.image} 
+                            alt={nft.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to placeholder if image fails to load
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                        ) : null}
+                        <div className={`text-center text-white p-4 ${nft.image && nft.image !== '/icon.webp' ? 'hidden' : ''}`}>
                           <Award className="w-12 h-12 mx-auto mb-2" />
                           <p className="text-xs font-medium">SOULBOUND TOKEN</p>
                         </div>

@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
           programName: program?.name || 'Unknown Program',
           language: program?.language || 'Unknown',
           txHash: cred.txHash,
+          metadataUrl: cred.metadataUrl,
           issuedAt: cred.issuedAt.toISOString(),
           explorerUrl: `https://sepolia-blockscout.lisk.com/tx/${cred.txHash}`,
         };
