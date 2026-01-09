@@ -70,8 +70,8 @@ export function Navbar() {
     router.push('/');
   };
 
-  // Floating navbar untuk landing page
-  if (!isLoggedIn && isLandingPage) {
+  // Floating navbar for landing page (even when logged in)
+  if (isLandingPage) {
     return (
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-4xl">
         <div className="bg-white rounded-2xl shadow-lg border border-neutral-100 px-6 py-4">
@@ -91,12 +91,21 @@ export function Navbar() {
             </div>
 
             <div className="flex items-center gap-3">
-              <button 
-                onClick={handleLogin}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 rounded-full transition-colors"
-              >
-                Connect
-              </button>
+              {isLoggedIn ? (
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 rounded-full transition-colors"
+                >
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <button 
+                  onClick={handleLogin}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 rounded-full transition-colors"
+                >
+                  Connect
+                </button>
+              )}
               <button
                 className="md:hidden p-2 hover:bg-neutral-100 rounded-full transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -163,7 +172,7 @@ export function Navbar() {
                   href="/languages" 
                   className={`px-4 py-2 rounded-full text-sm transition-colors ${pathname.startsWith('/languages') ? 'bg-neutral-100 text-neutral-900 font-medium' : 'text-neutral-600 hover:text-neutral-900'}`}
                 >
-                  Pelajaran
+                  Lessons
                 </Link>
                 <Link 
                   href="/wallet" 
@@ -248,20 +257,20 @@ export function Navbar() {
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50"
                       onClick={() => setIsProfileOpen(false)}
                     >
-                      Pengaturan Profil
+                      Profile Settings
                     </Link>
                     <Link
                       href="/verify"
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50"
                       onClick={() => setIsProfileOpen(false)}
                     >
-                      Verifikasi Sertifikat
+                      Verify Certificate
                     </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 w-full"
                     >
-                      Keluar
+                      Logout
                     </button>
                   </div>
                 )}
@@ -292,7 +301,7 @@ export function Navbar() {
                 className={`block px-4 py-3 rounded-xl text-sm ${pathname.startsWith('/languages') ? 'bg-neutral-100 text-neutral-900 font-medium' : 'text-neutral-600'}`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Pelajaran
+                Lessons
               </Link>
               <Link
                 href="/wallet"
@@ -313,7 +322,7 @@ export function Navbar() {
                   onClick={handleLogout}
                   className="block w-full text-left px-4 py-3 text-sm text-neutral-600 hover:bg-neutral-50 rounded-xl"
                 >
-                  Keluar
+                  Logout
                 </button>
               </div>
             </div>

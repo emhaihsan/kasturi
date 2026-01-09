@@ -22,12 +22,16 @@ export async function GET(request: NextRequest) {
           include: {
             lesson: {
               include: {
-                program: {
-                  select: {
-                    id: true,
-                    programId: true,
-                    name: true,
-                    language: true,
+                module: {
+                  include: {
+                    program: {
+                      select: {
+                        id: true,
+                        programId: true,
+                        name: true,
+                        language: true,
+                      },
+                    },
                   },
                 },
               },
@@ -48,7 +52,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate stats
-    const totalExp = user.progress.reduce((sum, p) => sum + p.expEarned, 0);
+    const totalExp = user.progress.reduce((sum: number, p: any) => sum + p.expEarned, 0);
     const completedLessons = user.progress.length;
 
     // Group by program
@@ -60,13 +64,19 @@ export async function GET(request: NextRequest) {
     }>();
 
     for (const p of user.progress) {
-      const programId = p.lesson.program.id;
+      const program = p.lesson.module.program;
+      const programId = program.id;
       if (!programMap.has(programId)) {
         const totalLessons = await prisma.lesson.count({
-          where: { programId, isActive: true },
+          where: { 
+            module: {
+              programId: programId
+            },
+            isActive: true 
+          },
         });
         programMap.set(programId, {
-          program: p.lesson.program,
+          program: program,
           completedLessons: 0,
           totalLessons,
           expEarned: 0,
@@ -85,7 +95,12 @@ export async function GET(request: NextRequest) {
       },
       totalExp,
       completedLessons,
-      programs: Array.from(programMap.values()),
+      programs: Array.from(programMap.values()).map(p => ({
+        program: p.program,
+        completedLessons: p.completedLessons,
+        totalLessons: p.totalLessons,
+        expEarned: p.expEarned,
+      })),
       recentProgress: user.progress.slice(0, 10),
     });
   } catch (error) {

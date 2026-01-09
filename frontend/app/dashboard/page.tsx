@@ -105,22 +105,22 @@ export default function DashboardPage() {
                     <BookOpen className="w-10 h-10 text-emerald-600" />
                   </div>
                   <h2 className="text-xl font-bold text-neutral-900 mb-2">
-                    Mulai Perjalanan Belajarmu!
+                    Start Your Learning Journey!
                   </h2>
                   <p className="text-neutral-500 mb-6 max-w-md mx-auto">
-                    Kamu belum memulai pelajaran apapun. Pilih bahasa daerah yang ingin kamu pelajari dan mulai petualangan budayamu sekarang!
+                    You haven't started any lessons yet. Choose a regional language you want to learn and begin your cultural adventure now!
                   </p>
                   <Link href="/languages">
                     <Button size="lg" className="px-8">
                       <BookOpen className="w-5 h-5 mr-2" />
-                      Mulai Belajar Sekarang
+                      Start Learning Now
                     </Button>
                   </Link>
                   
                   {/* Available languages preview */}
                   {!programsLoading && languageProgress.length > 0 && (
                     <div className="mt-8 pt-6 border-t border-neutral-100">
-                      <p className="text-sm text-neutral-500 mb-4">Bahasa yang tersedia:</p>
+                      <p className="text-sm text-neutral-500 mb-4">Available languages:</p>
                       <div className="flex flex-wrap justify-center gap-3">
                         {languageProgress.filter(l => !l.comingSoon).map((lang) => (
                           <Link 
@@ -144,10 +144,10 @@ export default function DashboardPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold text-neutral-900">
-                    Progress Belajar
+                    Learning Progress
                   </h2>
                   <Link href="/languages" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
-                    Lihat Semua →
+                    View All →
                   </Link>
                 </div>
               </CardHeader>
@@ -157,7 +157,7 @@ export default function DashboardPage() {
                     <div className="text-center py-8 text-neutral-500">Loading...</div>
                   ) : languageProgress.filter(l => !l.comingSoon).length === 0 ? (
                     <div className="text-center py-8">
-                      <p className="text-neutral-500">Belum ada bahasa tersedia</p>
+                      <p className="text-neutral-500">No languages available yet</p>
                     </div>
                   ) : (
                     languageProgress.filter(l => !l.comingSoon).map((lang) => (
@@ -171,7 +171,7 @@ export default function DashboardPage() {
                                   {lang.name}
                                 </p>
                                 <p className="text-sm text-neutral-500">
-                                  {lang.total} pelajaran tersedia
+                                  {lang.total} lessons available
                                 </p>
                               </div>
                             </div>

@@ -156,7 +156,7 @@ export default function LessonDetailPage() {
           >
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4" />
-              Materi
+              Content
             </div>
           </button>
           <button
@@ -169,7 +169,7 @@ export default function LessonDetailPage() {
           >
             <div className="flex items-center gap-2">
               <Award className="w-4 h-4" />
-              Latihan ({exercises.length})
+              Exercises ({exercises.length})
             </div>
           </button>
         </div>
@@ -297,10 +297,10 @@ export default function LessonDetailPage() {
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <Award className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-3xl font-bold text-emerald-800 mb-2">🎉 Selamat!</h3>
-                <p className="text-emerald-700 mb-2 text-lg">Pelajaran Selesai!</p>
+                <h3 className="text-3xl font-bold text-emerald-800 mb-2">🎉 Congratulations!</h3>
+                <p className="text-emerald-700 mb-2 text-lg">Lesson Completed!</p>
                 <p className="text-emerald-600 mb-6">
-                  Kamu menjawab <span className="font-bold text-emerald-800">{correctAnswers}</span> dari <span className="font-bold">{exercises.length}</span> soal dengan benar
+                  You answered <span className="font-bold text-emerald-800">{correctAnswers}</span> out of <span className="font-bold">{exercises.length}</span> questions correctly
                 </p>
                 
                 <div className="bg-white/80 rounded-xl p-4 mb-6 inline-block">
@@ -314,13 +314,13 @@ export default function LessonDetailPage() {
                   <Link href={`/languages/${languageId}/${moduleId}`}>
                     <Button variant="outline" className="w-full sm:w-auto">
                       <ArrowLeft className="w-4 h-4 mr-2" />
-                      Kembali ke Modul
+                      Back to Module
                     </Button>
                   </Link>
                   <Link href="/dashboard">
                     <Button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700">
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      Lihat Progress
+                      View Progress
                     </Button>
                   </Link>
                 </div>

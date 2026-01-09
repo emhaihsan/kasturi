@@ -77,9 +77,9 @@ export default function ModuleDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Modul tidak ditemukan</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Module not found</h1>
           <Link href={`/languages/${languageId}`} className="text-emerald-600 hover:underline">
-            Kembali ke daftar modul
+            Back to module list
           </Link>
         </div>
       </div>
@@ -95,7 +95,7 @@ export default function ModuleDetailPage() {
             className="inline-flex items-center gap-2 text-emerald-100 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Kembali ke {module.program.name}
+            Back to {module.program.name}
           </Link>
 
           <div className="flex flex-col md:flex-row items-start gap-8">
@@ -115,11 +115,11 @@ export default function ModuleDetailPage() {
               <div className="flex flex-wrap items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-emerald-200" />
-                  <span>{module.lessons.length} Pelajaran</span>
+                  <span>{module.lessons.length} Lessons</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-5 h-5 text-emerald-200" />
-                  <span>~{module.lessons.length * 8} menit</span>
+                  <span>~{module.lessons.length * 8} min</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="w-5 h-5 text-amber-300" />
@@ -132,9 +132,9 @@ export default function ModuleDetailPage() {
           {user && (
             <div className="mt-8 bg-white/10 backdrop-blur rounded-2xl p-6">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-medium">Progress Modul</span>
+                <span className="font-medium">Module Progress</span>
                 <span className="text-emerald-200">
-                  {completedLessons} / {module.lessons.length} Pelajaran
+                  {completedLessons} / {module.lessons.length} Lessons
                 </span>
               </div>
               <div className="h-3 bg-white/20 rounded-full overflow-hidden">
@@ -149,7 +149,7 @@ export default function ModuleDetailPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Daftar Pelajaran</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Lesson List</h2>
 
         <div className="space-y-4">
           {module.lessons.map((lesson, index) => {
@@ -209,7 +209,7 @@ export default function ModuleDetailPage() {
                     {!isLocked && !isCompleted && (
                       <Button size="sm" className="hidden sm:flex">
                         <Play className="w-4 h-4 mr-1" />
-                        Mulai
+                        Start
                       </Button>
                     )}
                   </div>
@@ -222,7 +222,7 @@ export default function ModuleDetailPage() {
         {module.lessons.length === 0 && (
           <div className="text-center py-16">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Belum ada pelajaran dalam modul ini.</p>
+            <p className="text-gray-500">No lessons available in this module yet.</p>
           </div>
         )}
       </div>

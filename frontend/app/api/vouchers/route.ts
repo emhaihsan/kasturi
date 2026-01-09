@@ -16,12 +16,15 @@ export async function GET(request: NextRequest) {
       transport: http(process.env.NEXT_PUBLIC_LISK_RPC_URL),
     });
 
-    // Get next voucher ID to determine count
-    const nextVoucherId = await publicClient.readContract({
+    // Get total voucher types count
+    const totalTypes = await publicClient.readContract({
       address: KASTURI_VOUCHER,
       abi: KasturiVoucherABI.abi,
-      functionName: 'nextVoucherId',
+      functionName: 'totalVoucherTypes',
     }) as bigint;
+    
+    // voucher IDs start from 1, so nextVoucherId = totalTypes + 1
+    const nextVoucherId = totalTypes + 1n;
 
     const voucherTypes = [];
 

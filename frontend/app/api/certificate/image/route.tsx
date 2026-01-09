@@ -259,16 +259,6 @@ export async function POST(req: NextRequest) {
                   {certId}
                 </span>
               </div>
-
-              {/* Right: Blockchain */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>
-                  VERIFIED ON LISK SEPOLIA
-                </span>
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontFamily: 'monospace' }}>
-                  {displayTxHash}
-                </span>
-              </div>
             </div>
           </div>
         </div>

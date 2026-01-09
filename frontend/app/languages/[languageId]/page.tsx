@@ -96,9 +96,9 @@ export default function LanguageDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Bahasa tidak ditemukan</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Language not found</h1>
           <Link href="/languages" className="text-emerald-600 hover:underline">
-            Kembali ke daftar bahasa
+            Back to language list
           </Link>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function LanguageDetailPage() {
             className="inline-flex items-center gap-2 text-emerald-100 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Kembali ke Daftar Bahasa
+            Back to Language List
           </Link>
 
           <div className="flex flex-col md:flex-row items-start gap-8">
@@ -155,11 +155,11 @@ export default function LanguageDetailPage() {
               <div className="flex flex-wrap items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
                   <FolderOpen className="w-5 h-5 text-emerald-200" />
-                  <span>{program.modules.length} Modul</span>
+                  <span>{program.modules.length} Modules</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-emerald-200" />
-                  <span>{totalLessons} Pelajaran</span>
+                  <span>{totalLessons} Lessons</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="w-5 h-5 text-amber-300" />
@@ -172,9 +172,9 @@ export default function LanguageDetailPage() {
           {user && (
             <div className="mt-8 bg-white/10 backdrop-blur rounded-2xl p-6">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-medium">Progress Anda</span>
+                <span className="font-medium">Your Progress</span>
                 <span className="text-emerald-200">
-                  {completedLessons} / {totalLessons} Pelajaran
+                  {completedLessons} / {totalLessons} Lessons
                 </span>
               </div>
               <div className="h-3 bg-white/20 rounded-full overflow-hidden">
@@ -194,8 +194,8 @@ export default function LanguageDetailPage() {
                           <Award className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <p className="font-semibold text-white">Sertifikat Diterbitkan! 🎉</p>
-                          <p className="text-emerald-200 text-sm">Soulbound Token telah dicetak di wallet Anda</p>
+                          <p className="font-semibold text-white">Certificate Issued! 🎉</p>
+                          <p className="text-emerald-200 text-sm">Soulbound Token has been minted to your wallet</p>
                         </div>
                       </div>
                       {credentialTxHash && (
@@ -205,7 +205,7 @@ export default function LanguageDetailPage() {
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-full text-sm transition-colors"
                         >
-                          Lihat di Explorer
+                          View on Explorer
                           <ExternalLink className="w-4 h-4" />
                         </a>
                       )}
@@ -217,8 +217,8 @@ export default function LanguageDetailPage() {
                           <Award className="w-6 h-6 text-amber-300" />
                         </div>
                         <div>
-                          <p className="font-semibold text-white">Selamat! Semua Modul Selesai 🎉</p>
-                          <p className="text-emerald-200 text-sm">Klaim sertifikat Soulbound Token Anda</p>
+                          <p className="font-semibold text-white">Congratulations! All Modules Completed 🎉</p>
+                          <p className="text-emerald-200 text-sm">Claim your Soulbound Token certificate</p>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2">
@@ -235,7 +235,7 @@ export default function LanguageDetailPage() {
                           ) : (
                             <>
                               <Award className="w-4 h-4" />
-                              Cetak Sertifikat
+                              Mint Certificate
                             </>
                           )}
                         </button>
@@ -253,7 +253,7 @@ export default function LanguageDetailPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Pilih Modul Pelajaran</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Choose a Learning Module</h2>
 
         <div className="grid gap-6 md:grid-cols-2">
           {program.modules.map((module) => {
@@ -286,7 +286,7 @@ export default function LanguageDetailPage() {
                     <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
                       <div className="flex items-center gap-1.5">
                         <BookOpen className="w-4 h-4" />
-                        <span>{module.lessonCount} Pelajaran</span>
+                        <span>{module.lessonCount} Lessons</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Star className="w-4 h-4 text-amber-500" />
@@ -299,7 +299,7 @@ export default function LanguageDetailPage() {
 
                     {user && (module.completedLessons || 0) > 0 && (
                       <div className="text-sm text-emerald-600 font-medium">
-                        {module.completedLessons} / {module.lessonCount} pelajaran selesai
+                        {module.completedLessons} / {module.lessonCount} lessons completed
                       </div>
                     )}
                   </div>
@@ -312,7 +312,7 @@ export default function LanguageDetailPage() {
         {program.modules.length === 0 && (
           <div className="text-center py-16">
             <FolderOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Belum ada modul tersedia untuk bahasa ini.</p>
+            <p className="text-gray-500">No modules available for this language yet.</p>
           </div>
         )}
       </div>
