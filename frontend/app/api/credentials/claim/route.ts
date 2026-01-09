@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
     const result = await issueCredential(formattedWallet, formattedProgramId);
     console.log('✅ Credential issued! TxHash:', result.hash);
 
-    // Save to database
+    // Save to database first
     const credential = await prisma.issuedCredential.create({
       data: {
         userId: user.id,
@@ -118,6 +118,47 @@ export async function POST(request: NextRequest) {
         txHash: result.hash,
       },
     });
+
+    // Generate and upload certificate image + metadata to IPFS
+    console.log('📸 Generating certificate image...');
+    try {
+      const { uploadCertificateImage } = await import('@/lib/certificate-generator');
+      const { uploadSBTMetadata } = await import('@/lib/pinata');
+      
+      const certificateImageUrl = await uploadCertificateImage({
+        programName: program.name,
+        recipientName: user.displayName || 'Anonymous Learner',
+        recipientAddress: walletAddress,
+        issuedAt: new Date().toISOString(),
+        txHash: result.hash,
+        language: program.language,
+      });
+      
+      console.log('🖼️ Certificate image uploaded:', certificateImageUrl);
+      
+      // Upload metadata with certificate image
+      const metadataUrl = await uploadSBTMetadata(
+        program.name,
+        program.programId,
+        walletAddress,
+        user.displayName || 'Anonymous Learner',
+        result.hash,
+        new Date(),
+        certificateImageUrl,
+        program.language
+      );
+      
+      console.log('📦 Metadata uploaded:', metadataUrl);
+      
+      // Update credential with metadata URL
+      await prisma.issuedCredential.update({
+        where: { id: credential.id },
+        data: { metadataUrl },
+      });
+    } catch (metadataError) {
+      console.error('⚠️ Failed to upload metadata, but credential was issued:', metadataError);
+      // Continue anyway - credential is already on-chain
+    }
 
     return NextResponse.json({
       success: true,

@@ -136,6 +136,7 @@ model IssuedCredential {
   userId      String   @map("user_id")
   programId   String   @map("program_id")
   txHash      String   @unique @map("tx_hash")
+  metadataUrl String?  @map("metadata_url") // IPFS URL for NFT metadata
   issuedAt    DateTime @default(now()) @map("issued_at")
   
   // Relations

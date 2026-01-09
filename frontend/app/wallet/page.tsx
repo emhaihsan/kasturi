@@ -17,6 +17,7 @@ import {
 import { useWallet } from '@/lib/hooks/useWallet';
 import { useNFTs } from '@/lib/hooks/useNFTs';
 import { useTokenExchange } from '@/lib/hooks/useTokenExchange';
+import { useFaucet } from '@/lib/hooks/useFaucet';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { usePrivy } from '@privy-io/react-auth';
@@ -26,7 +27,8 @@ export default function WalletPage() {
   const { authenticated } = usePrivy();
   const { 
     address, 
-    balanceFormatted, 
+    balanceFormatted,
+    tokenBalanceFormatted, 
     isEmbedded, 
     loading: walletLoading,
     refreshWallet,
@@ -34,11 +36,14 @@ export default function WalletPage() {
   } = useWallet();
   const { nfts, loading: nftsLoading, refreshNFTs } = useNFTs();
   const { expStatus, exchanging, exchangeExpForTokens, refreshExpStatus } = useTokenExchange();
+  const { faucetStatus, claiming: claimingFaucet, claimFaucet, refreshFaucetStatus } = useFaucet();
 
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'tokens' | 'nfts'>('tokens');
   const [exchangeSuccess, setExchangeSuccess] = useState<string | null>(null);
   const [exchangeError, setExchangeError] = useState<string | null>(null);
+  const [faucetSuccess, setFaucetSuccess] = useState<string | null>(null);
+  const [faucetError, setFaucetError] = useState<string | null>(null);
 
   if (!authenticated) {
     return (
@@ -63,7 +68,7 @@ export default function WalletPage() {
   };
 
   const handleRefresh = async () => {
-    await Promise.all([refreshWallet(), refreshNFTs(), refreshExpStatus()]);
+    await Promise.all([refreshWallet(), refreshNFTs(), refreshExpStatus(), refreshFaucetStatus()]);
   };
 
   const handleExchangeExp = async () => {
@@ -78,6 +83,20 @@ export default function WalletPage() {
       setExchangeSuccess(result.explorerUrl || null);
     } else {
       setExchangeError(result.error || 'Exchange failed');
+    }
+  };
+
+  const handleClaimFaucet = async () => {
+    setFaucetError(null);
+    setFaucetSuccess(null);
+
+    const result = await claimFaucet();
+    
+    if (result.success) {
+      setFaucetSuccess(result.explorerUrl || null);
+      await refreshWallet(); // Refresh wallet balance
+    } else {
+      setFaucetError(result.error || 'Faucet claim failed');
     }
   };
 
@@ -192,6 +211,68 @@ export default function WalletPage() {
         {/* Tokens Tab */}
         {activeTab === 'tokens' && (
           <div className="space-y-6">
+            {/* Faucet Card */}
+            <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Download className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Free Token Faucet</h3>
+                      <p className="text-sm text-gray-500">Claim {faucetStatus.faucetAmount} KASTURI tokens</p>
+                    </div>
+                  </div>
+                </div>
+
+                {faucetSuccess && (
+                  <div className="mb-4 p-3 bg-emerald-100 border border-emerald-200 rounded-lg">
+                    <p className="text-sm text-emerald-700">
+                      ✓ Faucet claimed successfully!{' '}
+                      <a href={faucetSuccess} target="_blank" rel="noopener noreferrer" className="underline">
+                        View transaction
+                      </a>
+                    </p>
+                  </div>
+                )}
+
+                {faucetError && (
+                  <div className="mb-4 p-3 bg-red-100 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-700">{faucetError}</p>
+                  </div>
+                )}
+
+                {!faucetStatus.canClaim && faucetStatus.timeUntilNext > 0 && (
+                  <div className="mb-4 p-3 bg-amber-100 border border-amber-200 rounded-lg">
+                    <p className="text-sm text-amber-700">
+                      ⏱️ Next claim available in {Math.ceil(faucetStatus.timeUntilNext / 3600)} hours
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleClaimFaucet}
+                  disabled={claimingFaucet || !faucetStatus.canClaim}
+                  className="w-full"
+                >
+                  {claimingFaucet ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Claiming...
+                    </>
+                  ) : faucetStatus.canClaim ? (
+                    `Claim ${faucetStatus.faucetAmount} KASTURI`
+                  ) : (
+                    'Faucet on Cooldown'
+                  )}
+                </Button>
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  Free tokens every 24 hours
+                </p>
+              </div>
+            </Card>
+
             {/* EXP Exchange Card */}
             <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
               <div className="p-6">
@@ -290,7 +371,26 @@ export default function WalletPage() {
             <Card>
               <div className="p-6">
                 <h3 className="font-semibold text-gray-900 mb-4">Token Holdings</h3>
-                <div className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0">
+                
+                {/* KASTURI Token */}
+                <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                      <span className="text-lg font-bold text-amber-600">K</span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Kasturi Token</p>
+                      <p className="text-sm text-gray-500">KSTR</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-amber-600">{tokenBalanceFormatted}</p>
+                    <p className="text-sm text-gray-500">Lisk Sepolia</p>
+                  </div>
+                </div>
+
+                {/* ETH */}
+                <div className="flex items-center justify-between py-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                       <span className="text-lg">Ξ</span>

@@ -42,13 +42,17 @@ export async function uploadSBTMetadata(
   programName: string,
   programId: string,
   userAddress: string,
-  completionDate: Date
+  recipientName: string,
+  txHash: string,
+  completionDate: Date,
+  certificateImageUrl: string,
+  language?: string
 ): Promise<string> {
   const metadata: SBTMetadata = {
     name: `Kasturi Certificate: ${programName}`,
-    description: `This soulbound credential certifies that the holder has successfully completed the "${programName}" program on Kasturi, a decentralized language learning platform for regional Indonesian languages.`,
-    image: `ipfs://bafkreiexample/kasturi-certificate.png`, // Replace with actual image
-    external_url: `https://kasturi.app/verify/${userAddress}/${programId}`,
+    description: `This soulbound credential certifies that ${recipientName} has successfully completed the "${programName}" program on Kasturi, a decentralized language learning platform for regional Indonesian languages.`,
+    image: certificateImageUrl,
+    external_url: `https://kasturi.app/verify?address=${userAddress}`,
     attributes: [
       {
         trait_type: 'Program',
@@ -59,8 +63,20 @@ export async function uploadSBTMetadata(
         value: programId,
       },
       {
+        trait_type: 'Recipient',
+        value: recipientName,
+      },
+      {
         trait_type: 'Completion Date',
         value: completionDate.toISOString().split('T')[0],
+      },
+      {
+        trait_type: 'Language',
+        value: language || 'Unknown',
+      },
+      {
+        trait_type: 'Transaction Hash',
+        value: txHash,
       },
       {
         trait_type: 'Platform',
@@ -68,7 +84,7 @@ export async function uploadSBTMetadata(
       },
       {
         trait_type: 'Network',
-        value: 'Lisk',
+        value: 'Lisk Sepolia',
       },
       {
         trait_type: 'Type',

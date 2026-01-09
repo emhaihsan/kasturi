@@ -48,10 +48,12 @@ export async function POST(request: NextRequest) {
 
       if (!user) {
         // Create new user with wallet
+        // IMPORTANT: Only set email if this is an embedded wallet (email login)
+        // External wallet login should NOT have email field populated
         user = await prisma.user.create({
           data: {
             walletAddress: normalizedWallet,
-            email: email || null,
+            email: null, // Never auto-populate email for wallet login
             displayName: displayName || null,
           },
           include: {
@@ -70,28 +72,8 @@ export async function POST(request: NextRequest) {
             credentials: true,
           },
         });
-      } else if (email && !user.email) {
-        // Update email if user logged in with wallet first, then connected email
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { email, displayName: displayName || user.displayName },
-          include: {
-            progress: {
-              include: {
-                lesson: {
-                  select: {
-                    id: true,
-                    title: true,
-                    expReward: true,
-                    programId: true,
-                  },
-                },
-              },
-            },
-            credentials: true,
-          },
-        });
       }
+      // Do NOT update email for existing wallet users
     } else if (email) {
       // Email-only login (Privy creates embedded wallet)
       user = await prisma.user.findFirst({
