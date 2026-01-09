@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kasturi Frontend
 
-## Getting Started
+This package contains the Kasturi web app (Next.js). It includes the learner UI, wallet and rewards screens, and server-side API routes for database access and contract interactions.
 
-First, run the development server:
+---
+
+## Tech Stack
+
+- Next.js 16 (App Router)
+- React 19
+- TypeScript
+- Prisma (PostgreSQL)
+- Viem (EVM / Lisk Sepolia)
+- Privy (authentication + wallets)
+
+---
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+The app will be available at:
+
+- `http://localhost:3000`
+
+---
+
+## Environment Variables
+
+Copy the example file and fill in values:
+
+```bash
+cp .env.example .env.local
+```
+
+Minimum required variables:
+
+- `DATABASE_URL`
+- `NEXT_PUBLIC_PRIVY_APP_ID`
+- `NEXT_PUBLIC_LISK_RPC_URL`
+- `NEXT_PUBLIC_LISK_CHAIN_ID`
+- `NEXT_PUBLIC_KASTURI_TOKEN`
+- `NEXT_PUBLIC_KASTURI_SBT`
+- `NEXT_PUBLIC_KASTURI_VOUCHER`
+- `NEXT_PUBLIC_KASTURI_MAIN`
+- `BACKEND_PRIVATE_KEY`
+- `BACKEND_ADDRESS`
+
+Optional (for certificate metadata uploads):
+
+- `PINATA_API_KEY` / `PINATA_SECRET_KEY` or `PINATA_JWT`
+- `NEXT_PUBLIC_PINATA_GATEWAY`
+
+---
+
+## Useful Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Database / Prisma:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run db:studio
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Voucher Metadata (ERC-1155)
 
-To learn more about Next.js, take a look at the following resources:
+The ERC-1155 voucher contract uses a base URI. Wallets and explorers resolve metadata by calling the URI with the voucher ID.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This app exposes:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `GET /api/voucher/[id]` (ERC-1155-compatible metadata JSON)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

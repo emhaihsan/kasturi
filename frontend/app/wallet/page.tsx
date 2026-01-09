@@ -454,7 +454,7 @@ export default function WalletPage() {
                         ) : null}
                         <div className={`text-center text-white p-4 ${nft.image && nft.image !== '/icon.webp' ? 'hidden' : ''}`}>
                           <Award className="w-12 h-12 mx-auto mb-2" />
-                          <p className="text-xs font-medium">SOULBOUND TOKEN</p>
+                          <p className="text-xs font-medium">Credential</p>
                         </div>
                       </div>
                       <h3 className="font-semibold text-gray-900 mb-1">

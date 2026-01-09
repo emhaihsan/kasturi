@@ -1,15 +1,21 @@
 # Kasturi Smart Contracts
 
-Smart contracts for Kasturi - a platform for learning Indonesian regional languages with verifiable on-chain credentials.
+Foundry workspace for the Kasturi protocol on Lisk (EVM).
 
-## Overview
+Kasturi uses smart contracts to:
 
-Kasturi uses blockchain technology to issue verifiable learning credentials:
+- Issue non-transferable learning credentials (SBT)
+- Mint and redeem ERC-1155 vouchers
+- Manage the utility token used to purchase vouchers
 
-- **KasturiEXP** - EXP ledger for tracking learning progress
-- **KasturiSBT** - Soulbound Token (non-transferable) for learning credentials
-- **KasturiUtility** - Utility NFT for rewards and vouchers
-- **Kasturi** - Main coordinator contract
+---
+
+## Contracts
+
+- **KasturiToken**: ERC-20 utility token (KSTR)
+- **KasturiSBT**: Soulbound credential token (non-transferable)
+- **KasturiVoucher**: ERC-1155 voucher contract
+- **Kasturi**: main coordinator contract
 
 ## Architecture
 
@@ -29,22 +35,21 @@ Kasturi uses blockchain technology to issue verifiable learning credentials:
 
 ## User Flow
 
-1. **Learn** - Complete lessons, earn EXP
-2. **Claim Credential** - Meet EXP requirement, claim SBT certificate
-3. **Earn Rewards** - Spend EXP to mint Utility NFTs (vouchers)
-4. **Redeem** - Redeem Utility NFTs for real benefits
-5. **Verify** - Anyone can verify credentials publicly
+1. **Learn**: complete lessons in the app.
+2. **Claim Credential**: once requirements are met, the backend issues an SBT.
+3. **Get Rewards**: users can purchase vouchers using KSTR.
+4. **Redeem**: vouchers are redeemed by burning ERC-1155 balances.
+5. **Verify**: credentials and vouchers can be verified in a block explorer.
+
+## Prerequisites
+
+- Foundry (`forge`, `cast`)
+- A funded EVM wallet on the target network (Lisk Sepolia for testing)
 
 ## Setup
 
 ```bash
-# Install dependencies
 forge install
-
-# Copy environment file
-cp .env.example .env
-
-# Edit .env with your private key
 ```
 
 ## Build & Test
@@ -63,76 +68,54 @@ forge test -vvv
 forge coverage
 ```
 
-## Deploy to Lisk Sepolia Testnet
+## Deploy (Lisk Sepolia)
 
 ```bash
-# Load environment variables
-source .env
+export PRIVATE_KEY=<YOUR_PRIVATE_KEY>
 
-# Deploy
 forge script script/Deploy.s.sol:DeployScript \
   --rpc-url https://rpc.sepolia-api.lisk.com \
-  --broadcast \
-  --verify
-
-# Or with explicit private key
-forge script script/Deploy.s.sol:DeployScript \
-  --rpc-url https://rpc.sepolia-api.lisk.com \
-  --private-key $PRIVATE_KEY \
   --broadcast
 ```
 
-## Deploy to Lisk Mainnet
+## Scripts
+
+### Update ERC-1155 Voucher Metadata URI
+
+ERC-1155 vouchers use a base URI for metadata (name, description, image). Wallets and explorers use this to display voucher details.
+
+Script:
+
+- `script/SetVoucherURI.s.sol`
+
+Usage:
 
 ```bash
-forge script script/Deploy.s.sol:DeployScript \
-  --rpc-url https://rpc.api.lisk.com \
-  --broadcast \
-  --verify
+export PRIVATE_KEY=<YOUR_PRIVATE_KEY>
+
+forge script script/SetVoucherURI.s.sol:SetVoucherURIScript \
+  --rpc-url https://rpc.sepolia-api.lisk.com \
+  --broadcast
 ```
+
+More details: `UPDATE_VOUCHER_URI.md`
 
 ## Contract Addresses
 
 After deployment, update these addresses:
 
-| Contract | Lisk Sepolia | Lisk Mainnet |
-|----------|--------------|--------------|
-| KasturiEXP | TBD | TBD |
-| KasturiSBT | TBD | TBD |
-| KasturiUtility | TBD | TBD |
-| Kasturi | TBD | TBD |
+| Contract | Lisk Sepolia | Notes |
+|----------|--------------|------|
+| KasturiToken | TBD | ERC-20 token (KSTR) |
+| KasturiSBT | TBD | Soulbound credential |
+| KasturiVoucher | TBD | ERC-1155 vouchers |
+| Kasturi | TBD | Main coordinator |
 
-## Verification on Blockscout
+## Block Explorer
 
-Contracts are automatically verified during deployment with `--verify` flag.
+Lisk Sepolia Blockscout:
 
-Manual verification:
-```bash
-forge verify-contract <CONTRACT_ADDRESS> src/Kasturi.sol:Kasturi \
-  --chain-id 4202 \
-  --verifier blockscout \
-  --verifier-url https://sepolia-blockscout.lisk.com/api
-```
-
-## Key Functions
-
-### For Backend (Owner Only)
-- `completeLessonForUser(user, programId, expAmount)` - Award EXP after lesson completion
-
-### For Users
-- `claimCredential(programId)` - Claim SBT after meeting requirements
-- `mintUtilityWithEXP(utilityType)` - Spend EXP to mint utility NFT
-
-### For Verification (Public)
-- `verifyCompletion(user, programId)` - Check if user completed a program
-- `getUserLearningStatus(user, programId)` - Get user's learning status
-
-## Program IDs
-
-| Program | ID (bytes32) |
-|---------|--------------|
-| Bahasa Banjar | `keccak256("banjar")` |
-| Bahasa Ambon | `keccak256("ambon")` |
+- https://sepolia-blockscout.lisk.com
 
 ## Security
 

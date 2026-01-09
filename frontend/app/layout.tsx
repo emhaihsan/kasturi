@@ -15,11 +15,20 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
 export const metadata: Metadata = {
-  title: "Kasturi - Belajar Bahasa Daerah Indonesia",
-  description: "Platform pembelajaran bahasa daerah Indonesia dengan sertifikasi on-chain terverifikasi. Belajar Bahasa Banjar, Ambon, dan lainnya.",
-  keywords: ["bahasa daerah", "belajar bahasa", "indonesia", "banjar", "ambon", "sertifikat", "blockchain", "lisk"],
+  title: "Kasturi - Learn Indonesian Regional Languages",
+  description:
+    "A learning platform for Indonesian regional languages with verifiable on-chain certification. Learn Banjar, Ambon, and more.",
+  keywords: [
+    "regional languages",
+    "language learning",
+    "Indonesia",
+    "Banjar",
+    "Ambon",
+    "certificate",
+    "blockchain",
+    "Lisk",
+  ],
   icons: {
     icon: "/icon.ico",
   },

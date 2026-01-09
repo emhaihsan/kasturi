@@ -195,7 +195,7 @@ export default function LanguageDetailPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-white">Certificate Issued! 🎉</p>
-                          <p className="text-emerald-200 text-sm">Soulbound Token has been minted to your wallet</p>
+                          <p className="text-emerald-200 text-sm">Credential has been minted to your wallet</p>
                         </div>
                       </div>
                       {credentialTxHash && (
