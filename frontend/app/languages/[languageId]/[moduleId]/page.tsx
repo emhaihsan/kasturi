@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Clock, Star, CheckCircle, Lock, Play } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Star, CheckCircle, Lock, Play, Award, Loader2, ExternalLink } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { useCredential } from '@/lib/hooks/useCredential';
+import { useWallet } from '@/lib/hooks/useWallet';
 
 interface Lesson {
   id: string;
@@ -28,6 +30,7 @@ interface Module {
   lessons: Lesson[];
   program: {
     id: string;
+    programId: string;
     name: string;
     language: string;
   };
@@ -41,6 +44,12 @@ export default function ModuleDetailPage() {
   
   const [module, setModule] = useState<Module | null>(null);
   const [loading, setLoading] = useState(true);
+  const { claimCredential, claiming, checkCredential } = useCredential();
+  const { getExplorerUrl } = useWallet();
+  const [hasCredential, setHasCredential] = useState(false);
+  const [credentialTxHash, setCredentialTxHash] = useState<string | null>(null);
+  const [mintError, setMintError] = useState<string | null>(null);
+  const [mintSuccess, setMintSuccess] = useState(false);
 
   // Fetch module with lessons
   useEffect(() => {
@@ -64,6 +73,36 @@ export default function ModuleDetailPage() {
     (lesson) => user?.progress[lesson.id]?.completed
   ).length || 0;
   const progress = module?.lessons.length ? (completedLessons / module.lessons.length) * 100 : 0;
+  const isModuleComplete = !!module?.lessons.length && completedLessons === module.lessons.length;
+
+  // Check if user has credential when module is complete
+  useEffect(() => {
+    if (isModuleComplete && module?.program?.programId) {
+      checkCredential(module.program.programId).then((result) => {
+        setHasCredential(result.hasCredential);
+        if (result.txHash) {
+          setCredentialTxHash(result.txHash);
+        }
+      });
+    }
+  }, [isModuleComplete, module?.program?.programId, checkCredential]);
+
+  const handleMintCertificate = async () => {
+    if (!module?.program?.programId) return;
+    
+    setMintError(null);
+    setMintSuccess(false);
+    
+    const result = await claimCredential(module.program.programId);
+    
+    if (result.success && result.credential) {
+      setMintSuccess(true);
+      setHasCredential(true);
+      setCredentialTxHash(result.credential.txHash);
+    } else {
+      setMintError(result.error || 'Failed to mint certificate');
+    }
+  };
 
   if (loading) {
     return (
@@ -143,6 +182,72 @@ export default function ModuleDetailPage() {
                   style={{ width: `${progress}%` }}
                 />
               </div>
+
+              {/* Mint Certificate Section */}
+              {isModuleComplete && (
+                <div className="mt-6 pt-6 border-t border-white/20">
+                  {hasCredential || mintSuccess ? (
+                    <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
+                          <CheckCircle className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-white">Certificate Minted!</p>
+                          <p className="text-sm text-emerald-200">Your on-chain credential has been issued</p>
+                        </div>
+                      </div>
+                      {credentialTxHash && (
+                        <a
+                          href={getExplorerUrl(credentialTxHash, 'tx')}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 w-full py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors"
+                        >
+                          View on Explorer
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                          <Award className="w-6 h-6 text-amber-300" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-white mb-1">Claim Your Certificate</h3>
+                          <p className="text-sm text-emerald-100">
+                            You've completed all lessons! Mint your Soulbound Token certificate on-chain.
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={handleMintCertificate}
+                        disabled={claiming}
+                        className="w-full bg-white text-emerald-700 hover:bg-emerald-100 disabled:bg-white disabled:text-emerald-400"
+                      >
+                        {claiming ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin text-emerald-700" />
+                            <span className="text-emerald-700">Minting Certificate...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Award className="w-5 h-5 mr-2 text-emerald-700" />
+                            <span className="text-emerald-700">Mint Certificate (Free)</span>
+                          </>
+                        )}
+                      </Button>
+                      {mintError && (
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                          <p className="text-red-200 text-sm">{mintError}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

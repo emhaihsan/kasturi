@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { usePrivy } from '@privy-io/react-auth';
-import { Menu, X, User, Wallet, ExternalLink, Coins } from 'lucide-react';
+import { Menu, X, User, Wallet, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useAppStore } from '@/lib/store';
 import { useWallet } from '@/lib/hooks/useWallet';
@@ -16,7 +16,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { login, logout, authenticated, user: privyUser, ready } = usePrivy();
   const { user, setUser, setAuthenticated, isAuthenticated } = useAppStore();
-  const { address, balanceFormatted, tokenBalanceFormatted, isEmbedded, getExplorerUrl, refreshWallet } = useWallet();
+  const { address, balanceFormatted, isEmbedded, getExplorerUrl } = useWallet();
 
   const isLandingPage = pathname === '/';
   const isLoggedIn = authenticated || isAuthenticated;
@@ -190,16 +190,6 @@ export function Navbar() {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              {/* KASTURI Token Balance */}
-              <Link
-                href="/wallet"
-                className="flex items-center gap-2 px-3 py-2 bg-amber-50 hover:bg-amber-100 rounded-full text-sm transition-colors"
-                title="KASTURI Token Balance"
-              >
-                <Coins className="w-4 h-4 text-amber-600" />
-                <span className="font-medium text-amber-700">{tokenBalanceFormatted} KSTR</span>
-              </Link>
-
               {/* ETH Balance */}
               {address && (
                 <a

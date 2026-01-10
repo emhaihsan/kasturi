@@ -75,15 +75,10 @@ export default function DashboardPage() {
             </Link>
           </div>
         </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           <div className="p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-shadow">
             <p className="text-xs text-neutral-500 mb-1">Total EXP</p>
             <p className="text-2xl font-bold text-neutral-900">{user?.totalExp || 0}</p>
-          </div>
-          <div className="p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-shadow">
-            <p className="text-xs text-neutral-500 mb-1">Tokens</p>
-            <p className="text-2xl font-bold text-neutral-900">{user?.tokenBalance || 0}</p>
           </div>
           <div className="p-5 bg-neutral-50 rounded-2xl hover:shadow-lg transition-shadow">
             <p className="text-xs text-neutral-500 mb-1">Lessons</p>

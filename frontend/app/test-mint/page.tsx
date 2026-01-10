@@ -56,7 +56,7 @@ export default function TestMintPage() {
   // Generate local preview without IPFS upload
   const handleGeneratePreview = async () => {
     if (!walletAddress || !programName || !recipientName) {
-      alert('Lengkapi semua field yang diperlukan');
+      alert('Please fill in all required fields');
       return;
     }
 
@@ -86,7 +86,7 @@ export default function TestMintPage() {
       setPreviewUrl(objectUrl);
       setIpfsUrl(null);
     } catch (error) {
-      alert('❌ Gagal generate preview: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      alert('❌ Failed to generate preview: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setGeneratingPng(false);
     }
@@ -94,7 +94,7 @@ export default function TestMintPage() {
 
   const handleMint = async () => {
     if (!walletAddress || !programName || !recipientName) {
-      setResult({ success: false, error: 'Lengkapi semua field yang diperlukan' });
+      setResult({ success: false, error: 'Please fill in all required fields' });
       return;
     }
 
@@ -157,18 +157,18 @@ export default function TestMintPage() {
           </p>
           <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-full text-amber-700 text-sm">
             <AlertCircle className="w-4 h-4" />
-            Testing only - tidak perlu menyelesaikan pelajaran
+            Testing only - no lesson completion required
           </div>
         </div>
 
         <Card>
           <CardContent className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Data Sertifikat</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Certificate Data</h2>
             
             <div className="space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Program
+                  Program Name
                 </label>
                 <input
                   type="text"
@@ -181,7 +181,7 @@ export default function TestMintPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Penerima
+                  Recipient Name
                 </label>
                 <input
                   type="text"
@@ -194,7 +194,7 @@ export default function TestMintPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bahasa
+                  Language
                 </label>
                 <select
                   value={language}
@@ -209,7 +209,7 @@ export default function TestMintPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Wallet Address Penerima
+                  Recipient Wallet Address
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -281,7 +281,7 @@ export default function TestMintPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-blue-800">PNG Generated!</h3>
-                  <p className="text-sm text-blue-600">Preview sertifikat berhasil dibuat</p>
+                  <p className="text-sm text-blue-600">Certificate preview generated successfully</p>
                 </div>
               </div>
 
@@ -311,8 +311,8 @@ export default function TestMintPage() {
                       <Check className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-emerald-800">Minting Berhasil!</h3>
-                      <p className="text-sm text-emerald-600">SBT telah diterbitkan dengan metadata lengkap</p>
+                      <h3 className="font-semibold text-emerald-800">Minting Successful!</h3>
+                      <p className="text-sm text-emerald-600">SBT has been issued with complete metadata</p>
                     </div>
                   </div>
 
@@ -385,7 +385,7 @@ export default function TestMintPage() {
                     <AlertCircle className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-red-800">Minting Gagal</h3>
+                    <h3 className="font-semibold text-red-800">Minting Failed</h3>
                     <p className="text-sm text-red-600">{result.error}</p>
                   </div>
                 </div>
@@ -396,26 +396,26 @@ export default function TestMintPage() {
 
         <Card className="mt-6">
           <CardContent className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Flow Test Minting</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">Minting Test Flow</h3>
             <div className="space-y-3 text-sm text-gray-600">
-              <p><strong>Tombol 1: Generate & Preview PNG (Local)</strong></p>
+              <p><strong>Button 1: Generate & Preview PNG (Local)</strong></p>
               <ol className="list-decimal list-inside space-y-1 ml-2">
-                <li>Generate certificate PNG menggunakan @vercel/og</li>
-                <li>Preview langsung tanpa upload ke IPFS</li>
-                <li>Download PNG ke komputer</li>
+                <li>Generate certificate PNG using @vercel/og</li>
+                <li>Preview directly without uploading to IPFS</li>
+                <li>Download PNG to your computer</li>
               </ol>
               
-              <p className="pt-3"><strong>Tombol 2: Mint SBT (Full Flow)</strong></p>
+              <p className="pt-3"><strong>Button 2: Mint SBT (Full Flow)</strong></p>
               <ol className="list-decimal list-inside space-y-1 ml-2">
-                <li>Mint SBT on-chain ke wallet penerima</li>
-                <li>Generate & upload certificate PNG ke IPFS</li>
-                <li>Upload metadata JSON ke IPFS</li>
+                <li>Mint SBT on-chain to recipient wallet</li>
+                <li>Generate & upload certificate PNG to IPFS</li>
+                <li>Upload metadata JSON to IPFS</li>
                 <li>Set tokenURI on-chain</li>
-                <li>Simpan record di database</li>
+                <li>Save record to database</li>
               </ol>
               
               <p className="mt-4 text-amber-600">
-                ⚠️ SBT bersifat Soulbound - tidak dapat di-transfer setelah diterbitkan.
+                ⚠️ SBT is Soulbound - it cannot be transferred after issuance.
               </p>
             </div>
           </CardContent>

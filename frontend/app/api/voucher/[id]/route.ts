@@ -27,10 +27,10 @@ const VOUCHER_METADATA: Record<string, {
     ],
   },
   '3': {
-    name: 'Gratis 1 Mangkok Soto Bang Amat Bawah Jembatan',
-    description: 'Nikmati semangkuk soto Banjar autentik gratis di warung legendaris Bang Amat di bawah jembatan. Soto Banjar terkenal dengan kuah bening yang gurih, perkedel, dan telur rebus.',
+    name: 'Free Bowl of Soto Banjar at Bang Amat',
+    description: 'Enjoy a free bowl of authentic Soto Banjar at the legendary Bang Amat stall under the bridge. Soto Banjar is famous for its savory clear broth, potato fritters, and boiled eggs.',
     image: '/sotobanjar.jpg',
-    external_url: 'https://kasturi.id/voucher/3',
+    external_url: 'https://kasturi.fun/rewards',
     attributes: [
       { trait_type: 'Type', value: 'Food' },
       { trait_type: 'Discount', value: '100%' },
@@ -39,22 +39,22 @@ const VOUCHER_METADATA: Record<string, {
     ],
   },
   '4': {
-    name: 'Diskon 50% Wisata Phinisi Sungai Barito',
-    description: 'Jelajahi keindahan Sungai Barito dengan perahu Phinisi tradisional. Nikmati pemandangan sunset yang menakjubkan dan pengalaman berlayar yang tak terlupakan dengan diskon 50%.',
+    name: '50% Off Phinisi Boat Tour on Barito River',
+    description: 'Explore the beauty of Barito River on a traditional Phinisi boat. Enjoy stunning sunset views and an unforgettable sailing experience at 50% off.',
     image: '/phinisi.jpg',
-    external_url: 'https://kasturi.id/voucher/4',
+    external_url: 'https://kasturi.fun/rewards',
     attributes: [
       { trait_type: 'Type', value: 'Tourism' },
       { trait_type: 'Discount', value: '50%' },
-      { trait_type: 'Location', value: 'Sungai Barito' },
+      { trait_type: 'Location', value: 'Barito River' },
       { trait_type: 'Price', value: '300 KSTR' },
     ],
   },
   '5': {
-    name: 'Diskon 30% Sewa Perahu ke Pasar Terapung Lok Baintan',
-    description: 'Kunjungi pasar terapung legendaris Lok Baintan dengan diskon 30% sewa perahu. Nikmati suasana pasar tradisional di atas air yang sudah ada sejak ratusan tahun lalu.',
+    name: '30% Off Boat Rental to Lok Baintan Floating Market',
+    description: 'Visit the legendary Lok Baintan floating market with 30% off boat rental. Experience the traditional market on water that has existed for hundreds of years.',
     image: '/pasarterapung.jpg',
-    external_url: 'https://kasturi.id/voucher/5',
+    external_url: 'https://kasturi.fun/rewards',
     attributes: [
       { trait_type: 'Type', value: 'Tourism' },
       { trait_type: 'Discount', value: '30%' },

@@ -21,6 +21,7 @@ export async function GET(
         program: {
           select: {
             id: true,
+            programId: true,
             name: true,
             language: true,
           },

@@ -56,15 +56,6 @@ Public verification (Blockscout + app UI)
 
 **Trust boundary:** the app decides *when* someone completes; the chain proves *that* completion was issued.
 
----
-
-## Demo Flow (Judge-friendly)
-
-1. Learn a short lesson
-2. See progress tracked in the UI
-3. Claim a completion credential (SBT)
-4. Purchase/redeem a voucher (ERC-1155)
-5. Verify everything publicly on the explorer
 
 ---
 

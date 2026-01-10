@@ -11,12 +11,12 @@ import "../src/KasturiVoucher.sol";
  */
 contract SetVoucherURIScript is Script {
     // Deployed voucher contract address on Lisk Sepolia
-    address constant VOUCHER_ADDRESS = 0x56331e159abc80d772cc617cb6ed3d5961e566e2;
+    address constant VOUCHER_ADDRESS = 0x7614C13cD1b629262161de25857AEb502cB54499;
     
     // New metadata URI - points to our API endpoint
     // The {id} placeholder will be replaced by the token ID by ERC-1155 clients
-    // Example: For token ID 3, it becomes: https://kasturi.vercel.app/api/voucher/3
-    string constant NEW_URI = "https://kasturi.vercel.app/api/voucher/{id}";
+    // Example: For token ID 3, it becomes: https://kasturi.fun/api/voucher/3
+    string constant NEW_URI = "https://kasturi.fun/api/voucher/{id}";
 
     function run() external {
         // Get deployer private key from environment

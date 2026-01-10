@@ -30,10 +30,10 @@ export default function SettingsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Pengaturan tidak tersedia</h1>
-          <p className="text-gray-600 mb-4">Silakan login terlebih dahulu</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Settings unavailable</h1>
+          <p className="text-gray-600 mb-4">Please login first</p>
           <Button onClick={() => router.push('/dashboard')}>
-            Kembali ke Dashboard
+            Back to Dashboard
           </Button>
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function SettingsPage() {
             className="inline-flex items-center gap-2 text-emerald-100 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Kembali
+            Back
           </button>
 
           <div className="flex items-center gap-4">
@@ -95,8 +95,8 @@ export default function SettingsPage() {
               <User className="w-8 h-8" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold mb-1">Pengaturan Profil</h1>
-              <p className="text-emerald-100">Atur nama tampilan Anda</p>
+              <h1 className="text-3xl font-bold mb-1">Profile Settings</h1>
+              <p className="text-emerald-100">Manage your display name</p>
             </div>
           </div>
         </div>
@@ -105,23 +105,23 @@ export default function SettingsPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Card>
           <div className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Informasi Profil</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Profile Information</h2>
             
             <div className="space-y-6">
               <div>
                 <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Tampilan
+                  Display Name
                 </label>
                 <input
                   id="displayName"
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Masukkan nama Anda"
+                  placeholder="Enter your name"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
                 />
                 <p className="text-sm text-gray-500 mt-2">
-                  Nama ini akan ditampilkan di seluruh aplikasi
+                  This name will be displayed throughout the app
                 </p>
               </div>
 
@@ -133,7 +133,7 @@ export default function SettingsPage() {
                   <code className="text-sm text-gray-600 break-all">{address}</code>
                 </div>
                 <p className="text-sm text-gray-500 mt-2">
-                  Alamat wallet tidak dapat diubah
+                  Wallet address cannot be changed
                 </p>
               </div>
 
@@ -145,7 +145,7 @@ export default function SettingsPage() {
 
               {saved && (
                 <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                  <p className="text-sm text-emerald-600">✓ Profil berhasil disimpan!</p>
+                  <p className="text-sm text-emerald-600">✓ Profile saved successfully!</p>
                 </div>
               )}
 
@@ -157,12 +157,12 @@ export default function SettingsPage() {
                 {saving ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Menyimpan...
+                    Saving...
                   </>
                 ) : (
                   <>
                     <Save className="w-4 h-4 mr-2" />
-                    Simpan Perubahan
+                    Save Changes
                   </>
                 )}
               </Button>

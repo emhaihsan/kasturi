@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { issueCredential, setCredentialTokenURI } from '@/lib/backend-wallet';
+import { keccak256, toHex } from 'viem';
+
+function isBytes32Hex(value: unknown): value is `0x${string}` {
+  if (typeof value !== 'string') return false;
+  return /^0x[0-9a-fA-F]{64}$/.test(value);
+}
 
 // POST /api/credentials/claim - Claim credential after completing a program
 export async function POST(request: NextRequest) {
@@ -70,6 +76,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Ensure program.programId is a valid bytes32 hex for on-chain calls.
+    // Some seed data used a human-readable slug (e.g. "bahasa-banjar").
+    // We deterministically convert it to bytes32 using keccak256(toHex(slug)).
+    let onChainProgramId: `0x${string}`;
+    if (isBytes32Hex(program.programId)) {
+      onChainProgramId = program.programId;
+    } else {
+      const legacy = program.programId;
+      onChainProgramId = keccak256(toHex(legacy)) as `0x${string}`;
+
+      // Best-effort: persist the upgraded bytes32 programId for future requests.
+      // If another record already uses the same programId, skip updating.
+      try {
+        const existing = await prisma.program.findUnique({ where: { programId: onChainProgramId } });
+        if (!existing) {
+          await prisma.program.update({
+            where: { id: program.id },
+            data: { programId: onChainProgramId },
+          });
+          program = { ...program, programId: onChainProgramId } as typeof program;
+          console.log('✅ Upgraded legacy programId to bytes32:', { legacy, onChainProgramId });
+        } else {
+          console.warn('⚠️ Cannot upgrade legacy programId due to unique collision:', {
+            legacy,
+            onChainProgramId,
+            existingProgramDbId: existing.id,
+          });
+        }
+      } catch (e) {
+        console.warn('⚠️ Failed to persist upgraded programId, continuing anyway:', e);
+      }
+    }
+
     const totalLessons = program.modules.reduce((sum: number, m: any) => sum + (m.lessons?.length || 0), 0);
     console.log('✅ Found program:', program.name, 'with', totalLessons, 'lessons');
 
@@ -121,9 +160,7 @@ export async function POST(request: NextRequest) {
     // Issue credential on-chain
     console.log('🔗 Issuing credential on-chain...');
     const formattedWallet = walletAddress.toLowerCase() as `0x${string}`;
-    const formattedProgramId = program.programId as `0x${string}`;
-    
-    const result = await issueCredential(formattedWallet, formattedProgramId);
+    const result = await issueCredential(formattedWallet, onChainProgramId);
     console.log('✅ Credential issued! TxHash:', result.hash);
 
     // Save to database first
@@ -135,24 +172,37 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Generate and upload certificate image + metadata to IPFS
-    console.log('📸 Generating certificate image...');
+    // Generate and upload certificate image + metadata to IPFS (same flow as test-mint)
+    console.log('📸 Generating certificate PNG...');
     try {
-      const { uploadCertificateImage } = await import('@/lib/certificate-generator');
       const { uploadSBTMetadata } = await import('@/lib/pinata');
       
-      const certificateImageUrl = await uploadCertificateImage({
-        programName: program.name,
-        recipientName: user.displayName || 'Anonymous Learner',
-        recipientAddress: walletAddress,
-        issuedAt: new Date().toISOString(),
-        txHash: result.hash,
-        language: program.language,
+      // Use the same certificate image endpoint as test-mint
+      const origin = request.url ? new URL(request.url).origin : 'http://localhost:3000';
+      const certResponse = await fetch(`${origin}/api/certificate/image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          programName: program.name,
+          recipientName: user.displayName || 'Anonymous Learner',
+          recipientAddress: walletAddress,
+          issuedAt: new Date().toISOString(),
+          txHash: result.hash,
+          language: program.language,
+        }),
       });
-      
-      console.log('🖼️ Certificate image uploaded:', certificateImageUrl);
+
+      if (!certResponse.ok) {
+        const errorData = await certResponse.json();
+        throw new Error(`Certificate generation failed: ${errorData.error}`);
+      }
+
+      const certData = await certResponse.json();
+      const certificateImageUrl = certData.ipfsUrl;
+      console.log('🖼️ Certificate PNG uploaded:', certificateImageUrl);
       
       // Upload metadata with certificate image
+      console.log('📦 Uploading metadata to IPFS...');
       const metadataUrl = await uploadSBTMetadata(
         program.name,
         program.programId,
@@ -189,7 +239,7 @@ export async function POST(request: NextRequest) {
       success: true,
       credential: {
         id: credential.id,
-        programId: program.programId,
+        programId: onChainProgramId,
         programName: program.name,
         txHash: result.hash,
       },

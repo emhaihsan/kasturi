@@ -32,8 +32,10 @@ export function useNFTs() {
       const response = await fetch(`/api/credentials?walletAddress=${address}`);
       
       if (!response.ok) {
-        console.error('Failed to fetch credentials');
+        const errorText = await response.text();
+        console.error('Failed to fetch credentials:', response.status, errorText);
         setNfts([]);
+        setLoading(false);
         return;
       }
 

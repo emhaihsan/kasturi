@@ -20,7 +20,7 @@ import { Card } from '@/components/ui/Card';
 import { useLesson, getYouTubeEmbedUrl } from '@/lib/hooks/usePrograms';
 import { useLessonProgress } from '@/lib/hooks/useLessonProgress';
 
-type Tab = 'materi' | 'exercises';
+type Tab = 'content' | 'exercises';
 
 export default function LessonDetailPage() {
   const params = useParams();
@@ -32,7 +32,7 @@ export default function LessonDetailPage() {
   const { user, updateExerciseScore } = useAppStore();
   const { lesson, loading, error } = useLesson(lessonId);
   const { completeLesson } = useLessonProgress();
-  const [activeTab, setActiveTab] = useState<Tab>('materi');
+  const [activeTab, setActiveTab] = useState<Tab>('content');
   const [currentExercise, setCurrentExercise] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -149,9 +149,9 @@ export default function LessonDetailPage() {
 
         <div className="flex gap-2 mb-6 border-b border-neutral-200">
           <button
-            onClick={() => setActiveTab('materi')}
+            onClick={() => setActiveTab('content')}
             className={`px-6 py-3 font-medium transition-colors ${
-              activeTab === 'materi'
+              activeTab === 'content'
                 ? 'text-emerald-600 border-b-2 border-emerald-600'
                 : 'text-neutral-500 hover:text-neutral-700'
             }`}
@@ -176,7 +176,7 @@ export default function LessonDetailPage() {
           </button>
         </div>
 
-        {activeTab === 'materi' && (
+        {activeTab === 'content' && (
           <div className="space-y-6">
             <Card className="p-6">
               <h2 className="text-xl font-semibold text-neutral-900 mb-4">Vocabulary</h2>
@@ -331,6 +331,7 @@ export default function LessonDetailPage() {
           </div>
         )}
       </div>
+
     </div>
   );
 }

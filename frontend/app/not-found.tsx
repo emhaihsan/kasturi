@@ -16,29 +16,29 @@ export default function NotFound() {
         </div>
         
         <h1 className="text-2xl font-bold text-neutral-900 mb-3">
-          Halaman Tidak Ditemukan
+          Page Not Found
         </h1>
         <p className="text-neutral-600 mb-8">
-          Maaf, halaman yang kamu cari tidak ada atau sudah dipindahkan.
+          Sorry, the page you are looking for does not exist or has been moved.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/">
             <Button variant="outline" className="w-full sm:w-auto">
               <Home className="w-4 h-4 mr-2" />
-              Ke Beranda
+              Go Home
             </Button>
           </Link>
           <Link href="/languages">
             <Button className="w-full sm:w-auto">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Mulai Belajar
+              Start Learning
             </Button>
           </Link>
         </div>
         
         <p className="mt-8 text-sm text-neutral-400">
-          Butuh bantuan? Hubungi tim support kami.
+          Need help? Contact our support team.
         </p>
       </div>
     </div>
