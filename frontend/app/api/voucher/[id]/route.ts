@@ -70,9 +70,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  
-  // Get base URL for images
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://kasturi.id';
+
+  const baseUrl = new URL(request.url).origin;
   
   const metadata = VOUCHER_METADATA[id];
   

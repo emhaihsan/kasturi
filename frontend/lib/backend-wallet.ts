@@ -1,3 +1,5 @@
+import 'server-only';
+
 // Backend Wallet for server-side contract interactions
 // Used for: minting tokens, issuing credentials, granting vouchers
 

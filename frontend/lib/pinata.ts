@@ -1,3 +1,5 @@
+import 'server-only';
+
 // Pinata IPFS Service for SBT and Voucher Metadata
 // Uses Pinata SDK for uploading and pinning files to IPFS
 
