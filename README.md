@@ -2,7 +2,12 @@
 
 Kasturi is a learning dApp for Indonesian regional languages. Learners complete structured lessons (starting with **Bahasa Banjar**), then receive a **verifiable on-chain credential** (a non-transferable SBT) as proof of completion. Learners can also redeem **ERC-1155 vouchers** for real-world benefits.
 
-This repository was built for the **Lisk Builders Challenge**.
+This repository was built for the **Lisk Builders Challenge Round 3**.
+
+KASTURI TOKEN=0x7F120b4E0Fa01B425C3FCc8A3F6d29d5E853F342
+KASTURI SBT=0x19c9A5AF2d19fC596FcEA5Ce3C35Db1FECd876Ba
+KASTURI VOUCHER=0x7614C13cD1b629262161de25857AEb502cB54499
+KASTURI MAIN=0x7c9FC13bFD2AE91e1eE41d0281120A47454a6Eb5
 
 ---
 
