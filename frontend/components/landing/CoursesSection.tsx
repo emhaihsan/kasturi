@@ -25,23 +25,24 @@ export function CoursesSection() {
   };
 
   return (
-    <section id="courses" className="py-20 bg-white" ref={ref}>
+    <section id="courses" className="py-20 bg-[var(--background)]" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`flex items-start justify-between gap-8 mb-12 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div>
-            <div className="inline-block px-4 py-2 bg-neutral-100 rounded-full mb-5">
-              <p className="text-sm text-neutral-600">Our courses</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white neo-pill mb-5">
+              <span className="inline-block w-3 h-3 rounded-sm bg-[var(--accent)]" />
+              <p className="text-sm font-semibold text-neutral-900">Our courses</p>
             </div>
 
-            <h2 className="text-4xl font-bold text-neutral-900 mb-4">Available Courses</h2>
-            <p className="text-neutral-500 max-w-xl">
+            <h2 className="text-4xl font-black text-neutral-900 mb-4 uppercase">Available Courses</h2>
+            <p className="text-[var(--ink-muted)] max-w-xl">
               Start with our first two regional languages: Banjar and Ambon. Each module is built from short, conversation-based lessons.
             </p>
           </div>
 
           <Link
             href="/languages"
-            className="hidden sm:inline-flex items-center gap-2 px-5 py-3 rounded-full border border-neutral-200 text-sm font-medium text-neutral-900 hover:bg-neutral-50 transition-colors"
+            className="hidden sm:inline-flex items-center gap-2 px-5 py-3 rounded-full neo-border neo-shadow-sm bg-white text-sm font-semibold text-neutral-900 hover:-translate-y-0.5 transition-transform"
           >
             Explore More
             <ArrowUpRight className="w-4 h-4" />
@@ -64,7 +65,7 @@ export function CoursesSection() {
                 style={{ transitionDelay: `${idx * 150}ms` }}
               >
                 <div className="relative">
-                  <div className="relative aspect-[16/10] bg-neutral-200 rounded-3xl overflow-hidden mb-6">
+                  <div className="relative aspect-[16/10] bg-white rounded-3xl overflow-hidden mb-6 neo-border neo-shadow">
                     <img
                       src={overrides[lang.id]?.image || ''}
                       alt={displayName}
@@ -74,7 +75,7 @@ export function CoursesSection() {
                     />
                     {isComingSoon && (
                       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                        <span className="px-4 py-2 bg-black/70 text-white text-xs font-semibold uppercase tracking-wide rounded-full">
+                        <span className="px-4 py-2 bg-white neo-pill text-xs font-semibold uppercase tracking-wide">
                           Coming Soon
                         </span>
                       </div>
@@ -82,7 +83,7 @@ export function CoursesSection() {
                   </div>
 
                   <h3 className="text-xl font-semibold text-neutral-900 mb-2">{displayName}</h3>
-                  <p className="text-sm text-neutral-500 leading-relaxed line-clamp-2">
+                  <p className="text-sm text-[var(--ink-muted)] leading-relaxed line-clamp-2">
                     {displayDescription}
                   </p>
                 </div>
@@ -94,7 +95,7 @@ export function CoursesSection() {
         <div className="mt-10 sm:hidden">
           <Link
             href="/languages"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-neutral-200 text-sm font-medium text-neutral-900 hover:bg-neutral-50 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-full neo-border neo-shadow-sm bg-white text-sm font-semibold text-neutral-900 hover:-translate-y-0.5 transition-transform"
           >
             Explore More
             <ArrowUpRight className="w-4 h-4" />

@@ -48,17 +48,18 @@ export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number>(0);
 
   return (
-    <section id="faq" className="py-20 bg-white" ref={ref}>
+    <section id="faq" className="py-20 bg-[var(--background)]" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`text-center mb-14 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="inline-block px-4 py-2 bg-neutral-100 rounded-full mb-6">
-            <p className="text-sm text-neutral-600">FAQ</p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white neo-pill mb-6">
+            <span className="inline-block w-3 h-3 rounded-sm bg-[var(--accent)]" />
+            <p className="text-sm font-semibold text-neutral-900">FAQ</p>
           </div>
-          <h2 className="text-4xl font-bold text-neutral-900 leading-tight">Frequently Asked Questions</h2>
+          <h2 className="text-4xl font-black text-neutral-900 leading-tight uppercase">Frequently Asked Questions</h2>
         </div>
 
-        <div className={`max-w-3xl mx-auto bg-neutral-50 rounded-3xl p-2 transition-all duration-700 delay-200 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-          <div className="divide-y divide-neutral-200">
+        <div className={`max-w-3xl mx-auto bg-[var(--surface)] rounded-3xl p-2 neo-border neo-shadow transition-all duration-700 delay-200 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          <div className="divide-y divide-neutral-900/20">
             {items.map((item, idx) => {
               const isOpen = idx === openIndex;
               return (
@@ -70,13 +71,13 @@ export function FAQSection() {
                 >
                   <div>
                     <p className="font-semibold text-neutral-900">{item.q}</p>
-                    {isOpen && <p className="text-sm text-neutral-600 leading-relaxed mt-2">{item.a}</p>}
+                    {isOpen && <p className="text-sm text-[var(--ink-muted)] leading-relaxed mt-2">{item.a}</p>}
                   </div>
                   <div className="mt-1 flex-shrink-0">
                     {isOpen ? (
-                      <ChevronUp className="w-5 h-5 text-neutral-600" />
+                      <ChevronUp className="w-5 h-5 text-neutral-900" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-neutral-600" />
+                      <ChevronDown className="w-5 h-5 text-neutral-900" />
                     )}
                   </div>
                 </button>

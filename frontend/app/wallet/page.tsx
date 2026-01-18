@@ -47,10 +47,10 @@ export default function WalletPage() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Wallet not available</h1>
-          <p className="text-gray-600 mb-4">Please login first</p>
+          <h1 className="text-2xl font-black text-neutral-900 mb-2 uppercase">Wallet not available</h1>
+          <p className="text-[var(--ink-muted)] mb-4">Please login first</p>
           <Button onClick={() => router.push('/dashboard')}>
             Back to Dashboard
           </Button>
@@ -101,12 +101,12 @@ export default function WalletPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white py-16">
+    <div className="min-h-screen bg-[var(--background)]">
+      <div className="bg-[var(--accent)] text-white py-16 border-b-4 border-neutral-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <button
             onClick={() => router.push('/dashboard')}
-            className="inline-flex items-center gap-2 text-emerald-100 hover:text-white mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -114,12 +114,12 @@ export default function WalletPage() {
 
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center">
+              <div className="w-16 h-16 rounded-2xl bg-white neo-border neo-shadow-sm flex items-center justify-center">
                 <Wallet className="w-8 h-8" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold mb-1">My Wallet</h1>
-                <p className="text-emerald-100">
+                <h1 className="text-3xl font-black mb-1 uppercase">My Wallet</h1>
+                <p className="text-white/80">
                   {isEmbedded ? 'Embedded Wallet' : 'External Wallet'}
                 </p>
               </div>
@@ -127,23 +127,23 @@ export default function WalletPage() {
             <button
               onClick={handleRefresh}
               disabled={walletLoading || nftsLoading}
-              className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-50"
+              className="p-3 rounded-full bg-white neo-border neo-shadow-sm transition-colors disabled:opacity-50"
             >
               <RefreshCw className={`w-5 h-5 ${(walletLoading || nftsLoading) ? 'animate-spin' : ''}`} />
             </button>
           </div>
 
           {/* Address Card */}
-          <Card className="bg-white/10 backdrop-blur border-white/20">
+          <Card className="bg-white">
             <div className="p-6">
-              <p className="text-emerald-100 text-sm mb-2">Wallet Address</p>
+              <p className="text-[var(--ink-muted)] text-sm mb-2">Wallet Address</p>
               <div className="flex items-center gap-3">
-                <code className="flex-1 text-white font-mono text-sm break-all">
+                <code className="flex-1 text-neutral-900 font-mono text-sm break-all">
                   {address || 'Loading...'}
                 </code>
                 <button
                   onClick={handleCopyAddress}
-                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                  className="p-2 rounded-lg bg-white neo-border"
                   title="Copy address"
                 >
                   <Copy className="w-4 h-4" />
@@ -153,7 +153,7 @@ export default function WalletPage() {
                     href={getExplorerUrl(address)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                    className="p-2 rounded-lg bg-white neo-border"
                     title="View on explorer"
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -161,22 +161,22 @@ export default function WalletPage() {
                 )}
               </div>
               {copied && (
-                <p className="text-emerald-200 text-xs mt-2">✓ Address copied!</p>
+                <p className="text-neutral-900 text-xs mt-2 font-semibold">✓ Address copied!</p>
               )}
             </div>
           </Card>
 
           {/* Balance Card */}
-          <Card className="bg-white/10 backdrop-blur border-white/20 mt-4">
+          <Card className="bg-white mt-4">
             <div className="p-6">
-              <p className="text-emerald-100 text-sm mb-2">Balance</p>
+              <p className="text-[var(--ink-muted)] text-sm mb-2">Balance</p>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-bold text-white">
+                <span className="text-4xl font-black text-neutral-900">
                   {balanceFormatted}
                 </span>
-                <span className="text-xl text-emerald-200">ETH</span>
+                <span className="text-xl text-neutral-900">ETH</span>
               </div>
-              <p className="text-emerald-200 text-xs mt-1">Lisk Sepolia Testnet</p>
+              <p className="text-[var(--ink-muted)] text-xs mt-1">Lisk Sepolia Testnet</p>
             </div>
           </Card>
         </div>
@@ -185,23 +185,23 @@ export default function WalletPage() {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Tabs */}
-        <div className="flex gap-2 mb-8 border-b border-gray-200">
+        <div className="inline-flex gap-2 mb-8 bg-white neo-border neo-shadow-sm rounded-full p-1">
           <button
             onClick={() => setActiveTab('tokens')}
-            className={`px-6 py-3 font-medium transition-colors border-b-2 ${
+            className={`px-5 py-2 text-sm font-semibold transition-colors rounded-full ${
               activeTab === 'tokens'
-                ? 'border-emerald-600 text-emerald-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'bg-[var(--highlight)] text-neutral-900 neo-pill'
+                : 'text-neutral-700 hover:text-neutral-900'
             }`}
           >
             Tokens
           </button>
           <button
             onClick={() => setActiveTab('nfts')}
-            className={`px-6 py-3 font-medium transition-colors border-b-2 ${
+            className={`px-5 py-2 text-sm font-semibold transition-colors rounded-full ${
               activeTab === 'nfts'
-                ? 'border-emerald-600 text-emerald-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'bg-[var(--highlight)] text-neutral-900 neo-pill'
+                : 'text-neutral-700 hover:text-neutral-900'
             }`}
           >
             NFTs 
@@ -212,23 +212,23 @@ export default function WalletPage() {
         {activeTab === 'tokens' && (
           <div className="space-y-6">
             {/* Faucet Card */}
-            <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50">
+            <Card className="bg-white">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Download className="w-6 h-6 text-blue-600" />
+                    <div className="w-12 h-12 rounded-full bg-white neo-border neo-shadow-sm flex items-center justify-center">
+                      <Download className="w-6 h-6 text-neutral-900" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">Free Token Faucet</h3>
-                      <p className="text-sm text-gray-500">Claim {faucetStatus.faucetAmount} KASTURI tokens</p>
+                      <h3 className="font-semibold text-neutral-900">Free Token Faucet</h3>
+                      <p className="text-sm text-[var(--ink-muted)]">Claim {faucetStatus.faucetAmount} KASTURI tokens</p>
                     </div>
                   </div>
                 </div>
 
                 {faucetSuccess && (
-                  <div className="mb-4 p-3 bg-emerald-100 border border-emerald-200 rounded-lg">
-                    <p className="text-sm text-emerald-700">
+                  <div className="mb-4 p-3 bg-white neo-border neo-shadow-sm rounded-lg">
+                    <p className="text-sm text-neutral-900 font-semibold">
                       ✓ Faucet claimed successfully!{' '}
                       <a href={faucetSuccess} target="_blank" rel="noopener noreferrer" className="underline">
                         View transaction
@@ -238,14 +238,14 @@ export default function WalletPage() {
                 )}
 
                 {faucetError && (
-                  <div className="mb-4 p-3 bg-red-100 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-700">{faucetError}</p>
+                  <div className="mb-4 p-3 bg-white neo-border neo-shadow-sm rounded-lg">
+                    <p className="text-sm text-neutral-900 font-semibold">{faucetError}</p>
                   </div>
                 )}
 
                 {!faucetStatus.canClaim && faucetStatus.timeUntilNext > 0 && (
-                  <div className="mb-4 p-3 bg-amber-100 border border-amber-200 rounded-lg">
-                    <p className="text-sm text-amber-700">
+                  <div className="mb-4 p-3 bg-white neo-border neo-shadow-sm rounded-lg">
+                    <p className="text-sm text-neutral-900 font-semibold">
                       ⏱️ Next claim available in {Math.ceil(faucetStatus.timeUntilNext / 3600)} hours
                     </p>
                   </div>
@@ -267,45 +267,45 @@ export default function WalletPage() {
                     'Faucet on Cooldown'
                   )}
                 </Button>
-                <p className="text-xs text-gray-500 text-center mt-2">
+                <p className="text-xs text-[var(--ink-muted)] text-center mt-2">
                   Free tokens every 24 hours
                 </p>
               </div>
             </Card>
 
             {/* EXP Exchange Card */}
-            <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
+            <Card className="bg-white">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                      <Award className="w-6 h-6 text-amber-600" />
+                    <div className="w-12 h-12 rounded-full bg-white neo-border neo-shadow-sm flex items-center justify-center">
+                      <Award className="w-6 h-6 text-neutral-900" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">Exchange EXP → KASTURI</h3>
-                      <p className="text-sm text-gray-500">Convert your learning EXP to tokens</p>
+                      <h3 className="font-semibold text-neutral-900">Exchange EXP → KASTURI</h3>
+                      <p className="text-sm text-[var(--ink-muted)]">Convert your learning EXP to tokens</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="text-center p-3 bg-white rounded-lg">
-                    <p className="text-xs text-gray-500 mb-1">Total EXP</p>
-                    <p className="text-xl font-bold text-gray-900">{expStatus.totalExp}</p>
+                  <div className="text-center p-3 bg-[var(--surface)] rounded-lg neo-border">
+                    <p className="text-xs text-[var(--ink-muted)] mb-1">Total EXP</p>
+                    <p className="text-xl font-black text-neutral-900">{expStatus.totalExp}</p>
                   </div>
-                  <div className="text-center p-3 bg-white rounded-lg">
-                    <p className="text-xs text-gray-500 mb-1">Claimed</p>
-                    <p className="text-xl font-bold text-gray-500">{expStatus.claimedExp}</p>
+                  <div className="text-center p-3 bg-[var(--surface)] rounded-lg neo-border">
+                    <p className="text-xs text-[var(--ink-muted)] mb-1">Claimed</p>
+                    <p className="text-xl font-black text-neutral-500">{expStatus.claimedExp}</p>
                   </div>
-                  <div className="text-center p-3 bg-white rounded-lg">
-                    <p className="text-xs text-gray-500 mb-1">Available</p>
-                    <p className="text-xl font-bold text-amber-600">{expStatus.availableExp}</p>
+                  <div className="text-center p-3 bg-[var(--surface)] rounded-lg neo-border">
+                    <p className="text-xs text-[var(--ink-muted)] mb-1">Available</p>
+                    <p className="text-xl font-black text-neutral-900">{expStatus.availableExp}</p>
                   </div>
                 </div>
 
                 {exchangeSuccess && (
-                  <div className="mb-4 p-3 bg-emerald-100 border border-emerald-200 rounded-lg">
-                    <p className="text-sm text-emerald-700">
+                  <div className="mb-4 p-3 bg-white neo-border neo-shadow-sm rounded-lg">
+                    <p className="text-sm text-neutral-900 font-semibold">
                       ✓ Exchange successful!{' '}
                       <a href={exchangeSuccess} target="_blank" rel="noopener noreferrer" className="underline">
                         View transaction
@@ -315,8 +315,8 @@ export default function WalletPage() {
                 )}
 
                 {exchangeError && (
-                  <div className="mb-4 p-3 bg-red-100 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-700">{exchangeError}</p>
+                  <div className="mb-4 p-3 bg-white neo-border neo-shadow-sm rounded-lg">
+                    <p className="text-sm text-neutral-900 font-semibold">{exchangeError}</p>
                   </div>
                 )}
 
@@ -336,33 +336,33 @@ export default function WalletPage() {
                     'No EXP available'
                   )}
                 </Button>
-                <p className="text-xs text-gray-500 text-center mt-2">
+                <p className="text-xs text-[var(--ink-muted)] text-center mt-2">
                   Rate: 1 EXP = 1 KASTURI Token
                 </p>
               </div>
             </Card>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card hover className="cursor-not-allowed opacity-75">
+              <Card hover className="cursor-not-allowed opacity-75 bg-[var(--surface)]">
                 <div className="p-6 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <Send className="w-6 h-6 text-emerald-600" />
+                  <div className="w-12 h-12 rounded-full bg-white neo-border neo-shadow-sm flex items-center justify-center">
+                    <Send className="w-6 h-6 text-neutral-900" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Send ETH</h3>
-                    <p className="text-sm text-gray-500">Coming soon</p>
+                    <h3 className="font-semibold text-neutral-900">Send ETH</h3>
+                    <p className="text-sm text-[var(--ink-muted)]">Coming soon</p>
                   </div>
                 </div>
               </Card>
 
-              <Card hover className="cursor-not-allowed opacity-75">
+              <Card hover className="cursor-not-allowed opacity-75 bg-[var(--surface)]">
                 <div className="p-6 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Download className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 rounded-full bg-white neo-border neo-shadow-sm flex items-center justify-center">
+                    <Download className="w-6 h-6 text-neutral-900" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Receive ETH</h3>
-                    <p className="text-sm text-gray-500">Use address above</p>
+                    <h3 className="font-semibold text-neutral-900">Receive ETH</h3>
+                    <p className="text-sm text-[var(--ink-muted)]">Use address above</p>
                   </div>
                 </div>
               </Card>
@@ -370,39 +370,39 @@ export default function WalletPage() {
 
             <Card>
               <div className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Token Holdings</h3>
+                <h3 className="font-black text-neutral-900 mb-4 uppercase">Token Holdings</h3>
                 
                 {/* KASTURI Token */}
-                <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                <div className="flex items-center justify-between py-4 border-b border-neutral-900/10">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                      <span className="text-lg font-bold text-amber-600">K</span>
+                    <div className="w-10 h-10 rounded-full bg-white neo-border neo-shadow-sm flex items-center justify-center">
+                      <span className="text-lg font-bold text-neutral-900">K</span>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Kasturi Token</p>
-                      <p className="text-sm text-gray-500">KSTR</p>
+                      <p className="font-medium text-neutral-900">Kasturi Token</p>
+                      <p className="text-sm text-[var(--ink-muted)]">KSTR</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-amber-600">{tokenBalanceFormatted}</p>
-                    <p className="text-sm text-gray-500">Lisk Sepolia</p>
+                    <p className="font-semibold text-neutral-900">{tokenBalanceFormatted}</p>
+                    <p className="text-sm text-[var(--ink-muted)]">Lisk Sepolia</p>
                   </div>
                 </div>
 
                 {/* ETH */}
                 <div className="flex items-center justify-between py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-white neo-border neo-shadow-sm flex items-center justify-center">
                       <span className="text-lg">Ξ</span>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Ethereum</p>
-                      <p className="text-sm text-gray-500">ETH</p>
+                      <p className="font-medium text-neutral-900">Ethereum</p>
+                      <p className="text-sm text-[var(--ink-muted)]">ETH</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-gray-900">{balanceFormatted}</p>
-                    <p className="text-sm text-gray-500">Lisk Sepolia</p>
+                    <p className="font-semibold text-neutral-900">{balanceFormatted}</p>
+                    <p className="text-sm text-[var(--ink-muted)]">Lisk Sepolia</p>
                   </div>
                 </div>
               </div>
@@ -415,18 +415,18 @@ export default function WalletPage() {
           <div>
             {nftsLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-neutral-900" />
               </div>
             ) : nfts.length === 0 ? (
               <Card>
                 <div className="p-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                  <div className="w-16 h-16 rounded-full bg-white neo-border neo-shadow-sm flex items-center justify-center mx-auto mb-4">
+                    <ImageIcon className="w-8 h-8 text-neutral-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-black text-neutral-900 mb-2 uppercase">
                     No NFTs yet
                   </h3>
-                  <p className="text-gray-500 mb-6">
+                  <p className="text-[var(--ink-muted)] mb-6">
                     Complete learning programs to earn Soulbound Tokens
                   </p>
                   <Button onClick={() => router.push('/languages')}>
@@ -439,7 +439,7 @@ export default function WalletPage() {
                 {nfts.map((nft) => (
                   <Card key={nft.tokenId} hover>
                     <div className="p-4">
-                      <div className="aspect-square rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 mb-4 flex items-center justify-center relative overflow-hidden">
+                      <div className="aspect-square rounded-lg bg-[var(--accent)] mb-4 flex items-center justify-center relative overflow-hidden border-2 border-neutral-900">
                         {nft.image && nft.image !== '/icon.webp' ? (
                           <img 
                             src={nft.image} 
@@ -454,22 +454,22 @@ export default function WalletPage() {
                         ) : null}
                         <div className={`text-center text-white p-4 ${nft.image && nft.image !== '/icon.webp' ? 'hidden' : ''}`}>
                           <Award className="w-12 h-12 mx-auto mb-2" />
-                          <p className="text-xs font-medium">Credential</p>
+                          <p className="text-xs font-semibold">Credential</p>
                         </div>
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-1">
+                      <h3 className="font-semibold text-neutral-900 mb-1">
                         {nft.name}
                       </h3>
-                      <p className="text-sm text-gray-500 mb-2 line-clamp-2">
+                      <p className="text-sm text-[var(--ink-muted)] mb-2 line-clamp-2">
                         {nft.description}
                       </p>
                       {nft.issuedAt && (
-                        <p className="text-xs text-gray-400 mb-3">
+                        <p className="text-xs text-[var(--ink-muted)] mb-3">
                           Issued: {new Date(nft.issuedAt).toLocaleDateString('id-ID')}
                         </p>
                       )}
                       <div className="flex items-center justify-between">
-                        <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                        <span className="text-xs bg-white neo-pill text-neutral-900 px-2 py-1">
                           Soulbound
                         </span>
                         {nft.txHash && (
@@ -477,7 +477,7 @@ export default function WalletPage() {
                             href={`https://sepolia-blockscout.lisk.com/tx/${nft.txHash}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-emerald-600 hover:text-emerald-700 flex items-center gap-1 text-xs"
+                            className="text-[var(--accent)] flex items-center gap-1 text-xs font-semibold"
                           >
                             View TX
                             <ExternalLink className="w-3 h-3" />

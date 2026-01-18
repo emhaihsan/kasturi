@@ -28,10 +28,10 @@ export default function SettingsPage() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Settings unavailable</h1>
-          <p className="text-gray-600 mb-4">Please login first</p>
+          <h1 className="text-2xl font-black text-neutral-900 mb-2 uppercase">Settings unavailable</h1>
+          <p className="text-[var(--ink-muted)] mb-4">Please login first</p>
           <Button onClick={() => router.push('/dashboard')}>
             Back to Dashboard
           </Button>
@@ -79,24 +79,24 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white py-16">
+    <div className="min-h-screen bg-[var(--background)]">
+      <div className="bg-[var(--accent)] text-white py-16 border-b-4 border-neutral-900">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
           <button
             onClick={() => router.push('/dashboard')}
-            className="inline-flex items-center gap-2 text-emerald-100 hover:text-white mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
           </button>
 
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-white neo-border neo-shadow-sm flex items-center justify-center">
               <User className="w-8 h-8" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold mb-1">Profile Settings</h1>
-              <p className="text-emerald-100">Manage your display name</p>
+              <h1 className="text-3xl font-black mb-1 uppercase">Profile Settings</h1>
+              <p className="text-white/80">Manage your display name</p>
             </div>
           </div>
         </div>
@@ -105,11 +105,11 @@ export default function SettingsPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Card>
           <div className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Profile Information</h2>
+            <h2 className="text-lg font-black text-neutral-900 mb-6 uppercase">Profile Information</h2>
             
             <div className="space-y-6">
               <div>
-                <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="displayName" className="block text-sm font-semibold text-neutral-900 mb-2">
                   Display Name
                 </label>
                 <input
@@ -118,34 +118,34 @@ export default function SettingsPage() {
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Enter your name"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                  className="w-full px-4 py-3 bg-white neo-border neo-shadow-sm rounded-xl focus:outline-none transition-all"
                 />
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-[var(--ink-muted)] mt-2">
                   This name will be displayed throughout the app
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-neutral-900 mb-2">
                   Wallet Address
                 </label>
-                <div className="px-4 py-3 bg-gray-100 rounded-lg">
-                  <code className="text-sm text-gray-600 break-all">{address}</code>
+                <div className="px-4 py-3 bg-white rounded-xl neo-border neo-shadow-sm">
+                  <code className="text-sm text-neutral-700 break-all">{address}</code>
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-[var(--ink-muted)] mt-2">
                   Wallet address cannot be changed
                 </p>
               </div>
 
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-600">{error}</p>
+                <div className="p-4 bg-white neo-border neo-shadow-sm rounded-xl">
+                  <p className="text-sm text-neutral-900 font-semibold">{error}</p>
                 </div>
               )}
 
               {saved && (
-                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                  <p className="text-sm text-emerald-600">✓ Profile saved successfully!</p>
+                <div className="p-4 bg-white neo-border neo-shadow-sm rounded-xl">
+                  <p className="text-sm text-neutral-900 font-semibold">✓ Profile saved successfully!</p>
                 </div>
               )}
 

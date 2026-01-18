@@ -117,14 +117,14 @@ export default function VerifyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-16">
+    <div className="min-h-screen bg-[var(--background)] py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12" ref={heroRef}>
-          <div className={`w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6 transition-all duration-700 ${heroInView ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
-            <Shield className="w-10 h-10 text-green-600" />
+          <div className={`w-20 h-20 rounded-2xl bg-white neo-border neo-shadow-sm flex items-center justify-center mx-auto mb-6 transition-all duration-700 ${heroInView ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
+            <Shield className="w-10 h-10 text-neutral-900" />
           </div>
-          <h1 className={`text-4xl font-bold text-neutral-900 mb-4 transition-all duration-700 delay-100 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Verify Certificate</h1>
-          <p className={`text-xl text-neutral-600 max-w-xl mx-auto transition-all duration-700 delay-200 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h1 className={`text-4xl font-black text-neutral-900 mb-4 uppercase transition-all duration-700 delay-100 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Verify Certificate</h1>
+          <p className={`text-xl text-[var(--ink-muted)] max-w-xl mx-auto transition-all duration-700 delay-200 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             Verify on-chain learning certificates without logging in. Enter certificate ID or wallet address.
           </p>
         </div>
@@ -135,14 +135,14 @@ export default function VerifyPage() {
             <div className="flex gap-2 mb-4">
               <button
                 onClick={() => { setSearchType('certificate'); setSearchInput(''); setResult(null); setHasSearched(false); }}
-                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${searchType === 'certificate' ? 'bg-green-600 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-colors ${searchType === 'certificate' ? 'bg-[var(--highlight)] text-neutral-900 neo-border neo-shadow-sm' : 'bg-white text-neutral-700 neo-border'}`}
               >
                 <Hash className="w-4 h-4 inline mr-2" />
                 Certificate ID
               </button>
               <button
                 onClick={() => { setSearchType('wallet'); setSearchInput(''); setResult(null); setHasSearched(false); }}
-                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${searchType === 'wallet' ? 'bg-green-600 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-colors ${searchType === 'wallet' ? 'bg-[var(--highlight)] text-neutral-900 neo-border neo-shadow-sm' : 'bg-white text-neutral-700 neo-border'}`}
               >
                 <User className="w-4 h-4 inline mr-2" />
                 Wallet Address
@@ -162,7 +162,7 @@ export default function VerifyPage() {
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-neutral-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-white neo-border neo-shadow-sm focus:outline-none transition-all"
                 />
               </div>
               <Button
@@ -185,46 +185,46 @@ export default function VerifyPage() {
                 {/* Single Certificate Result */}
                 {result.singleCredential ? (
                   <>
-                    <Card className="border-green-200 bg-green-50">
+                    <Card className="bg-white">
                       <CardContent className="p-6">
                         <div className="flex items-center gap-4 mb-4">
-                          <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
-                            <CheckCircle className="w-6 h-6 text-white" />
+                          <div className="w-12 h-12 rounded-xl bg-[var(--highlight)] neo-border neo-shadow-sm flex items-center justify-center">
+                            <CheckCircle className="w-6 h-6 text-neutral-900" />
                           </div>
                           <div>
-                            <h2 className="text-xl font-bold text-green-800">Certificate Verified</h2>
-                            <p className="text-green-600 text-sm">This certificate is valid and recorded on-chain</p>
+                            <h2 className="text-xl font-black text-neutral-900 uppercase">Certificate Verified</h2>
+                            <p className="text-[var(--ink-muted)] text-sm">This certificate is valid and recorded on-chain</p>
                           </div>
                         </div>
                         
                         <div className="grid sm:grid-cols-2 gap-4">
-                          <div className="bg-white rounded-xl p-4">
-                            <p className="text-sm text-neutral-500 mb-1">Certificate ID</p>
+                          <div className="bg-[var(--surface)] rounded-xl p-4 neo-border">
+                            <p className="text-sm text-[var(--ink-muted)] mb-1">Certificate ID</p>
                             <p className="font-mono text-neutral-900 text-sm break-all">{result.singleCredential.id}</p>
                           </div>
-                          <div className="bg-white rounded-xl p-4">
-                            <p className="text-sm text-neutral-500 mb-1">Wallet Address</p>
+                          <div className="bg-[var(--surface)] rounded-xl p-4 neo-border">
+                            <p className="text-sm text-[var(--ink-muted)] mb-1">Wallet Address</p>
                             <p className="font-mono text-neutral-900 text-sm break-all">{result.address}</p>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
 
-                    <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                      <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 text-white">
+                    <Card className="overflow-hidden">
+                      <div className="bg-[var(--accent)] p-6 text-white border-b-4 border-neutral-900">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-2xl bg-white neo-border neo-shadow-sm flex items-center justify-center">
                               <Award className="w-8 h-8" />
                             </div>
                             <div>
-                              <h4 className="text-xl font-bold">{result.singleCredential.programName}</h4>
-                              <p className="text-green-100">Program Completion Certificate</p>
+                              <h4 className="text-xl font-black">{result.singleCredential.programName}</h4>
+                              <p className="text-white/80">Program Completion Certificate</p>
                             </div>
                           </div>
                           <button
                             onClick={() => setSelectedCert(result.singleCredential!)}
-                            className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+                            className="px-4 py-2 bg-white text-neutral-900 rounded-lg text-sm font-semibold neo-border"
                           >
                             View Certificate
                           </button>
@@ -233,12 +233,12 @@ export default function VerifyPage() {
                       <CardContent className="p-6">
                         <div className="grid sm:grid-cols-2 gap-4 mb-6">
                           <div>
-                            <p className="text-sm text-gray-500 mb-1">Recipient</p>
-                            <p className="font-medium text-gray-900">{result.singleCredential.recipientName}</p>
+                            <p className="text-sm text-[var(--ink-muted)] mb-1">Recipient</p>
+                            <p className="font-semibold text-neutral-900">{result.singleCredential.recipientName}</p>
                           </div>
                           <div>
-                            <p className="text-sm text-gray-500 mb-1">Issue Date</p>
-                            <p className="text-gray-900">{new Date(result.singleCredential.issuedAt).toLocaleDateString('id-ID', { dateStyle: 'long' })}</p>
+                            <p className="text-sm text-[var(--ink-muted)] mb-1">Issue Date</p>
+                            <p className="text-neutral-900">{new Date(result.singleCredential.issuedAt).toLocaleDateString('id-ID', { dateStyle: 'long' })}</p>
                           </div>
                         </div>
                         
@@ -246,7 +246,7 @@ export default function VerifyPage() {
                           href={`https://sepolia-blockscout.lisk.com/tx/${result.singleCredential.txHash}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-lg font-semibold neo-border"
                         >
                           <ExternalLink className="w-4 h-4" />
                           View on Blockscout
@@ -257,48 +257,48 @@ export default function VerifyPage() {
                 ) : (
                   /* Wallet Address Results */
                   <>
-                    <Card className="border-green-200 bg-green-50">
+                    <Card className="bg-white">
                       <CardContent className="p-6">
                         <div className="flex items-center gap-4 mb-4">
-                          <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
-                            <CheckCircle className="w-6 h-6 text-white" />
+                          <div className="w-12 h-12 rounded-xl bg-[var(--highlight)] neo-border neo-shadow-sm flex items-center justify-center">
+                            <CheckCircle className="w-6 h-6 text-neutral-900" />
                           </div>
                           <div>
-                            <h2 className="text-xl font-bold text-green-800">Verified</h2>
-                            <p className="text-green-600 text-sm">Address has valid certificates</p>
+                            <h2 className="text-xl font-black text-neutral-900 uppercase">Verified</h2>
+                            <p className="text-[var(--ink-muted)] text-sm">Address has valid certificates</p>
                           </div>
                         </div>
                         
-                        <div className="bg-white rounded-xl p-4 mb-4">
-                          <p className="text-sm text-neutral-500 mb-1">Wallet Address</p>
+                        <div className="bg-[var(--surface)] rounded-xl p-4 mb-4 neo-border">
+                          <p className="text-sm text-[var(--ink-muted)] mb-1">Wallet Address</p>
                           <p className="font-mono text-neutral-900 break-all">{result.address}</p>
                         </div>
 
-                        <div className="bg-white rounded-xl p-4">
-                          <p className="text-sm text-neutral-500 mb-1">Total EXP</p>
-                          <p className="text-2xl font-bold text-green-600">{result.totalExp} EXP</p>
+                        <div className="bg-[var(--surface)] rounded-xl p-4 neo-border">
+                          <p className="text-sm text-[var(--ink-muted)] mb-1">Total EXP</p>
+                          <p className="text-2xl font-black text-neutral-900">{result.totalExp} EXP</p>
                         </div>
                       </CardContent>
                     </Card>
 
-                    <h3 className="text-xl font-bold text-neutral-900">Certificates Found ({result.credentials?.length || 0})</h3>
+                    <h3 className="text-xl font-black text-neutral-900 uppercase">Certificates Found ({result.credentials?.length || 0})</h3>
                     
                     {result.credentials?.map((cred, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                    <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 text-white">
+                  <Card key={index} className="overflow-hidden">
+                    <div className="bg-[var(--accent)] p-6 text-white border-b-4 border-neutral-900">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
+                          <div className="w-16 h-16 rounded-2xl bg-white neo-border neo-shadow-sm flex items-center justify-center">
                             <Award className="w-8 h-8" />
                           </div>
                           <div>
-                            <h4 className="text-xl font-bold">{cred.programName}</h4>
-                            <p className="text-green-100">Program Completion Certificate</p>
+                            <h4 className="text-xl font-black">{cred.programName}</h4>
+                            <p className="text-white/80">Program Completion Certificate</p>
                           </div>
                         </div>
                         <button
                           onClick={() => setSelectedCert(cred)}
-                          className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
+                          className="px-4 py-2 bg-white text-neutral-900 rounded-lg text-sm font-semibold neo-border"
                         >
                           View Certificate
                         </button>
@@ -307,22 +307,22 @@ export default function VerifyPage() {
                     <CardContent className="p-6">
                       <div className="grid sm:grid-cols-2 gap-4 mb-6">
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Recipient</p>
-                          <p className="font-medium text-gray-900">{cred.recipientName}</p>
+                          <p className="text-sm text-[var(--ink-muted)] mb-1">Recipient</p>
+                          <p className="font-semibold text-neutral-900">{cred.recipientName}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">TX Hash</p>
-                          <p className="font-mono text-gray-900 text-xs truncate">{cred.txHash}</p>
+                          <p className="text-sm text-[var(--ink-muted)] mb-1">TX Hash</p>
+                          <p className="font-mono text-neutral-900 text-xs truncate">{cred.txHash}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-neutral-500 mb-1">Issue Date</p>
+                          <p className="text-sm text-[var(--ink-muted)] mb-1">Issue Date</p>
                           <p className="text-neutral-900">{new Date(cred.issuedAt).toLocaleDateString('id-ID', { dateStyle: 'long' })}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-neutral-500 mb-1">Status</p>
+                          <p className="text-sm text-[var(--ink-muted)] mb-1">Status</p>
                           <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-green-500" />
-                            <span className="text-green-600 font-medium">Verified On-Chain</span>
+                            <CheckCircle className="w-4 h-4 text-neutral-900" />
+                            <span className="text-neutral-900 font-semibold">Verified On-Chain</span>
                           </div>
                         </div>
                       </div>
@@ -331,7 +331,7 @@ export default function VerifyPage() {
                         href={`https://sepolia-blockscout.lisk.com/tx/${cred.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition-colors"
+                        className="inline-flex items-center gap-2 text-[var(--accent)] font-semibold"
                       >
                         View on Blockscout
                         <ExternalLink className="w-4 h-4" />
@@ -343,15 +343,15 @@ export default function VerifyPage() {
                 )}
               </>
             ) : (
-              <Card className="border-red-200 bg-red-50">
+              <Card className="bg-white">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center">
-                      <XCircle className="w-6 h-6 text-white" />
+                    <div className="w-12 h-12 rounded-xl bg-white neo-border neo-shadow-sm flex items-center justify-center">
+                      <XCircle className="w-6 h-6 text-neutral-900" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-red-800">Not Found</h2>
-                      <p className="text-red-600">
+                      <h2 className="text-xl font-black text-neutral-900 uppercase">Not Found</h2>
+                      <p className="text-[var(--ink-muted)]">
                         Address has no Kasturi certificates or address format is invalid.
                       </p>
                     </div>
@@ -363,28 +363,28 @@ export default function VerifyPage() {
         )}
 
         <div className="mt-16 text-center" ref={infoRef}>
-          <h3 className={`text-lg font-semibold text-neutral-900 mb-4 transition-all duration-700 ${infoInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Why On-Chain Verification?</h3>
+          <h3 className={`text-lg font-black text-neutral-900 mb-4 uppercase transition-all duration-700 ${infoInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Why On-Chain Verification?</h3>
           <div className="grid sm:grid-cols-3 gap-6 text-left">
-            <div className={`p-4 bg-white rounded-xl border border-neutral-100 hover:shadow-lg transition-all duration-500 delay-[100ms] ${infoInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mb-3">
-                <Shield className="w-5 h-5 text-green-600" />
+            <div className={`p-4 bg-white rounded-xl neo-border neo-shadow-sm transition-all duration-500 delay-[100ms] ${infoInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className="w-10 h-10 rounded-lg bg-white neo-border flex items-center justify-center mb-3">
+                <Shield className="w-5 h-5 text-neutral-900" />
               </div>
               <h4 className="font-semibold text-neutral-900 mb-1">Cannot Be Forged</h4>
-              <p className="text-sm text-neutral-500">Certificates are permanently recorded on Lisk blockchain</p>
+              <p className="text-sm text-[var(--ink-muted)]">Certificates are permanently recorded on Lisk blockchain</p>
             </div>
-            <div className={`p-4 bg-white rounded-xl border border-neutral-100 hover:shadow-lg transition-all duration-500 delay-[200ms] ${infoInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center mb-3">
-                <User className="w-5 h-5 text-neutral-600" />
+            <div className={`p-4 bg-white rounded-xl neo-border neo-shadow-sm transition-all duration-500 delay-[200ms] ${infoInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className="w-10 h-10 rounded-lg bg-white neo-border flex items-center justify-center mb-3">
+                <User className="w-5 h-5 text-neutral-900" />
               </div>
               <h4 className="font-semibold text-neutral-900 mb-1">No Login Required</h4>
-              <p className="text-sm text-neutral-500">Anyone can verify without an account</p>
+              <p className="text-sm text-[var(--ink-muted)]">Anyone can verify without an account</p>
             </div>
-            <div className={`p-4 bg-white rounded-xl border border-neutral-100 hover:shadow-lg transition-all duration-500 delay-[300ms] ${infoInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center mb-3">
-                <Award className="w-5 h-5 text-neutral-600" />
+            <div className={`p-4 bg-white rounded-xl neo-border neo-shadow-sm transition-all duration-500 delay-[300ms] ${infoInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className="w-10 h-10 rounded-lg bg-white neo-border flex items-center justify-center mb-3">
+                <Award className="w-5 h-5 text-neutral-900" />
               </div>
               <h4 className="font-semibold text-neutral-900 mb-1">Real Proof</h4>
-              <p className="text-sm text-neutral-500">Learning effort is recorded and provable</p>
+              <p className="text-sm text-[var(--ink-muted)]">Learning effort is recorded and provable</p>
             </div>
           </div>
         </div>
@@ -393,12 +393,12 @@ export default function VerifyPage() {
       {/* Certificate Modal */}
       {selectedCert && result?.address && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto neo-border neo-shadow">
             <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Certificate Preview</h3>
+              <h3 className="text-lg font-black uppercase">Certificate Preview</h3>
               <button
                 onClick={() => setSelectedCert(null)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
+                className="p-2 neo-border rounded-lg"
               >
                 ✕
               </button>
@@ -418,14 +418,14 @@ export default function VerifyPage() {
                 href={`https://sepolia-blockscout.lisk.com/tx/${selectedCert.txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg font-medium flex items-center gap-2"
+                className="px-4 py-2 text-[var(--accent)] rounded-lg font-semibold flex items-center gap-2"
               >
                 <ExternalLink className="w-4 h-4" />
                 View on Blockscout
               </a>
               <button
                 onClick={() => setSelectedCert(null)}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium"
+                className="px-4 py-2 bg-[var(--accent)] text-white rounded-lg font-semibold neo-border"
               >
                 Close
               </button>

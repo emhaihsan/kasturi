@@ -12,8 +12,8 @@ interface CardProps {
 export function Card({ children, className = '', hover = false, onClick }: CardProps) {
   return (
     <div
-      className={`bg-white rounded-2xl border border-neutral-200 ${
-        hover ? 'hover:border-neutral-300 hover:shadow-md transition-all duration-200 cursor-pointer' : ''
+      className={`bg-white rounded-2xl neo-border neo-shadow-sm ${
+        hover ? 'hover:-translate-y-1 hover:shadow-none transition-all duration-200 cursor-pointer' : ''
       } ${className}`}
       onClick={onClick}
     >

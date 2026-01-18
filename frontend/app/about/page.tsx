@@ -15,13 +15,12 @@ export default function AboutPage() {
   const { ref: ctaRef, isInView: ctaInView } = useInView();
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="relative bg-gradient-to-br from-neutral-900 to-neutral-800 text-white py-20 overflow-hidden" ref={heroRef}>
-        <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-emerald-500/5 animate-gradient" />
-        <div className="absolute top-10 right-10 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-float" />
+    <div className="min-h-screen bg-[var(--background)]">
+      <div className="relative bg-[var(--accent)] text-white py-20 overflow-hidden border-b-4 border-neutral-900" ref={heroRef}>
+        <div className="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_10%_20%,#ffd84d_0%,transparent_40%),radial-gradient(circle_at_80%_10%,#b5dcff_0%,transparent_38%)]" />
         <div className={`relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center transition-all duration-700 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-6">About Kasturi</h1>
-          <p className="text-xl text-neutral-300 max-w-2xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl font-black mb-6 uppercase">About Kasturi</h1>
+          <p className="text-xl text-white/80 max-w-2xl mx-auto">
             Indonesian regional language learning platform with verifiable on-chain certification
           </p>
         </div>
@@ -29,8 +28,8 @@ export default function AboutPage() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <section className="mb-16" ref={problemRef}>
-          <h2 className={`text-3xl font-bold text-neutral-900 mb-6 transition-all duration-700 ${problemInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>The Problem We Solve</h2>
-          <div className={`prose prose-lg text-neutral-600 max-w-none transition-all duration-700 delay-200 ${problemInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h2 className={`text-3xl font-black text-neutral-900 mb-6 uppercase transition-all duration-700 ${problemInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>The Problem We Solve</h2>
+          <div className={`prose prose-lg text-[var(--ink-muted)] max-w-none transition-all duration-700 delay-200 ${problemInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <p>
               Indonesia has hundreds of regional languages still actively used in daily life. 
               However, there is no structured and credible way for newcomers to learn them.
@@ -47,51 +46,51 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-16" ref={solutionRef}>
-          <h2 className={`text-3xl font-bold text-neutral-900 mb-6 transition-all duration-700 ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Kasturi Solution</h2>
+          <h2 className={`text-3xl font-black text-neutral-900 mb-6 uppercase transition-all duration-700 ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Kasturi Solution</h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <Card className={`transition-all duration-500 hover:shadow-xl delay-[100ms] ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <Card className={`transition-all duration-500 hover:-translate-y-1 delay-[100ms] ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <CardContent className="p-6">
-                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-4">
-                  <Target className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 rounded-xl bg-white neo-border neo-shadow-sm flex items-center justify-center mb-4">
+                  <Target className="w-6 h-6 text-neutral-900" />
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 mb-2">Structured Learning</h3>
-                <p className="text-neutral-600">
+                <p className="text-[var(--ink-muted)]">
                   Systematically organized modules based on real-life conversations, not grammar theory.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className={`transition-all duration-500 hover:shadow-xl delay-[200ms] ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <Card className={`transition-all duration-500 hover:-translate-y-1 delay-[200ms] ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <CardContent className="p-6">
-                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-4">
-                  <Award className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 rounded-xl bg-white neo-border neo-shadow-sm flex items-center justify-center mb-4">
+                  <Award className="w-6 h-6 text-neutral-900" />
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 mb-2">Verified Certificate</h3>
-                <p className="text-neutral-600">
+                <p className="text-[var(--ink-muted)]">
                   Proof of completion is recorded on-chain and can be verified by anyone without logging in.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className={`transition-all duration-500 hover:shadow-xl delay-[300ms] ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <Card className={`transition-all duration-500 hover:-translate-y-1 delay-[300ms] ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <CardContent className="p-6">
-                <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-neutral-600" />
+                <div className="w-12 h-12 rounded-xl bg-white neo-border neo-shadow-sm flex items-center justify-center mb-4">
+                  <Users className="w-6 h-6 text-neutral-900" />
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 mb-2">Focus on Practice</h3>
-                <p className="text-neutral-600">
+                <p className="text-[var(--ink-muted)]">
                   Learn language that is actually used daily, not formal language rarely spoken.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className={`transition-all duration-500 hover:shadow-xl delay-[400ms] ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <Card className={`transition-all duration-500 hover:-translate-y-1 delay-[400ms] ${solutionInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <CardContent className="p-6">
-                <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center mb-4">
-                  <Heart className="w-6 h-6 text-neutral-600" />
+                <div className="w-12 h-12 rounded-xl bg-white neo-border neo-shadow-sm flex items-center justify-center mb-4">
+                  <Heart className="w-6 h-6 text-neutral-900" />
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 mb-2">Reward System</h3>
-                <p className="text-neutral-600">
+                <p className="text-[var(--ink-muted)]">
                   Collect EXP from each lesson, exchange for tokens, and get vouchers or merchandise.
                 </p>
               </CardContent>
@@ -100,16 +99,16 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-16" ref={blockchainRef}>
-          <h2 className={`text-3xl font-bold text-neutral-900 mb-6 transition-all duration-700 ${blockchainInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Why Blockchain?</h2>
-          <Card className={`bg-gradient-to-br from-green-50 to-neutral-50 border-green-200 transition-all duration-700 delay-200 ${blockchainInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          <h2 className={`text-3xl font-black text-neutral-900 mb-6 uppercase transition-all duration-700 ${blockchainInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Why Blockchain?</h2>
+          <Card className={`bg-white transition-all duration-700 delay-200 ${blockchainInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
             <CardContent className="p-8">
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center flex-shrink-0">
-                  <Globe className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-white neo-border neo-shadow-sm flex items-center justify-center flex-shrink-0">
+                  <Globe className="w-6 h-6 text-neutral-900" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-neutral-900 mb-2">Credibility Without Intermediaries</h3>
-                  <p className="text-neutral-600">
+                  <p className="text-[var(--ink-muted)]">
                     Without blockchain, certificates only rely on trust in the platform. 
                     With blockchain, proof of completion is public, permanent, and can be verified 
                     by anyone without needing to trust Kasturi as a third party.
@@ -118,17 +117,17 @@ export default function AboutPage() {
               </div>
               
               <div className="grid sm:grid-cols-3 gap-4 mt-6">
-                <div className="bg-white rounded-xl p-4 text-center">
-                  <p className="text-2xl font-bold text-green-600">100%</p>
-                  <p className="text-sm text-neutral-500">Verified</p>
+                <div className="bg-[var(--surface)] rounded-xl p-4 text-center neo-border">
+                  <p className="text-2xl font-black text-neutral-900">100%</p>
+                  <p className="text-sm text-[var(--ink-muted)]">Verified</p>
                 </div>
-                <div className="bg-white rounded-xl p-4 text-center">
-                  <p className="text-2xl font-bold text-green-600">0</p>
-                  <p className="text-sm text-neutral-500">Trust Required</p>
+                <div className="bg-[var(--surface)] rounded-xl p-4 text-center neo-border">
+                  <p className="text-2xl font-black text-neutral-900">0</p>
+                  <p className="text-sm text-[var(--ink-muted)]">Trust Required</p>
                 </div>
-                <div className="bg-white rounded-xl p-4 text-center">
-                  <p className="text-2xl font-bold text-green-600">∞</p>
-                  <p className="text-sm text-neutral-500">Proof Duration</p>
+                <div className="bg-[var(--surface)] rounded-xl p-4 text-center neo-border">
+                  <p className="text-2xl font-black text-neutral-900">∞</p>
+                  <p className="text-sm text-[var(--ink-muted)]">Proof Duration</p>
                 </div>
               </div>
             </CardContent>
@@ -136,8 +135,8 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-16" ref={liskRef}>
-          <h2 className={`text-3xl font-bold text-neutral-900 mb-6 transition-all duration-700 ${liskInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Built for Lisk</h2>
-          <div className={`prose prose-lg text-neutral-600 max-w-none transition-all duration-700 delay-200 ${liskInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h2 className={`text-3xl font-black text-neutral-900 mb-6 uppercase transition-all duration-700 ${liskInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Built for Lisk</h2>
+          <div className={`prose prose-lg text-[var(--ink-muted)] max-w-none transition-all duration-700 delay-200 ${liskInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <p>
               Kasturi is built on <strong>Lisk</strong>, an Ethereum Layer-2 designed for 
               low transaction costs, builder-friendly, and focused on high-growth markets including Southeast Asia.
@@ -150,12 +149,12 @@ export default function AboutPage() {
         </section>
 
         <section className="text-center" ref={ctaRef}>
-          <div className={`inline-flex items-center gap-2 px-4 py-2 bg-green-100 rounded-full text-green-700 text-sm font-medium mb-6 transition-all duration-700 ${ctaInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          <div className={`inline-flex items-center gap-2 px-4 py-2 bg-white neo-pill text-neutral-900 text-sm font-semibold mb-6 transition-all duration-700 ${ctaInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
             <Sparkles className="w-4 h-4" />
             Ready to start?
           </div>
-          <h2 className={`text-3xl font-bold text-neutral-900 mb-4 transition-all duration-700 delay-100 ${ctaInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Start Learning Now</h2>
-          <p className={`text-neutral-600 mb-8 max-w-xl mx-auto transition-all duration-700 delay-200 ${ctaInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h2 className={`text-3xl font-black text-neutral-900 mb-4 uppercase transition-all duration-700 delay-100 ${ctaInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>Start Learning Now</h2>
+          <p className={`text-[var(--ink-muted)] mb-8 max-w-xl mx-auto transition-all duration-700 delay-200 ${ctaInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             Choose a regional language and start your learning journey. Free, structured, and your learning proof will be stored forever.
           </p>
           <div className={`transition-all duration-700 delay-300 ${ctaInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>

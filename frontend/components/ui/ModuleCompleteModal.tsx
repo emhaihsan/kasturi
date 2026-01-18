@@ -71,65 +71,65 @@ export function ModuleCompleteModal({
         onClick={onClose}
       />
       
-      <div className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-300">
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-emerald-500 to-teal-600" />
+      <div className="relative bg-white rounded-3xl neo-border neo-shadow max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className="absolute top-0 left-0 right-0 h-32 bg-[var(--accent)] border-b-4 border-neutral-900" />
         
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white text-neutral-900 neo-border transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="relative pt-8 pb-8 px-6">
           <div className="flex justify-center mb-6">
-            <div className="w-24 h-24 rounded-full bg-white shadow-lg flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                <Award className="w-10 h-10 text-white" />
+            <div className="w-24 h-24 rounded-full bg-white neo-border neo-shadow-sm flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-[var(--highlight)] neo-border flex items-center justify-center">
+                <Award className="w-10 h-10 text-neutral-900" />
               </div>
             </div>
           </div>
 
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-amber-500" />
-              <span className="text-amber-600 font-semibold">Module Completed!</span>
-              <Sparkles className="w-5 h-5 text-amber-500" />
+              <Sparkles className="w-5 h-5 text-neutral-900" />
+              <span className="text-neutral-900 font-semibold">Module Completed!</span>
+              <Sparkles className="w-5 h-5 text-neutral-900" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-black text-neutral-900 mb-2 uppercase">
               Congratulations! 🎉
             </h2>
-            <p className="text-gray-600">
-              You have completed <span className="font-semibold text-emerald-600">{moduleName}</span>
+            <p className="text-[var(--ink-muted)]">
+              You have completed <span className="font-semibold text-neutral-900">{moduleName}</span>
             </p>
           </div>
 
-          <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 mb-6">
+          <div className="bg-[var(--surface)] rounded-2xl p-4 mb-6 neo-border">
             <div className="flex items-center justify-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-white neo-border flex items-center justify-center">
                 <span className="text-2xl">⭐</span>
               </div>
               <div>
-                <p className="text-sm text-amber-700">Experience Earned</p>
-                <p className="text-2xl font-bold text-amber-600">+{expEarned} EXP</p>
+                <p className="text-sm text-[var(--ink-muted)]">Experience Earned</p>
+                <p className="text-2xl font-black text-neutral-900">+{expEarned} EXP</p>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-gray-100 pt-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-4 text-center">
+          <div className="border-t border-neutral-900/10 pt-6">
+            <h3 className="text-sm font-semibold text-[var(--ink-muted)] mb-4 text-center">
               Claim Your Certificate
             </h3>
 
             {hasCredential || claimSuccess ? (
-              <div className="bg-emerald-50 rounded-2xl p-4">
+              <div className="bg-white rounded-2xl p-4 neo-border neo-shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 rounded-full bg-[var(--highlight)] neo-border flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-neutral-900" />
                   </div>
                   <div>
-                    <p className="font-semibold text-emerald-800">Certificate Minted!</p>
-                    <p className="text-sm text-emerald-600">Soulbound Token issued to your wallet</p>
+                    <p className="font-semibold text-neutral-900">Certificate Minted!</p>
+                    <p className="text-sm text-[var(--ink-muted)]">Soulbound Token issued to your wallet</p>
                   </div>
                 </div>
                 {credentialTxHash && (
@@ -137,7 +137,7 @@ export function ModuleCompleteModal({
                     href={getExplorerUrl(credentialTxHash, 'tx')}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-colors"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-[var(--accent)] text-white rounded-xl text-sm font-semibold neo-border"
                   >
                     View on Explorer
                     <ExternalLink className="w-4 h-4" />
@@ -146,7 +146,7 @@ export function ModuleCompleteModal({
               </div>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm text-gray-500 text-center">
+                <p className="text-sm text-[var(--ink-muted)] text-center">
                   Mint a Soulbound Token certificate for completing {programName}
                 </p>
                 <Button
@@ -167,7 +167,7 @@ export function ModuleCompleteModal({
                   )}
                 </Button>
                 {claimError && (
-                  <p className="text-red-500 text-sm text-center">{claimError}</p>
+                  <p className="text-neutral-900 text-sm text-center font-semibold">{claimError}</p>
                 )}
               </div>
             )}
@@ -175,7 +175,7 @@ export function ModuleCompleteModal({
 
           <button
             onClick={onClose}
-            className="w-full mt-4 py-2.5 text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors"
+            className="w-full mt-4 py-2.5 text-neutral-900 text-sm font-semibold transition-colors"
           >
             Continue Learning
           </button>

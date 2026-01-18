@@ -139,13 +139,13 @@ export default function RewardsPage() {
 
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-white py-16">
+      <div className="min-h-screen bg-[var(--background)] py-16">
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-            <Gift className="w-10 h-10 text-green-600" />
+          <div className="w-20 h-20 rounded-2xl bg-white neo-border neo-shadow-sm flex items-center justify-center mx-auto mb-6">
+            <Gift className="w-10 h-10 text-neutral-900" />
           </div>
-          <h1 className="text-3xl font-bold text-neutral-900 mb-4">NFT Vouchers</h1>
-          <p className="text-neutral-600 mb-8">
+          <h1 className="text-3xl font-black text-neutral-900 mb-4 uppercase">NFT Vouchers</h1>
+          <p className="text-[var(--ink-muted)] mb-8">
             Login to view and purchase NFT vouchers with KASTURI tokens.
           </p>
           <Button size="lg" onClick={() => login()}>
@@ -157,54 +157,54 @@ export default function RewardsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-screen bg-[var(--background)] py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-neutral-900 mb-4">NFT Vouchers</h1>
-          <p className="text-xl text-neutral-600">
+          <h1 className="text-4xl font-black text-neutral-900 mb-4 uppercase">NFT Vouchers</h1>
+          <p className="text-xl text-[var(--ink-muted)]">
             Exchange KASTURI tokens for exclusive NFT vouchers with real-world benefits
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-12">
-          <Card className="bg-gradient-to-br from-amber-500 to-orange-600 text-white hover:scale-105">
+          <Card className="bg-white hover:-translate-y-1">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Coins className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-xl bg-white neo-border neo-shadow-sm flex items-center justify-center">
+                  <Coins className="w-6 h-6 text-neutral-900" />
                 </div>
                 <div>
-                  <p className="text-amber-100 text-sm">KASTURI Balance</p>
-                  <p className="text-3xl font-bold">{tokenBalanceFormatted} KSTR</p>
+                  <p className="text-[var(--ink-muted)] text-sm">KASTURI Balance</p>
+                  <p className="text-3xl font-black text-neutral-900">{tokenBalanceFormatted} KSTR</p>
                 </div>
               </div>
-              <p className="text-amber-100 text-sm">
+              <p className="text-[var(--ink-muted)] text-sm">
                 Tokens to purchase NFT vouchers
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-600 to-emerald-700 text-white hover:scale-105">
+          <Card className="bg-white hover:-translate-y-1">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Gift className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-xl bg-white neo-border neo-shadow-sm flex items-center justify-center">
+                  <Gift className="w-6 h-6 text-neutral-900" />
                 </div>
                 <div>
-                  <p className="text-green-100 text-sm">My Vouchers</p>
+                  <p className="text-[var(--ink-muted)] text-sm">My Vouchers</p>
                   {loadingVouchers ? (
                     <div className="flex items-center gap-2">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <p className="text-2xl font-bold">...</p>
+                      <Loader2 className="w-5 h-5 animate-spin text-neutral-900" />
+                      <p className="text-2xl font-black text-neutral-900">...</p>
                     </div>
                   ) : (
-                    <p className="text-3xl font-bold">
+                    <p className="text-3xl font-black text-neutral-900">
                       {onChainVouchers.reduce((sum, v) => sum + parseInt(v.userBalance || '0'), 0)}
                     </p>
                   )}
                 </div>
               </div>
-              <p className="text-green-100 text-sm">
+              <p className="text-[var(--ink-muted)] text-sm">
                 NFT vouchers you own
               </p>
             </CardContent>
@@ -213,20 +213,20 @@ export default function RewardsPage() {
 
         {/* Success/Error Messages */}
         {purchaseSuccess && (
-          <div className="mb-6 p-4 bg-emerald-100 border border-emerald-200 rounded-xl">
-            <p className="text-emerald-700">{purchaseSuccess}</p>
+          <div className="mb-6 p-4 bg-white neo-border neo-shadow-sm rounded-xl">
+            <p className="text-neutral-900 font-semibold">{purchaseSuccess}</p>
           </div>
         )}
         {purchaseError && (
-          <div className="mb-6 p-4 bg-red-100 border border-red-200 rounded-xl">
-            <p className="text-red-700">{purchaseError}</p>
+          <div className="mb-6 p-4 bg-white neo-border neo-shadow-sm rounded-xl">
+            <p className="text-neutral-900 font-semibold">{purchaseError}</p>
           </div>
         )}
 
         <div className="mb-12">
-          <Card className="hover:shadow-xl">
+          <Card className="hover:-translate-y-1 transition-all">
             <CardHeader>
-              <h2 className="text-xl font-bold text-neutral-900">Your Vouchers</h2>
+              <h2 className="text-xl font-black text-neutral-900 uppercase">Your Vouchers</h2>
             </CardHeader>
             <CardContent>
               {loadingVouchers ? (
@@ -239,9 +239,9 @@ export default function RewardsPage() {
                   {onChainVouchers.filter(v => parseInt(v.userBalance) > 0).map((voucher) => (
                     <div
                       key={voucher.id}
-                      className="flex items-center gap-4 p-4 rounded-xl border bg-emerald-50 border-emerald-200"
+                      className="flex items-center gap-4 p-4 rounded-xl neo-border neo-shadow-sm bg-[var(--surface)]"
                     >
-                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-white flex-shrink-0">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-white neo-border flex-shrink-0">
                         <Image
                           src={getVoucherMetadata(voucher.id).image}
                           alt={voucher.name}
@@ -252,7 +252,7 @@ export default function RewardsPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-neutral-900 truncate">{voucher.name}</p>
-                        <p className="text-sm text-neutral-500">
+                        <p className="text-sm text-[var(--ink-muted)]">
                           Owned: {voucher.userBalance}
                         </p>
                       </div>
@@ -275,7 +275,7 @@ export default function RewardsPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-neutral-500">
+                <div className="text-center py-8 text-[var(--ink-muted)]">
                   <Gift className="w-12 h-12 mx-auto mb-3 text-neutral-300" />
                   <p>No vouchers yet. Purchase vouchers with KASTURI tokens!</p>
                 </div>
@@ -286,13 +286,13 @@ export default function RewardsPage() {
 
         {/* Transaction Success Link */}
         {txHash && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
-            <p className="text-blue-700 text-sm">Transaction successful!</p>
+          <div className="mb-6 p-4 bg-white neo-border neo-shadow-sm rounded-xl flex items-center justify-between">
+            <p className="text-neutral-900 text-sm font-semibold">Transaction successful!</p>
             <a
               href={`https://sepolia-blockscout.lisk.com/tx/${txHash}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
+              className="flex items-center gap-1 text-[var(--accent)] text-sm font-semibold"
             >
               View on Blockscout
               <ExternalLink className="w-4 h-4" />
@@ -301,17 +301,17 @@ export default function RewardsPage() {
         )}
 
         <div>
-          <h2 className="text-2xl font-bold text-neutral-900 mb-6">NFT Voucher Catalog</h2>
+          <h2 className="text-2xl font-black text-neutral-900 mb-6 uppercase">NFT Voucher Catalog</h2>
           
           {loadingVouchers ? (
             <div className="text-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto text-emerald-600 mb-4" />
-              <p className="text-neutral-500">Loading vouchers...</p>
+              <Loader2 className="w-8 h-8 animate-spin mx-auto text-neutral-900 mb-4" />
+              <p className="text-[var(--ink-muted)]">Loading vouchers...</p>
             </div>
           ) : onChainVouchers.length === 0 ? (
             <div className="text-center py-12">
               <Gift className="w-16 h-16 mx-auto text-neutral-300 mb-4" />
-              <p className="text-neutral-500">No vouchers available on blockchain yet.</p>
+              <p className="text-[var(--ink-muted)]">No vouchers available on blockchain yet.</p>
               <p className="text-neutral-400 text-sm mt-2">Run the create-vouchers script to add voucher types.</p>
             </div>
           ) : (
@@ -323,7 +323,7 @@ export default function RewardsPage() {
                 const ownedCount = parseInt(voucher.userBalance) || 0;
 
                 return (
-                  <Card key={voucher.id} hover className="overflow-hidden hover:scale-105">
+                  <Card key={voucher.id} hover className="overflow-hidden">
                     <div className="aspect-video relative overflow-hidden">
                       <Image
                         src={getVoucherMetadata(voucher.id).image}
@@ -334,14 +334,14 @@ export default function RewardsPage() {
                     </div>
                     <CardContent className="p-4">
                       <h3 className="font-semibold text-neutral-900 mb-1">{voucher.name}</h3>
-                      <p className="text-sm text-neutral-500 mb-4 line-clamp-2">{getVoucherMetadata(voucher.id).description}</p>
+                      <p className="text-sm text-[var(--ink-muted)] mb-4 line-clamp-2">{getVoucherMetadata(voucher.id).description}</p>
                       <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-1 text-amber-600 font-bold">
+                        <div className="flex items-center gap-1 text-neutral-900 font-bold">
                           <Coins className="w-4 h-4" />
                           <span>{voucherPrice.toFixed(0)} KSTR</span>
                         </div>
                         {ownedCount > 0 && (
-                          <span className="text-sm text-emerald-600 font-medium">
+                          <span className="text-sm text-[var(--accent)] font-semibold">
                             Owned: {ownedCount}
                           </span>
                         )}

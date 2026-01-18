@@ -53,15 +53,16 @@ export function WhyChooseUsSection() {
   const { ref, isInView } = useInView();
 
   return (
-    <section id="why-choose-us" className="py-20 bg-white" ref={ref}>
+    <section id="why-choose-us" className="py-20 bg-[var(--background)]" ref={ref}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className={`bg-neutral-50 rounded-3xl px-6 py-14 sm:px-10 transition-all duration-700 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+        <div className={`bg-[var(--surface)] rounded-3xl px-6 py-14 sm:px-10 neo-border neo-shadow transition-all duration-700 ${isInView ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           <div className="text-center mb-14">
-            <div className="inline-block px-4 py-2 bg-white border border-neutral-200 rounded-full mb-6">
-              <p className="text-sm text-neutral-600">Why choose us</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white neo-pill mb-6">
+              <span className="inline-block w-3 h-3 rounded-sm bg-[var(--accent)]" />
+              <p className="text-sm font-semibold text-neutral-900">Why choose us</p>
             </div>
 
-            <h2 className="text-4xl font-bold text-neutral-900 leading-tight">
+            <h2 className="text-4xl font-black text-neutral-900 leading-tight uppercase">
               Why Choose Kasturi
             </h2>
           </div>
@@ -75,11 +76,11 @@ export function WhyChooseUsSection() {
                   className={`text-left transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
-                  <div className="w-10 h-10 rounded-xl bg-white border border-neutral-200 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-neutral-800" />
+                  <div className="w-12 h-12 rounded-xl bg-white neo-border neo-shadow-sm flex items-center justify-center mb-4">
+                    <Icon className="w-5 h-5 text-neutral-900" />
                   </div>
                   <h3 className="font-semibold text-neutral-900 mb-2">{item.title}</h3>
-                  <p className="text-sm text-neutral-500 leading-relaxed">{item.description}</p>
+                  <p className="text-sm text-[var(--ink-muted)] leading-relaxed">{item.description}</p>
                 </div>
               );
             })}

@@ -106,18 +106,18 @@ export default function ModuleDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-neutral-500">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
+        <div className="text-[var(--ink-muted)]">Loading...</div>
       </div>
     );
   }
 
   if (!module) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Module not found</h1>
-          <Link href={`/languages/${languageId}`} className="text-emerald-600 hover:underline">
+          <h1 className="text-2xl font-black text-neutral-900 mb-2 uppercase">Module not found</h1>
+          <Link href={`/languages/${languageId}`} className="text-[var(--accent)] font-semibold">
             Back to module list
           </Link>
         </div>
@@ -126,42 +126,42 @@ export default function ModuleDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white py-16">
+    <div className="min-h-screen bg-[var(--background)]">
+      <div className="bg-[var(--accent)] text-white py-16 border-b-4 border-neutral-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href={`/languages/${languageId}`}
-            className="inline-flex items-center gap-2 text-emerald-100 hover:text-white mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to {module.program.name}
           </Link>
 
           <div className="flex flex-col md:flex-row items-start gap-8">
-            <div className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center">
-              <BookOpen className="w-10 h-10 text-emerald-200" />
+            <div className="w-20 h-20 rounded-2xl bg-white neo-border neo-shadow-sm flex items-center justify-center">
+              <BookOpen className="w-10 h-10 text-neutral-900" />
             </div>
 
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <span className="px-3 py-1 bg-white/20 rounded-full text-sm capitalize">
+                <span className="px-3 py-1 bg-white neo-pill text-neutral-900 text-sm capitalize">
                   {module.level}
                 </span>
               </div>
-              <h1 className="text-3xl font-bold mb-2">{module.name}</h1>
-              <p className="text-emerald-50 max-w-2xl mb-6">{module.description}</p>
+              <h1 className="text-3xl font-black mb-2 uppercase">{module.name}</h1>
+              <p className="text-white/80 max-w-2xl mb-6">{module.description}</p>
 
               <div className="flex flex-wrap items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-emerald-200" />
+                  <BookOpen className="w-5 h-5 text-white" />
                   <span>{module.lessons.length} Lessons</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-emerald-200" />
+                  <Clock className="w-5 h-5 text-white" />
                   <span>~{module.lessons.length * 8} min</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Star className="w-5 h-5 text-amber-300" />
+                  <Star className="w-5 h-5 text-[var(--highlight)]" />
                   <span>+{module.totalExp} EXP</span>
                 </div>
               </div>
@@ -169,16 +169,16 @@ export default function ModuleDetailPage() {
           </div>
 
           {user && (
-            <div className="mt-8 bg-white/10 backdrop-blur rounded-2xl p-6">
+            <div className="mt-8 bg-white rounded-2xl p-6 neo-border neo-shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-medium">Module Progress</span>
-                <span className="text-emerald-200">
+                <span className="font-semibold text-neutral-900">Module Progress</span>
+                <span className="text-neutral-700 font-semibold">
                   {completedLessons} / {module.lessons.length} Lessons
                 </span>
               </div>
-              <div className="h-3 bg-white/20 rounded-full overflow-hidden">
+              <div className="h-3 bg-[var(--surface)] rounded-full overflow-hidden neo-border">
                 <div
-                  className="h-full bg-amber-400 rounded-full transition-all duration-500"
+                  className="h-full bg-[var(--highlight)] rounded-full transition-all duration-500"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -187,14 +187,14 @@ export default function ModuleDetailPage() {
               {isModuleComplete && (
                 <div className="mt-6 pt-6 border-t border-white/20">
                   {hasCredential || mintSuccess ? (
-                    <div className="bg-white/10 backdrop-blur rounded-xl p-4">
+                    <div className="bg-white rounded-xl p-4 neo-border neo-shadow-sm">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
-                          <CheckCircle className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-full bg-[var(--highlight)] neo-border flex items-center justify-center">
+                          <CheckCircle className="w-5 h-5 text-neutral-900" />
                         </div>
                         <div>
-                          <p className="font-semibold text-white">Certificate Minted!</p>
-                          <p className="text-sm text-emerald-200">Your on-chain credential has been issued</p>
+                          <p className="font-semibold text-neutral-900">Certificate Minted!</p>
+                          <p className="text-sm text-[var(--ink-muted)]">Your on-chain credential has been issued</p>
                         </div>
                       </div>
                       {credentialTxHash && (
@@ -202,7 +202,7 @@ export default function ModuleDetailPage() {
                           href={getExplorerUrl(credentialTxHash, 'tx')}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors"
+                          className="flex items-center justify-center gap-2 w-full py-2.5 bg-[var(--accent)] text-white rounded-lg text-sm font-semibold neo-border"
                         >
                           View on Explorer
                           <ExternalLink className="w-4 h-4" />
@@ -212,12 +212,12 @@ export default function ModuleDetailPage() {
                   ) : (
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                          <Award className="w-6 h-6 text-amber-300" />
+                        <div className="w-12 h-12 rounded-xl bg-white neo-border flex items-center justify-center flex-shrink-0">
+                          <Award className="w-6 h-6 text-neutral-900" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-white mb-1">Claim Your Certificate</h3>
-                          <p className="text-sm text-emerald-100">
+                          <h3 className="font-semibold text-neutral-900 mb-1">Claim Your Certificate</h3>
+                          <p className="text-sm text-[var(--ink-muted)]">
                             You've completed all lessons! Mint your Soulbound Token certificate on-chain.
                           </p>
                         </div>
@@ -225,23 +225,23 @@ export default function ModuleDetailPage() {
                       <Button
                         onClick={handleMintCertificate}
                         disabled={claiming}
-                        className="w-full bg-white text-emerald-700 hover:bg-emerald-100 disabled:bg-white disabled:text-emerald-400"
+                        className="w-full"
                       >
                         {claiming ? (
                           <>
-                            <Loader2 className="w-5 h-5 mr-2 animate-spin text-emerald-700" />
-                            <span className="text-emerald-700">Minting Certificate...</span>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            <span>Minting Certificate...</span>
                           </>
                         ) : (
                           <>
-                            <Award className="w-5 h-5 mr-2 text-emerald-700" />
-                            <span className="text-emerald-700">Mint Certificate (Free)</span>
+                            <Award className="w-5 h-5 mr-2" />
+                            <span>Mint Certificate (Free)</span>
                           </>
                         )}
                       </Button>
                       {mintError && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                          <p className="text-red-200 text-sm">{mintError}</p>
+                        <div className="bg-white neo-border neo-shadow-sm rounded-lg p-3">
+                          <p className="text-neutral-900 text-sm font-semibold">{mintError}</p>
                         </div>
                       )}
                     </div>
@@ -254,7 +254,7 @@ export default function ModuleDetailPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Lesson List</h2>
+        <h2 className="text-2xl font-black text-neutral-900 mb-8 uppercase">Lesson List</h2>
 
         <div className="space-y-4">
           {module.lessons.map((lesson, index) => {
@@ -270,16 +270,16 @@ export default function ModuleDetailPage() {
               >
                 <Card
                   hover={!isLocked}
-                  className={`${isLocked ? 'opacity-60' : ''} ${isCompleted ? 'border-emerald-200 bg-emerald-50/50' : ''}`}
+                  className={`${isLocked ? 'opacity-60' : ''} ${isCompleted ? 'bg-[var(--surface)]' : ''}`}
                 >
                   <div className="p-6 flex items-center gap-6">
                     <div
                       className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold ${
                         isCompleted
-                          ? 'bg-emerald-500 text-white'
+                          ? 'bg-[var(--highlight)] text-neutral-900 neo-border'
                           : isLocked
-                          ? 'bg-gray-200 text-gray-400'
-                          : 'bg-emerald-100 text-emerald-600'
+                          ? 'bg-[var(--surface)] text-neutral-400 neo-border'
+                          : 'bg-white text-neutral-900 neo-border'
                       }`}
                     >
                       {isCompleted ? (
@@ -292,21 +292,21 @@ export default function ModuleDetailPage() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                      <h3 className="text-lg font-semibold text-neutral-900 mb-1">
                         {lesson.title}
                       </h3>
-                      <p className="text-gray-600 text-sm line-clamp-1">
+                      <p className="text-[var(--ink-muted)] text-sm line-clamp-1">
                         {lesson.description}
                       </p>
                     </div>
 
-                    <div className="hidden sm:flex items-center gap-6 text-sm text-gray-500">
+                    <div className="hidden sm:flex items-center gap-6 text-sm text-[var(--ink-muted)]">
                       <div className="flex items-center gap-1.5">
                         <Clock className="w-4 h-4" />
                         <span>{lesson.duration}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-amber-600 font-medium">
-                        <Star className="w-4 h-4 fill-amber-400" />
+                      <div className="flex items-center gap-1.5 text-neutral-900 font-semibold">
+                        <Star className="w-4 h-4 text-[var(--highlight)]" />
                         <span>+{lesson.expReward} EXP</span>
                       </div>
                     </div>
@@ -326,8 +326,8 @@ export default function ModuleDetailPage() {
 
         {module.lessons.length === 0 && (
           <div className="text-center py-16">
-            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No lessons available in this module yet.</p>
+            <BookOpen className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
+            <p className="text-[var(--ink-muted)]">No lessons available in this module yet.</p>
           </div>
         )}
       </div>
